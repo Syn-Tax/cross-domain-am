@@ -2,4 +2,4 @@ torch
 torchaudio
 transformers
 dataclasses_json
-ctc_forced_alignment
+git+https://github.com/MahmoudAshraf97/ctc-forced-aligner.git
