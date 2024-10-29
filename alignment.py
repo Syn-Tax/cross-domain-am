@@ -38,14 +38,26 @@ def save_spans(word_spans, labels, num_frames, waveform_len, sample_rate):
     ratio = waveform_len / num_frames
     print(waveform_len, num_frames)
     output = []
+    offset = 0
+    prev_end = 0
     for word in word_spans:
+        word_start = int(word[0].start * ratio) / sample_rate
+        word_end = int(word[-1].end * ratio) / sample_rate
+
+        if prev_end > word_start:
+            offset += CHUNK_LEN
+
+        prev_end = word_end
+
         output.append(
             {
                 "word": "".join(labels[span.token] for span in word),
-                "start": int(word[0].start * ratio) / sample_rate,
-                "end": int(word[-1].end * ratio) / sample_rate,
+                "start": word_start + offset,
+                "end": word_start + offset,
             }
         )
+
+    print(len(output))
 
     with open(OUT_PATH, "w") as f:
         json.dump(output, f)
@@ -78,7 +90,7 @@ def main():
 
     transcript = re.sub(timestamp_regex, "", transcript)
     transcript = re.sub(punctuation_regex, " ", transcript)
-    transcript = transcript.split()[:100]
+    transcript = transcript.split()[:200]
 
     bundle = torchaudio.pipelines.MMS_FA
 
