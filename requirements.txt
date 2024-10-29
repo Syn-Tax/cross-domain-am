@@ -1,0 +1,5 @@
+torch
+torchaudio
+transformers
+dataclasses_json
+ctc_forced_alignment
