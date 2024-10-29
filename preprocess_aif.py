@@ -10,6 +10,8 @@ PROP_RELATIONS = ["RA", "CA", "MA"]
 PROPOSITION_TYPE = "I"
 LOCUTION_TYPE = "L"
 
+REMOVE_PEOPLE = ["People", "Two of the Moral Maze's witnesses"]
+
 
 def follow_edges(from_id: str, nodes, edges) -> list[dict]:
     indices = [i for i, x in enumerate(edges) if x["fromID"] == from_id]
@@ -71,7 +73,7 @@ def denormalise(obj: dict):
         if node["type"] != LOCUTION_TYPE:
             continue
 
-        if node["text"].startswith("People :"):
+        if any(node["text"].startswith(x) for x in REMOVE_PEOPLE):
             continue
 
         n = Node()

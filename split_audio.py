@@ -49,7 +49,7 @@ def get_span(locution, alignments):
     loc_len = len(locution)
     f = 0
 
-    for i in (i for i, e in enumerate(transcript) if e == locution[0]):
+    for i in (ind for ind, e in enumerate(transcript) if locution[0] in e):
         f = i
         if transcript[i : i + loc_len] == locution:
             start_ind = i
