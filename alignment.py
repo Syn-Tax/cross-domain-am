@@ -4,6 +4,7 @@ import torchaudio
 import torchaudio.functional as F
 import re
 from tqdm import tqdm
+import math
 
 AUDIO_PATH = "raw_data/Moral Maze/GreenBelt/audio_16000.mp3"
 TRANSCRIPT_PATH = "raw_data/Moral Maze/GreenBelt/transcript.txt"
@@ -38,22 +39,22 @@ def save_spans(word_spans, labels, num_frames, waveform_len, sample_rate):
     ratio = waveform_len / num_frames
     print(waveform_len, num_frames)
     output = []
-    offset = 0
-    prev_end = 0
+    # offset = 0
+    # prev_end = 0
     for word in word_spans:
         word_start = int(word[0].start * ratio) / sample_rate
         word_end = int(word[-1].end * ratio) / sample_rate
 
-        if prev_end > word_start:
-            offset += CHUNK_LEN
+        # if prev_end > word_start:
+        #     offset += CHUNK_LEN
 
-        prev_end = word_end
+        # prev_end = word_end
 
         output.append(
             {
                 "word": "".join(labels[span.token] for span in word),
-                "start": word_start + offset,
-                "end": word_start + offset,
+                "start": word_start,
+                "end": word_end,
             }
         )
 
@@ -69,7 +70,7 @@ def main():
     print(waveform.size())
     print(sample_rate)
 
-    n_splits = int(waveform.size(1) / (CHUNK_LEN * sample_rate))
+    n_splits = math.ceil(waveform.size(1) / (CHUNK_LEN * sample_rate))
     waveform_split = torch.tensor_split(waveform, n_splits, dim=1)
 
     with open(TRANSCRIPT_PATH, "r") as f:
@@ -90,7 +91,7 @@ def main():
 
     transcript = re.sub(timestamp_regex, "", transcript)
     transcript = re.sub(punctuation_regex, " ", transcript)
-    transcript = transcript.split()[:200]
+    transcript = transcript.split()
 
     bundle = torchaudio.pipelines.MMS_FA
 
@@ -104,7 +105,7 @@ def main():
 
     count = 0
 
-    for chunk in tqdm(waveform_split[:2]):
+    for chunk in tqdm(waveform_split):
         with torch.inference_mode():
             emission, _ = model(chunk.to(device))
             print(emission.size())
@@ -117,7 +118,11 @@ def main():
     word_spans = unflatten(token_spans, [len(word) for word in transcript])
 
     save_spans(
-        word_spans, labels, emissions.size(1), CHUNK_LEN * sample_rate, sample_rate
+        word_spans,
+        labels,
+        emissions.size(1),
+        n_splits * CHUNK_LEN * sample_rate,
+        bundle.sample_rate,
     )
 
 
