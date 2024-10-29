@@ -2,7 +2,7 @@ import json
 import torch
 import torchaudio
 import re
-import tqdm
+from tqdm import tqdm
 
 from datastructs import Node, Relation, WordSpan
 
@@ -12,12 +12,12 @@ AUDIO_PATH = "raw_data/Moral Maze/GreenBelt/audio_16000.mp3"
 
 OUT_PATH = "data/Moral Maze/GreenBelt/audio/"
 
-PADDING = 0.5
+SHIFT = 3.1
 
 
 def clean_text(txt):
     timestamp_regex = r"\[.{0,10}[0-9]+:[0-9]+:[0-9]+\]"
-    punctuation_regex = r"[^a-z0-9]"
+    punctuation_regex = r"[^a-z]"
 
     transcript = " ".join(
         [
@@ -37,9 +37,6 @@ def clean_text(txt):
 
 def get_span(locution, alignments):
     locution = locution.split()
-    found_until = -1
-    curr_word = locution[0]
-
     start_ind = -1
     end_ind = -1
 
@@ -52,8 +49,6 @@ def get_span(locution, alignments):
             start_ind = i
             end_ind = i + loc_len
             break
-
-    print(transcript[start_ind:end_ind])
 
     if start_ind == -1 or end_ind == -1:
         print("locution not found")
@@ -72,20 +67,23 @@ def main():
         argument_map = Node.schema().loads(f.read(), many=True)
 
     waveform, sample_rate = torchaudio.load(AUDIO_PATH)
+    print(sample_rate)
 
-    for node in argument_map:
+    for node in tqdm(argument_map):
         cleaned_loc = clean_text(node.locution)
         span = get_span(cleaned_loc, alignments)
 
+        print(cleaned_loc)
+        print(node.locution)
+
         node_audio = waveform[
             :,
-            int((span.start - PADDING) * sample_rate) : int(
-                (span.end + PADDING) * sample_rate
+            int((span.start - SHIFT) * sample_rate) : int(
+                (span.end - SHIFT) * sample_rate
             ),
         ]
 
         torchaudio.save(f"{OUT_PATH}{node.id}.wav", node_audio, sample_rate)
-        return
 
 
 if __name__ == "__main__":

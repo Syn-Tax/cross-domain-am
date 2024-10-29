@@ -64,7 +64,7 @@ def main():
         lines = f.readlines()
 
     timestamp_regex = r"\[.{0,10}[0-9]+:[0-9]+:[0-9]+\]"
-    punctuation_regex = r"[^a-z]"
+    punctuation_regex = r"[^a-z0-9]"
 
     transcript = " ".join(
         [
@@ -103,7 +103,7 @@ def main():
         word_spans,
         labels,
         emissions.size(1),
-        n_splits * CHUNK_LEN * sample_rate,
+        waveform.size(1),
         bundle.sample_rate,
     )
 
