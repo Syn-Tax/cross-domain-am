@@ -78,9 +78,7 @@ def main():
 
         node_audio = waveform[
             :,
-            int((span.start - SHIFT) * sample_rate) : int(
-                (span.end - SHIFT) * sample_rate
-            ),
+            int((span.start) * sample_rate) : int((span.end) * sample_rate),
         ]
 
         torchaudio.save(f"{OUT_PATH}{node.id}.wav", node_audio, sample_rate)

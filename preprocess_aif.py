@@ -71,6 +71,9 @@ def denormalise(obj: dict):
         if node["type"] != LOCUTION_TYPE:
             continue
 
+        if node["text"].startswith("People :"):
+            continue
+
         n = Node()
 
         n.locution = node["text"]
