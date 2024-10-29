@@ -1,40 +1,44 @@
 import json
-import ctc_forced_aligner as fa
 import torch
+import torchaudio
+import re
 
-AUDIO_PATH = "raw_data/Moral Maze/GreenBelt/audio.mp3"
+AUDIO_PATH = "raw_data/Moral Maze/GreenBelt/audio_8000.wav"
 TRANSCRIPT_PATH = "raw_data/Moral Maze/GreenBelt/transcript.txt"
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-language = "eng"
-batch_size = 1
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def align():
-    model, tokenizer = fa.load_alignment_model(
-        device, dtype=torch.float16 if device == "cuda" else torch.float32
-    )
-
-    waveform = fa.load_audio(AUDIO_PATH, model.dtype, model.device)
+    waveform, _ = torchaudio.load(AUDIO_PATH)
 
     with open(TRANSCRIPT_PATH, "r") as f:
         lines = f.readlines()
 
-    text = "".join(line for line in lines).replace("\n", " ").strip()
+    timestamp_regex = r"\[.{0,10}[0-9]+:[0-9]+:[0-9]+\]"
 
-    emissions, stride = fa.generate_emissions(model, waveform, batch_size=batch_size)
-
-    tokens_starred, text_starred = fa.preprocess_text(
-        text, romanize=True, language=language
+    transcript = " ".join(
+        [
+            ":".join(l.split(":")[1:] if len(l.split(":")) > 1 else [l])
+            .replace("\n", "")
+            .replace("\t", "")
+            for l in lines
+        ]
     )
 
-    segments, scores, blank_id = fa.get_alignments(emissions, tokens_starred, tokenizer)
+    transcript = re.sub(timestamp_regex, "", transcript).split()
 
-    spans = fa.get_spans(tokens_starred, segments, tokenizer.decode(blank_id))
+    bundle = torchaudio.pipelines.MMS_FA
 
-    word_timestamps = fa.postprocess_results(text_starred, spans, stride, scores)
+    model = bundle.get_model(with_star=False).to(device)
+    with torch.inference_mode():
+        emission, _ = model(waveform.to(device))
 
-    print(word_timestamps)
+    labels = bundle.get_labels(star=None)
+    dictionary = bundle.get_dict(star=None)
+
+    for k, v in dictionary.get_items():
+        print(f"{k}: {v}")
 
 
 if __name__ == "__main__":
