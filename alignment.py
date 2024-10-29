@@ -78,7 +78,7 @@ def main():
 
     transcript = re.sub(timestamp_regex, "", transcript)
     transcript = re.sub(punctuation_regex, " ", transcript)
-    transcript = transcript.split()[:50]
+    transcript = transcript.split()[:100]
 
     bundle = torchaudio.pipelines.MMS_FA
 
@@ -88,16 +88,19 @@ def main():
 
     tokenized_transcript = [dictionary[c] for word in transcript for c in word]
 
-    emissions = torch.tensor([])
+    emissions = torch.tensor([]).to(device)
 
     count = 0
 
-    for chunk in tqdm(waveform_split):
+    for chunk in tqdm(waveform_split[:2]):
         with torch.inference_mode():
             emission, _ = model(chunk.to(device))
-            emissions = torch.cat((emissions, emission))
+            print(emission.size())
+            emissions = torch.cat((emissions, emission), dim=1)
 
-    aligned_tokens, alignment_scores = align(emission, tokenized_transcript)
+    print(emissions.size())
+
+    aligned_tokens, alignment_scores = align(emissions, tokenized_transcript)
     token_spans = F.merge_tokens(aligned_tokens, alignment_scores)
     word_spans = unflatten(token_spans, [len(word) for word in transcript])
 
