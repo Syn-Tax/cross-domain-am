@@ -37,18 +37,10 @@ def unflatten(list_, lengths):
 
 def save_spans(word_spans, labels, num_frames, waveform_len, sample_rate):
     ratio = waveform_len / num_frames
-    print(waveform_len, num_frames)
     output = []
-    # offset = 0
-    # prev_end = 0
     for word in word_spans:
         word_start = int(word[0].start * ratio) / sample_rate
         word_end = int(word[-1].end * ratio) / sample_rate
-
-        # if prev_end > word_start:
-        #     offset += CHUNK_LEN
-
-        # prev_end = word_end
 
         output.append(
             {
@@ -58,17 +50,12 @@ def save_spans(word_spans, labels, num_frames, waveform_len, sample_rate):
             }
         )
 
-    print(len(output))
-
     with open(OUT_PATH, "w") as f:
         json.dump(output, f)
 
 
 def main():
     waveform, sample_rate = torchaudio.load(AUDIO_PATH)
-
-    print(waveform.size())
-    print(sample_rate)
 
     n_splits = math.ceil(waveform.size(1) / (CHUNK_LEN * sample_rate))
     waveform_split = torch.tensor_split(waveform, n_splits, dim=1)
@@ -103,15 +90,10 @@ def main():
 
     emissions = torch.tensor([]).to(device)
 
-    count = 0
-
     for chunk in tqdm(waveform_split):
         with torch.inference_mode():
             emission, _ = model(chunk.to(device))
-            print(emission.size())
             emissions = torch.cat((emissions, emission), dim=1)
-
-    print(emissions.size())
 
     aligned_tokens, alignment_scores = align(emissions, tokenized_transcript)
     token_spans = F.merge_tokens(aligned_tokens, alignment_scores)
