@@ -68,7 +68,11 @@ def main():
 
     transcript = " ".join(
         [
-            ":".join(l.split(":")[1:] if len(l.split(":")) > 1 else [l])
+            ":".join(
+                l.split(":")[1:]
+                if len(l.split(":")) > 1 and not l.startswith("\t")
+                else [l]
+            )
             .replace("\n", "")
             .replace("\t", "")
             .lower()

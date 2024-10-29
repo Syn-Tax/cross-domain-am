@@ -12,7 +12,7 @@ AUDIO_PATH = "raw_data/Moral Maze/GreenBelt/audio_16000.mp3"
 
 OUT_PATH = "data/Moral Maze/GreenBelt/audio/"
 
-SHIFT = 3.1
+PADDING = 0.1
 
 
 def clean_text(txt):
@@ -21,7 +21,11 @@ def clean_text(txt):
 
     transcript = " ".join(
         [
-            ":".join(l.split(":")[1:] if len(l.split(":")) > 1 else [l])
+            ":".join(
+                l.split(":")[1:]
+                if len(l.split(":")) > 1 and not l.startswith("\t")
+                else [l]
+            )
             .replace("\n", "")
             .replace("\t", "")
             .lower()
@@ -32,7 +36,7 @@ def clean_text(txt):
     transcript = re.sub(timestamp_regex, "", transcript)
     transcript = re.sub(punctuation_regex, " ", transcript)
 
-    return transcript
+    return " ".join(transcript.split())
 
 
 def get_span(locution, alignments):
@@ -43,15 +47,20 @@ def get_span(locution, alignments):
     transcript = [a.word for a in alignments]
 
     loc_len = len(locution)
+    f = 0
 
     for i in (i for i, e in enumerate(transcript) if e == locution[0]):
+        f = i
         if transcript[i : i + loc_len] == locution:
             start_ind = i
-            end_ind = i + loc_len
+            end_ind = i + loc_len - 1
             break
 
     if start_ind == -1 or end_ind == -1:
+        print(transcript.index(locution[0]))
         print("locution not found")
+        print(start_ind, end_ind)
+        print(f)
         return
 
     return WordSpan(
@@ -67,18 +76,20 @@ def main():
         argument_map = Node.schema().loads(f.read(), many=True)
 
     waveform, sample_rate = torchaudio.load(AUDIO_PATH)
-    print(sample_rate)
 
     for node in tqdm(argument_map):
         cleaned_loc = clean_text(node.locution)
         span = get_span(cleaned_loc, alignments)
 
-        print(cleaned_loc)
-        print(node.locution)
+        if not span:
+            print(node.locution)
+            print(cleaned_loc)
 
         node_audio = waveform[
             :,
-            int((span.start) * sample_rate) : int((span.end) * sample_rate),
+            int((span.start - PADDING) * sample_rate) : int(
+                (span.end + PADDING) * sample_rate
+            ),
         ]
 
         torchaudio.save(f"{OUT_PATH}{node.id}.wav", node_audio, sample_rate)
