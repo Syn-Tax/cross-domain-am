@@ -53,7 +53,7 @@ def find_relations(prop_id: str, nodes: list, edges: list) -> list[Relation]:
         possible_next_props = follow_edges(node["nodeID"], nodes, edges)
         relations.extend(
             [
-                Relation(node["type"], x["nodeID"])
+                Relation(node["type"], int(x["nodeID"]))
                 for x in possible_next_props
                 if x["type"] == PROPOSITION_TYPE
             ]
@@ -62,19 +62,16 @@ def find_relations(prop_id: str, nodes: list, edges: list) -> list[Relation]:
     return relations
 
 
-def denormalise(obj: dict, last_id: int):
+def denormalise(obj: dict):
     output = []
     nodes = obj["nodes"]
     edges = obj["edges"]
-
-    curr_id = last_id
 
     for node in nodes:
         if node["type"] != LOCUTION_TYPE:
             continue
 
-        n = Node(id=curr_id)
-        curr_id += 1
+        n = Node()
 
         n.locution = node["text"]
 
@@ -84,11 +81,13 @@ def denormalise(obj: dict, last_id: int):
         if not prop_id:
             continue
 
+        n.id = int(prop_id)
+
         n.relations = find_relations(prop_id, nodes, edges)
 
         output.append(n)
 
-    return output, curr_id
+    return output
 
 
 def get_files(dir: str) -> list[str]:
@@ -103,12 +102,11 @@ def get_files(dir: str) -> list[str]:
 if __name__ == "__main__":
     files = get_files(DIR_PATH)
     data = []
-    id = 0
     for file in files:
         with open(file, "r") as f:
             obj = json.load(f)
 
-        file_data, id = denormalise(obj, id)
+        file_data = denormalise(obj)
 
         data.extend(file_data)
         print(f"Processed file: {file}")
