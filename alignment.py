@@ -1,45 +1,110 @@
 import json
 import torch
 import torchaudio
+import torchaudio.functional as F
 import re
+from tqdm import tqdm
 
-AUDIO_PATH = "raw_data/Moral Maze/GreenBelt/audio_8000.wav"
+AUDIO_PATH = "raw_data/Moral Maze/GreenBelt/audio_16000.mp3"
 TRANSCRIPT_PATH = "raw_data/Moral Maze/GreenBelt/transcript.txt"
+
+OUT_PATH = "data/Moral Maze/GreenBelt/alignments.json"
+
+CHUNK_LEN = 10
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def align():
-    waveform, _ = torchaudio.load(AUDIO_PATH)
+def align(emission, tokens):
+    targets = torch.tensor([tokens], dtype=torch.int32, device=device)
+    alignments, scores = F.forced_align(emission, targets, blank=0)
+
+    alignments, scores = alignments[0], scores[0]
+    scores = scores.exp()
+    return alignments, scores
+
+
+def unflatten(list_, lengths):
+    assert len(list_) == sum(lengths)
+    i = 0
+    ret = []
+    for l in lengths:
+        ret.append(list_[i : i + l])
+        i += l
+    return ret
+
+
+def save_spans(word_spans, labels, num_frames, waveform_len, sample_rate):
+    ratio = waveform_len / num_frames
+    print(waveform_len, num_frames)
+    output = []
+    for word in word_spans:
+        output.append(
+            {
+                "word": "".join(labels[span.token] for span in word),
+                "start": int(word[0].start * ratio) / sample_rate,
+                "end": int(word[-1].end * ratio) / sample_rate,
+            }
+        )
+
+    with open(OUT_PATH, "w") as f:
+        json.dump(output, f)
+
+
+def main():
+    waveform, sample_rate = torchaudio.load(AUDIO_PATH)
+
+    print(waveform.size())
+    print(sample_rate)
+
+    n_splits = int(waveform.size(1) / (CHUNK_LEN * sample_rate))
+    waveform_split = torch.tensor_split(waveform, n_splits, dim=1)
 
     with open(TRANSCRIPT_PATH, "r") as f:
         lines = f.readlines()
 
     timestamp_regex = r"\[.{0,10}[0-9]+:[0-9]+:[0-9]+\]"
+    punctuation_regex = r"[^a-z]"
 
     transcript = " ".join(
         [
             ":".join(l.split(":")[1:] if len(l.split(":")) > 1 else [l])
             .replace("\n", "")
             .replace("\t", "")
+            .lower()
             for l in lines
         ]
     )
 
-    transcript = re.sub(timestamp_regex, "", transcript).split()
+    transcript = re.sub(timestamp_regex, "", transcript)
+    transcript = re.sub(punctuation_regex, " ", transcript)
+    transcript = transcript.split()[:50]
 
     bundle = torchaudio.pipelines.MMS_FA
 
     model = bundle.get_model(with_star=False).to(device)
-    with torch.inference_mode():
-        emission, _ = model(waveform.to(device))
-
     labels = bundle.get_labels(star=None)
     dictionary = bundle.get_dict(star=None)
 
-    for k, v in dictionary.get_items():
-        print(f"{k}: {v}")
+    tokenized_transcript = [dictionary[c] for word in transcript for c in word]
+
+    emissions = torch.tensor([])
+
+    count = 0
+
+    for chunk in tqdm(waveform_split):
+        with torch.inference_mode():
+            emission, _ = model(chunk.to(device))
+            emissions = torch.cat((emissions, emission))
+
+    aligned_tokens, alignment_scores = align(emission, tokenized_transcript)
+    token_spans = F.merge_tokens(aligned_tokens, alignment_scores)
+    word_spans = unflatten(token_spans, [len(word) for word in transcript])
+
+    save_spans(
+        word_spans, labels, emissions.size(1), CHUNK_LEN * sample_rate, sample_rate
+    )
 
 
 if __name__ == "__main__":
-    align()
+    main()
