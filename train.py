@@ -19,8 +19,8 @@ MAX_SAMPLES = 160_000
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
-BATCH_SIZE = 1
-EPOCHS = 1
+BATCH_SIZE = 16
+EPOCHS = 10
 LEARNING_RATE = 1e-5
 
 
@@ -45,7 +45,6 @@ def train(train_dataloader, model, loss_fn, optim, metrics_fn):
 
             optim.zero_grad()
             print(loss)
-            return
 
 
 def main():
