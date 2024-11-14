@@ -4,7 +4,7 @@ import torchaudio
 import re
 from tqdm import tqdm
 
-from datastructs import Node, Relation, WordSpan
+from datastructs import Node, Relation, Segment
 
 ALIGNMENTS_PATH = "data/Moral Maze/GreenBelt/alignments.json"
 ARGUMENT_MAP_PATH = "data/Moral Maze/GreenBelt/argument_map.json"
@@ -63,14 +63,14 @@ def get_span(locution, alignments):
         print(f)
         return
 
-    return WordSpan(
+    return Segment(
         " ".join(locution), alignments[start_ind].start, alignments[end_ind].end
     )
 
 
 def main():
     with open(ALIGNMENTS_PATH, "r") as f:
-        alignments = WordSpan.schema().loads(f.read(), many=True)
+        alignments = Segment.schema().loads(f.read(), many=True)
 
     with open(ARGUMENT_MAP_PATH, "r") as f:
         argument_map = Node.schema().loads(f.read(), many=True)

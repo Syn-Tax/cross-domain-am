@@ -92,6 +92,13 @@ def denormalise(obj: dict):
 
         output.append(n)
 
+    ids = [n.id for n in output]
+
+    for node in output:
+        for i, rel in enumerate([*node.relations]):
+            if rel.to_node_id not in ids:
+                del node.relations[i]
+
     return output
 
 

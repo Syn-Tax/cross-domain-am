@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from typing import Optional
+import torch
 
 
 @dataclass_json
@@ -17,11 +18,19 @@ class Node:
     locution: Optional[str] = None
     proposition: Optional[str] = None
     relations: Optional[list[Relation]] = None
+    audio: Optional[torch.Tensor] = None
 
 
 @dataclass_json
 @dataclass
-class WordSpan:
+class Segment:
     word: str
     start: float
     end: float
+
+
+@dataclass
+class Sample:
+    node_1: Node
+    node_2: Node
+    label: int
