@@ -68,11 +68,11 @@ def train(train_dataloader, model, loss_fn, optim):
 
         if sys.argv[1] == "--log":
             wandb.log({"train_loss": loss})
+
+        optim.zero_grad()
         loss.backward()
         optim.step()
         progress_bar.update(1)
-
-        optim.zero_grad()
 
 
 def eval(test_dataloader, model, metrics):
