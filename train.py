@@ -73,7 +73,6 @@ def train(train_dataloader, model, loss_fn, optim):
         progress_bar.update(1)
 
         optim.zero_grad()
-        break
 
 
 def eval(test_dataloader, model, metrics):
@@ -93,8 +92,6 @@ def eval(test_dataloader, model, metrics):
         targets = torch.cat((targets, batch_targets), dim=0)
 
         progress_bar.update(1)
-
-        break
 
     metrics(logits, targets)
 
