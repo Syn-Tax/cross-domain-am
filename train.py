@@ -5,7 +5,10 @@ from pathlib import Path
 from create_datasets import MultimodalDataset, collate_fn
 from model import ConcatModel
 import transformers
+import evaluate
 import tqdm
+import wandb
+import sys
 
 DATA_DIR = "data/Moral Maze/GreenBelt"
 TRAIN_SPLIT = 0.8
@@ -20,31 +23,80 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
 BATCH_SIZE = 16
-EPOCHS = 10
+EPOCHS = 5
 LEARNING_RATE = 1e-5
 
+# initialise wandb
+if sys.argv[1] == "--log":
+    wandb.init(
+        project="cross-domain-am",
+        config={
+            "batch_size": BATCH_SIZE,
+            "epochs": EPOCHS,
+            "lr": LEARNING_RATE,
+            "data_dir": DATA_DIR,
+            "text": TEXT_ENCODER,
+            "audio": AUDIO_ENCODER,
+            "merge_strategy": "concatenation",
+        },
+    )
 
-def metrics_fn(eval_pred):
-    pass
+# load metrics
+f1 = evaluate.load("f1")
+accuracy = evaluate.load("accuracy")
 
 
-def train(train_dataloader, model, loss_fn, optim, metrics_fn):
-    model.to(device)
+def metrics_fn(logits, targets):
+    preds = torch.argmax(logits, dim=-1)
+    f1_score = f1.compute(predictions=preds, references=targets, average="macro")["f1"]
+    accuracy_score = accuracy.compute(predictions=preds, references=targets)
 
-    for epoch in range(EPOCHS):
-        progress_bar = tqdm.tqdm(range(len(train_dataloader)))
-        for batch in train_dataloader:
-            batch = {k: v.to(device) for k, v in batch.items()}
-            # print(batch)
-            logits = model(**batch)
+    res = {"f1": f1_score, "accuracy": accuracy_score}
+    print(res)
 
-            loss = loss_fn(logits, batch["label"])
-            loss.backward()
-            optim.step()
-            progress_bar.update(1)
+    if sys.argv[1] == "--log":
+        wandb.log(res)
 
-            optim.zero_grad()
-            print(loss)
+
+def train(train_dataloader, model, loss_fn, optim):
+    progress_bar = tqdm.tqdm(range(len(train_dataloader)))
+    for batch in train_dataloader:
+        batch = {k: v.to(device) for k, v in batch.items()}
+        logits = model(**batch)
+
+        loss = loss_fn(logits, batch["label"])
+
+        if sys.argv[1] == "--log":
+            wandb.log({"train_loss": loss})
+        loss.backward()
+        optim.step()
+        progress_bar.update(1)
+
+        optim.zero_grad()
+        break
+
+
+def eval(test_dataloader, model, metrics):
+    progress_bar = tqdm.tqdm(range(len(test_dataloader)))
+    logits = torch.tensor([], dtype=torch.float)
+    targets = torch.tensor([], dtype=torch.int)
+
+    for batch in test_dataloader:
+        batch = {k: v.to(device) for k, v in batch.items()}
+
+        with torch.no_grad():
+            batch_logits = model(**batch)
+
+        batch_logits.to(torch.device("cpu"))
+        batch["label"].to(torch.device("cpu"))
+        logits = torch.cat((logits, batch_logits), dim=0)
+        targets = torch.cat((targets, batch["label"]), dim=0)
+
+        progress_bar.update(1)
+
+        break
+
+    metrics(logits, targets)
 
 
 def main():
@@ -85,11 +137,19 @@ def main():
         text_config.hidden_size * MAX_TOKENS,
         audio_config.hidden_size * 499,
     )
+    model.to(device)
 
-    loss = nn.CrossEntropyLoss()
+    loss = nn.NLLLoss()
     optimiser = torch.optim.AdamW(model.parameters(), LEARNING_RATE)
 
-    train(train_dataloader, model, loss, optimiser, metrics_fn)
+    for epoch in range(EPOCHS):
+        print(f"############# EPOCH {epoch} #############")
+
+        model.train()
+        train(train_dataloader, model, loss, optimiser)
+
+        model.eval()
+        eval(test_dataloader, model, metrics_fn)
 
 
 if __name__ == "__main__":

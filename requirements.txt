@@ -2,5 +2,6 @@ torch
 torchaudio
 transformers
 dataclasses_json
-git+https://github.com/MahmoudAshraf97/ctc-forced-aligner.git
 tqdm
+evaluate
+scikit-learn
