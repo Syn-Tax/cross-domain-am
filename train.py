@@ -78,19 +78,19 @@ def train(train_dataloader, model, loss_fn, optim):
 
 def eval(test_dataloader, model, metrics):
     progress_bar = tqdm.tqdm(range(len(test_dataloader)))
-    logits = torch.tensor([], dtype=torch.float)
-    targets = torch.tensor([], dtype=torch.int)
+    logits = torch.tensor([], dtype=torch.float, device=torch.device("cpu"))
+    targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
 
     for batch in test_dataloader:
         batch = {k: v.to(device) for k, v in batch.items()}
 
         with torch.no_grad():
-            batch_logits = model(**batch)
+            raw_logits = model(**batch)
 
-        batch_logits.to(torch.device("cpu"))
-        batch["label"].to(torch.device("cpu"))
+        batch_logits = raw_logits.to(torch.device("cpu"))
+        batch_targets = batch["label"].to(torch.device("cpu"))
         logits = torch.cat((logits, batch_logits), dim=0)
-        targets = torch.cat((targets, batch["label"]), dim=0)
+        targets = torch.cat((targets, batch_targets), dim=0)
 
         progress_bar.update(1)
 
