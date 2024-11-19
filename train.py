@@ -27,7 +27,7 @@ EPOCHS = 5
 LEARNING_RATE = 1e-5
 
 # initialise wandb
-if sys.argv[1] == "--log":
+if "--log" in sys.argv:
     wandb.init(
         project="cross-domain-am",
         config={
@@ -54,7 +54,7 @@ def metrics_fn(logits, targets):
     res = {"f1": f1_score, "accuracy": accuracy_score}
     print(res)
 
-    if sys.argv[1] == "--log":
+    if "--log" in sys.argv:
         wandb.log(res)
 
 
@@ -66,13 +66,16 @@ def train(train_dataloader, model, loss_fn, optim):
 
         loss = loss_fn(logits, batch["label"])
 
-        if sys.argv[1] == "--log":
+        if "--log" in sys.argv:
             wandb.log({"train_loss": loss})
 
+        pre_params = model.parameters()
         optim.zero_grad()
         loss.backward()
         optim.step()
         progress_bar.update(1)
+
+        print(pre_params == model.parameters())
 
 
 def eval(test_dataloader, model, metrics):
@@ -136,7 +139,7 @@ def main():
     )
     model.to(device)
 
-    loss = nn.NLLLoss()
+    loss = nn.CrossEntropyLoss()
     optimiser = torch.optim.AdamW(model.parameters(), LEARNING_RATE)
 
     for epoch in range(EPOCHS):

@@ -47,6 +47,8 @@ class ConcatModel(nn.Module):
         audio2_encoding = self.audio_encoder(**audio2).last_hidden_state
         text2_encoding = self.text_encoder(**text2).last_hidden_state
 
+        print(audio1_encoding.requires_grad)
+
         hidden_vector = torch.cat(
             (
                 audio1_encoding.view((batch_size, self.audio_hidden_size)),
@@ -56,5 +58,7 @@ class ConcatModel(nn.Module):
             ),
             dim=1,
         )
+
+        print(hidden_vector.requires_grad)
 
         return self.head(hidden_vector)
