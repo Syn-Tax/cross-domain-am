@@ -69,16 +69,14 @@ class MultimodalDataset(torch.utils.data.Dataset):
 
         print("------------ DATASET DATA -------------")
         print(f"length: {len(self)}")
-        print(
-            {
-                x: round(
-                    [p.label for p in self.sequence_pairs].count(x)
-                    / len(self.sequence_pairs),
-                    2,
-                )
-                for x in [0, 1, 2]
-            }
-        )
+        self.weights = {
+            x: round(
+                [p.label for p in self.sequence_pairs].count(x)
+                / len(self.sequence_pairs),
+                2,
+            )
+            for x in [0, 1, 2]
+        }
 
     def __len__(self):
         return len(self.sequence_pairs)

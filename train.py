@@ -14,7 +14,7 @@ DATA_DIR = "data/Moral Maze/GreenBelt"
 TRAIN_SPLIT = 0.8
 
 TEXT_ENCODER = "google-bert/bert-base-uncased"
-AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
+AUDIO_ENCODER = "facebook/wav2vec2-base"
 
 MAX_TOKENS = 128
 MAX_SAMPLES = 160_000
@@ -22,9 +22,10 @@ MAX_SAMPLES = 160_000
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
-BATCH_SIZE = 16
-EPOCHS = 5
+BATCH_SIZE = 8
+EPOCHS = 50
 LEARNING_RATE = 1e-5
+DROPOUT = 0.8
 
 # initialise wandb
 if "--log" in sys.argv:
@@ -37,6 +38,7 @@ if "--log" in sys.argv:
             "data_dir": DATA_DIR,
             "text": TEXT_ENCODER,
             "audio": AUDIO_ENCODER,
+            "dropout": DROPOUT,
             "merge_strategy": "concatenation",
         },
     )
@@ -49,7 +51,7 @@ accuracy = evaluate.load("accuracy")
 def metrics_fn(logits, targets):
     preds = torch.argmax(logits, dim=-1)
     f1_score = f1.compute(predictions=preds, references=targets, average="macro")["f1"]
-    accuracy_score = accuracy.compute(predictions=preds, references=targets)
+    accuracy_score = accuracy.compute(predictions=preds, references=targets)["accuracy"]
 
     res = {"f1": f1_score, "accuracy": accuracy_score}
     print(res)
@@ -58,9 +60,10 @@ def metrics_fn(logits, targets):
         wandb.log(res)
 
 
-def train(train_dataloader, model, loss_fn, optim):
+def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
     progress_bar = tqdm.tqdm(range(len(train_dataloader)))
     for batch in train_dataloader:
+        optim.zero_grad()
         batch = {k: v.to(device) for k, v in batch.items()}
         logits = model(**batch)
 
@@ -69,13 +72,14 @@ def train(train_dataloader, model, loss_fn, optim):
         if "--log" in sys.argv:
             wandb.log({"train_loss": loss})
 
-        pre_params = model.parameters()
-        optim.zero_grad()
+        # pre_params = model.parameters()
         loss.backward()
         optim.step()
+        lr_scheduler.step()
         progress_bar.update(1)
+        # print(model.head.fc.weight.grad)
 
-        print(pre_params == model.parameters())
+        # print(pre_params == model.parameters())
 
 
 def eval(test_dataloader, model, metrics):
@@ -131,22 +135,28 @@ def main():
     text_config = transformers.PretrainedConfig.from_pretrained(TEXT_ENCODER)
     audio_config = transformers.PretrainedConfig.from_pretrained(AUDIO_ENCODER)
 
+    class_weights = torch.tensor(
+        [1 / v for k, v in train_dataset.weights.items()], device=device
+    )
+
     model = ConcatModel(
         TEXT_ENCODER,
         AUDIO_ENCODER,
-        text_config.hidden_size * MAX_TOKENS,
-        audio_config.hidden_size * 499,
+        text_config.hidden_size,
+        audio_config.hidden_size,
+        dropout=DROPOUT,
     )
     model.to(device)
 
-    loss = nn.CrossEntropyLoss()
-    optimiser = torch.optim.AdamW(model.parameters(), LEARNING_RATE)
+    loss = nn.CrossEntropyLoss(weight=class_weights)
+    optimizer = torch.optim.AdamW(model.parameters(), LEARNING_RATE)
+    lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer)
 
     for epoch in range(EPOCHS):
         print(f"############# EPOCH {epoch} #############")
 
         model.train()
-        train(train_dataloader, model, loss, optimiser)
+        train(train_dataloader, model, loss, optimizer, lr_scheduler)
 
         model.eval()
         eval(test_dataloader, model, metrics_fn)
