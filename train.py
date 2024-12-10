@@ -1,5 +1,8 @@
 import torch
 import torch.nn as nn
+import random
+import os
+import numpy as np
 import pickle
 from pathlib import Path
 from create_datasets import MultimodalDataset, collate_fn
@@ -23,9 +26,18 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
 BATCH_SIZE = 8
-EPOCHS = 50
+EPOCHS = 10
 LEARNING_RATE = 1e-5
 DROPOUT = 0.8
+
+# set seeds
+seed = 0
+random.seed(seed)
+os.environ["PYTHONHASHSEED"] = str(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 # initialise wandb
 if "--log" in sys.argv:
