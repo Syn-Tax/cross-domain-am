@@ -6,10 +6,10 @@ import re
 from tqdm import tqdm
 import math
 
-AUDIO_PATH = "raw_data/Moral Maze/DDay/audio_16000.wav"
-TRANSCRIPT_PATH = "raw_data/Moral Maze/DDay/transcript.txt"
+AUDIO_PATH = "raw_data/Moral Maze/Hypocrisy/audio_16000.wav"
+TRANSCRIPT_PATH = "raw_data/Moral Maze/Hypocrisy/transcript.txt"
 
-OUT_PATH = "data/Moral Maze/DDay/alignments.json"
+OUT_PATH = "data/Moral Maze/Hypocrisy/alignments.json"
 
 CHUNK_LEN = 10
 

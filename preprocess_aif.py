@@ -2,8 +2,8 @@ import json
 import pathlib
 from datastructs import Node, Relation
 
-DIR_PATH = "raw_data/Moral Maze/DDay"
-OUT_PATH = "data/Moral Maze/DDay/argument_map.json"
+DIR_PATH = "raw_data/Moral Maze/Hypocrisy"
+OUT_PATH = "data/Moral Maze/Hypocrisy/argument_map.json"
 
 TO_PROP_RELATIONS = ["YA"]
 PROP_RELATIONS = ["RA", "CA", "MA"]

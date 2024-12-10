@@ -6,11 +6,11 @@ from tqdm import tqdm
 
 from datastructs import Node, Relation, Segment
 
-ALIGNMENTS_PATH = "data/Moral Maze/DDay/alignments.json"
-ARGUMENT_MAP_PATH = "data/Moral Maze/DDay/argument_map.json"
-AUDIO_PATH = "raw_data/Moral Maze/DDay/audio_16000.wav"
+ALIGNMENTS_PATH = "data/Moral Maze/Hypocrisy/alignments.json"
+ARGUMENT_MAP_PATH = "data/Moral Maze/Hypocrisy/argument_map.json"
+AUDIO_PATH = "raw_data/Moral Maze/Hypocrisy/audio_16000.wav"
 
-OUT_PATH = "data/Moral Maze/DDay/audio/"
+OUT_PATH = "data/Moral Maze/Hypocrisy/audio/"
 
 PADDING = 0.1
 
