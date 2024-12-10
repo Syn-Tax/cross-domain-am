@@ -6,10 +6,10 @@ import re
 from tqdm import tqdm
 import math
 
-AUDIO_PATH = "raw_data/Moral Maze/GreenBelt/audio_16000.mp3"
-TRANSCRIPT_PATH = "raw_data/Moral Maze/GreenBelt/transcript.txt"
+AUDIO_PATH = "raw_data/Moral Maze/DDay/audio_16000.wav"
+TRANSCRIPT_PATH = "raw_data/Moral Maze/DDay/transcript.txt"
 
-OUT_PATH = "data/Moral Maze/GreenBelt/alignments.json"
+OUT_PATH = "data/Moral Maze/DDay/alignments.json"
 
 CHUNK_LEN = 10
 
@@ -55,12 +55,12 @@ def save_spans(word_spans, labels, num_frames, waveform_len, sample_rate):
 
 
 def main():
-    waveform, sample_rate = torchaudio.load(AUDIO_PATH)
+    waveform, sample_rate = torchaudio.load(AUDIO_PATH, format="mp3")
 
     n_splits = math.ceil(waveform.size(1) / (CHUNK_LEN * sample_rate))
     waveform_split = torch.tensor_split(waveform, n_splits, dim=1)
 
-    with open(TRANSCRIPT_PATH, "r") as f:
+    with open(TRANSCRIPT_PATH, "r", encoding="UTF-8") as f:
         lines = f.readlines()
 
     timestamp_regex = r"\[.{0,10}[0-9]+:[0-9]+:[0-9]+\]"

@@ -6,11 +6,11 @@ from tqdm import tqdm
 
 from datastructs import Node, Relation, Segment
 
-ALIGNMENTS_PATH = "data/Moral Maze/GreenBelt/alignments.json"
-ARGUMENT_MAP_PATH = "data/Moral Maze/GreenBelt/argument_map.json"
-AUDIO_PATH = "raw_data/Moral Maze/GreenBelt/audio_16000.mp3"
+ALIGNMENTS_PATH = "data/Moral Maze/DDay/alignments.json"
+ARGUMENT_MAP_PATH = "data/Moral Maze/DDay/argument_map.json"
+AUDIO_PATH = "raw_data/Moral Maze/DDay/audio_16000.wav"
 
-OUT_PATH = "data/Moral Maze/GreenBelt/audio/"
+OUT_PATH = "data/Moral Maze/DDay/audio/"
 
 PADDING = 0.1
 
@@ -84,6 +84,8 @@ def main():
         if not span:
             print(node.locution)
             print(cleaned_loc)
+            print(node.relations)
+            continue
 
         node_audio = waveform[
             :,
