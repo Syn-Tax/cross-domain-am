@@ -5,3 +5,4 @@ dataclasses_json
 tqdm
 evaluate
 scikit-learn
+ffmpeg-python

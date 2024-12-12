@@ -110,9 +110,8 @@ def get_files(dir: str) -> list[str]:
 
     return all_files
 
-
-if __name__ == "__main__":
-    files = get_files(DIR_PATH)
+def process_dir(dir_path, out_path):
+    files = get_files(dir_path)
     data = []
     for file in files:
         with open(file, "r") as f:
@@ -123,7 +122,13 @@ if __name__ == "__main__":
         data.extend(file_data)
         print(f"Processed file: {file}")
 
-    with open(OUT_PATH, "w") as f:
+    with open(out_path, "w") as f:
         out = Node.schema().dumps(data, many=True)
         f.write(out)
+        print()
         print("Written output")
+
+
+
+if __name__ == "__main__":
+    process_dir(DIR_PATH, OUT_PATH)
