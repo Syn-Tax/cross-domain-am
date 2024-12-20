@@ -68,14 +68,14 @@ def get_span(locution, alignments):
     )
 
 
-def main():
-    with open(ALIGNMENTS_PATH, "r") as f:
+def main(alignments_path, argument_map_path, audio_path):
+    with open(alignments_path, "r") as f:
         alignments = Segment.schema().loads(f.read(), many=True)
 
-    with open(ARGUMENT_MAP_PATH, "r") as f:
+    with open(argument_map_path, "r") as f:
         argument_map = Node.schema().loads(f.read(), many=True)
 
-    waveform, sample_rate = torchaudio.load(AUDIO_PATH)
+    waveform, sample_rate = torchaudio.load(audio_path)
 
     for node in tqdm(argument_map):
         cleaned_loc = clean_text(node.locution)
@@ -98,4 +98,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(ALIGNMENTS_PATH, ARGUMENT_MAP_PATH, AUDIO_PATH)
