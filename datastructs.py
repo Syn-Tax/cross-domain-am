@@ -19,6 +19,7 @@ class Node:
     proposition: Optional[str] = None
     relations: Optional[list[Relation]] = None
     audio: Optional[torch.Tensor] = None
+    audio_score: Optional[float] = None
 
 
 @dataclass_json
@@ -27,6 +28,7 @@ class Segment:
     word: str
     start: float
     end: float
+    score: Optional[float] = 0
 
 
 @dataclass

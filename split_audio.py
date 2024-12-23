@@ -3,14 +3,18 @@ import torch
 import torchaudio
 import re
 from tqdm import tqdm
+import pickle
 
 from datastructs import Node, Relation, Segment
+import alignment
 
-ALIGNMENTS_PATH = "data/Moral Maze/Hypocrisy/alignments.json"
-ARGUMENT_MAP_PATH = "data/Moral Maze/Hypocrisy/argument_map.json"
-AUDIO_PATH = "raw_data/Moral Maze/Hypocrisy/audio_16000.wav"
+QT_EPISODE = "03.18June2020"
 
-OUT_PATH = "data/Moral Maze/Hypocrisy/audio/"
+ALIGNMENTS_PATH = f"data/Question Time/{QT_EPISODE}/alignments.json"
+ARGUMENT_MAP_PATH = f"data/Question Time/{QT_EPISODE}/argument_map.json"
+AUDIO_PATH = f"raw_data/Question Time/{QT_EPISODE}/audio.wav"
+
+OUT_PATH = f"data/Question Time/{QT_EPISODE}/audio/"
 
 PADDING = 0.1
 
@@ -39,7 +43,7 @@ def clean_text(txt):
     return " ".join(transcript.split())
 
 
-def get_span(locution, alignments):
+def get_span(locution, alignments, node):
     locution = locution.split()
     start_ind = -1
     end_ind = -1
@@ -57,7 +61,12 @@ def get_span(locution, alignments):
             break
 
     if start_ind == -1 or end_ind == -1:
-        print(transcript.index(locution[0]))
+        if len(node.relations) == 0:
+            return
+        try:
+            print(transcript.index(locution[0]))
+        except:
+            pass
         print("locution not found")
         print(start_ind, end_ind)
         print(f)
@@ -69,23 +78,31 @@ def get_span(locution, alignments):
 
 
 def main(alignments_path, argument_map_path, audio_path):
-    with open(alignments_path, "r") as f:
-        alignments = Segment.schema().loads(f.read(), many=True)
-
     with open(argument_map_path, "r") as f:
         argument_map = Node.schema().loads(f.read(), many=True)
 
     waveform, sample_rate = torchaudio.load(audio_path)
 
-    for node in tqdm(argument_map):
-        cleaned_loc = clean_text(node.locution)
-        span = get_span(cleaned_loc, alignments)
+    bundle = torchaudio.pipelines.MMS_FA
 
-        if not span:
-            print(node.locution)
-            print(cleaned_loc)
-            print(node.relations)
-            continue
+    print("############ Calculating Emissions ################")
+    emissions = alignment.calculate_emissions(waveform, sample_rate, bundle)
+
+    # with open("emissions.pkl", "wb+") as f:
+    #     pickle.dump(emissions, f)
+    # with open("emissions.pkl", "rb+") as f:
+    #     emissions = pickle.load(f)
+
+    span_scores = []
+    print("############ Getting Alignments ################")
+
+    for i, node in enumerate(tqdm(argument_map)):
+        cleaned_loc = clean_text(node.locution)
+
+        span = alignment.get_span(emissions, bundle, cleaned_loc, waveform.size(1), sample_rate)
+        span_scores.append(span.score)
+
+        argument_map[i].audio_score = span.score
 
         node_audio = waveform[
             :,
@@ -95,6 +112,13 @@ def main(alignments_path, argument_map_path, audio_path):
         ]
 
         torchaudio.save(f"{OUT_PATH}{node.id}.wav", node_audio, sample_rate)
+
+    with open(argument_map_path, "w") as f:
+        out = Node.schema().dumps(argument_map, many=True)
+        f.write(out)
+        print("written argument map with audio scores")
+
+    print(f"Mean audio confidence score: {sum(span_scores) / len(span_scores)}")
 
 
 if __name__ == "__main__":
