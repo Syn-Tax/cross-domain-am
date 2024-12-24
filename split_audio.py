@@ -8,7 +8,7 @@ import pickle
 from datastructs import Node, Relation, Segment
 import alignment
 
-QT_EPISODE = "03.18June2020"
+QT_EPISODE = "06.22October2020"
 
 ALIGNMENTS_PATH = f"data/Question Time/{QT_EPISODE}/alignments.json"
 ARGUMENT_MAP_PATH = f"data/Question Time/{QT_EPISODE}/argument_map.json"
