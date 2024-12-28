@@ -26,7 +26,7 @@ MAX_SAMPLES = 160_000
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
-BATCH_SIZE = 8
+BATCH_SIZE = 1
 EPOCHS = 5
 LEARNING_RATE = 1e-5
 DROPOUT = 0.8
@@ -93,6 +93,7 @@ def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
         # print(model.head.fc.weight.grad)
 
         # print(pre_params == model.parameters())
+        return
 
 
 def eval(test_dataloader, model, metrics):
@@ -112,6 +113,7 @@ def eval(test_dataloader, model, metrics):
         targets = torch.cat((targets, batch_targets), dim=0)
 
         progress_bar.update(1)
+        return
 
     metrics(logits, targets)
 

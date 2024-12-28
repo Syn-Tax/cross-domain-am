@@ -107,11 +107,11 @@ class MultimodalDataset(torch.utils.data.Dataset):
         sample = self.sequence_pairs[idx]
 
         if self.qt_complete:
-            n1_audio_path = Path(self.data_dir) / sample.node_1.episode / "audio" / (str(sample.node_1.id) + ".wav")
-            n2_audio_path = Path(self.data_dir) / sample.node_2.episode / "audio" / (str(sample.node_2.id) + ".wav")
+            n1_audio_path = str(Path(self.data_dir) / sample.node_1.episode / "audio" / (str(sample.node_1.id) + ".wav"))
+            n2_audio_path = str(Path(self.data_dir) / sample.node_2.episode / "audio" / (str(sample.node_2.id) + ".wav"))
         else:
-            n1_audio_path = Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
-            n2_audio_path = Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
+            n1_audio_path = str(Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav"))
+            n2_audio_path = str(Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav"))
 
         n1_audio, rate = torchaudio.load(n1_audio_path)
         self.sample_rate = rate

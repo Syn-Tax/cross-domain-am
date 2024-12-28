@@ -22,7 +22,7 @@ class ConcatModel(nn.Module):
         audio_encoder_checkpoint,
         text_hidden_size,
         audio_hidden_size,
-        n_classes=3,
+        n_classes=4,
         dropout=0.5,
     ):
         super().__init__()

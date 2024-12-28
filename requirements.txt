@@ -6,3 +6,4 @@ tqdm
 evaluate
 scikit-learn
 ffmpeg-python
+wandb
