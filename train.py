@@ -30,6 +30,7 @@ BATCH_SIZE = 8
 EPOCHS = 5
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
+GRAD_ACCUMULATION_STEPS = 8
 
 # set seeds
 seed = 0
@@ -75,21 +76,23 @@ def metrics_fn(logits, targets):
 
 def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
     progress_bar = tqdm.tqdm(range(len(train_dataloader)))
-    for batch in train_dataloader:
-        optim.zero_grad()
+    for i, batch in enumerate(train_dataloader):
         batch = {k: v.to(device) for k, v in batch.items()}
         logits = model(**batch)
 
-        loss = loss_fn(logits, batch["label"])
+        loss = loss_fn(logits, batch["label"]) / GRAD_ACCUMULATION_STEPS
 
         if "--log" in sys.argv:
             wandb.log({"train_loss": loss, "lr": lr_scheduler.get_last_lr()[0]})
 
         # pre_params = model.parameters()
         loss.backward()
-        optim.step()
         lr_scheduler.step()
         progress_bar.update(1)
+
+        if i + 1 % GRAD_ACCUMULATION_STEPS == 0 or i + 1 == len(train_dataloader):
+            optim.step()
+            optim.zero_grad()
         # print(model.head.fc.weight.grad)
 
         # print(pre_params == model.parameters())
