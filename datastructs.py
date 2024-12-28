@@ -20,6 +20,7 @@ class Node:
     relations: Optional[list[Relation]] = None
     audio: Optional[torch.Tensor] = None
     audio_score: Optional[float] = None
+    episode: Optional[str] = None
 
 
 @dataclass_json

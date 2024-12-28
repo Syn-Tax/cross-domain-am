@@ -5,11 +5,12 @@ import torchaudio
 import transformers
 from pathlib import Path
 from tqdm import tqdm
+import random
 
 from datastructs import Node, Sample
 
 
-RELATION_TYPES = {"RA": 1, "CA": 2, "MA": 3}
+RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
 TRAIN_SPLIT = 0.8
 
 
@@ -23,6 +24,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
         max_samples,
         train_test_split=1,
         train=True,
+        qt_complete=False
     ):
 
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(tokenizer)
@@ -34,10 +36,14 @@ class MultimodalDataset(torch.utils.data.Dataset):
         self.max_tokens = max_tokens
         self.max_samples = max_samples
 
+        self.qt_complete = qt_complete
+
         with open(Path(data_dir) / "argument_map.json", "r") as f:
             self.argument_map = Node.schema().loads(f.read(), many=True)
 
         self.sequence_pairs = []
+        relation_sequence_pairs = []
+        no_relation_sequence_pairs = []
         for n1, n2 in tqdm(itertools.combinations(self.argument_map, 2)):
             if n1.relations == [] and n2.relations == []:
                 continue
@@ -52,11 +58,16 @@ class MultimodalDataset(torch.utils.data.Dataset):
                 label = RELATION_TYPES[n2.relations[idx].type]
 
             if label == 0:
-                continue
+                no_relation_sequence_pairs.append(
+                    Sample(n1, n2, torch.tensor([label], dtype=torch.long))
+                )
+            else:
+                relation_sequence_pairs.append(
+                    Sample(n1, n2, torch.tensor([label], dtype=torch.long))
+                )
 
-            self.sequence_pairs.append(
-                Sample(n1, n2, torch.tensor([label - 1], dtype=torch.long))
-            )
+        self.sequence_pairs.extend(relation_sequence_pairs)
+        self.sequence_pairs.extend(random.sample(no_relation_sequence_pairs, len(relation_sequence_pairs)))
 
         if train:
             self.sequence_pairs = self.sequence_pairs[
@@ -75,16 +86,22 @@ class MultimodalDataset(torch.utils.data.Dataset):
                 / len(self.sequence_pairs),
                 2,
             )
-            for x in [0, 1, 2]
+            for x in RELATION_TYPES
         }
+        print(self.weights)
 
     def __len__(self):
         return len(self.sequence_pairs)
 
     def __getitem__(self, idx):
         sample = self.sequence_pairs[idx]
-        n1_audio_path = Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
-        n2_audio_path = Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
+
+        if self.qt_complete:
+            n1_audio_path = Path(self.data_dir) / sample.node1.episode / "audio" / (str(sample.node_1.id) + ".wav")
+            n2_audio_path = Path(self.data_dir) / sample.node2.episode / "audio" / (str(sample.node_2.id) + ".wav")
+        else:
+            n1_audio_path = Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
+            n2_audio_path = Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
 
         n1_audio, rate = torchaudio.load(n1_audio_path)
         self.sample_rate = rate
@@ -149,15 +166,23 @@ def collate_fn(data):
 
 
 if __name__ == "__main__":
+
+    TEXT_ENCODER = "google-bert/bert-base-uncased"
+    AUDIO_ENCODER = "facebook/wav2vec2-base"
+
+    MAX_TOKENS = 128
+    MAX_SAMPLES = 160_000
+
+
     train_dataset = MultimodalDataset(
-        "data/Moral Maze/GreenBelt", train_test_split=TRAIN_SPLIT, train=True
+        "data/Question Time", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=1, train=True, qt_complete=True
     )
-    test_dataset = MultimodalDataset(
-        "data/Moral Maze/GreenBelt", train_test_split=TRAIN_SPLIT, train=False
-    )
+    # test_dataset = MultimodalDataset(
+    #     "data/Moral Maze/GreenBelt", train_test_split=TRAIN_SPLIT, train=False
+    # )
 
-    with open("data/Moral Maze/GreenBelt/train_dataset.pkl", "wb+") as f:
-        pickle.dump(train_dataset, f)
+    # with open("data/Moral Maze/GreenBelt/train_dataset.pkl", "wb+") as f:
+    #     pickle.dump(train_dataset, f)
 
-    with open("data/Moral Maze/GreenBelt/test_dataset.pkl", "wb+") as f:
-        pickle.dump(test_dataset, f)
+    # with open("data/Moral Maze/GreenBelt/test_dataset.pkl", "wb+") as f:
+    #     pickle.dump(test_dataset, f)
