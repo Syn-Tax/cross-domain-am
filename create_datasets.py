@@ -44,6 +44,8 @@ class MultimodalDataset(torch.utils.data.Dataset):
         self.sequence_pairs = []
         relation_sequence_pairs = []
         no_relation_sequence_pairs = []
+        counter = 0
+        num_ra = 0
         for n1, n2 in tqdm(itertools.combinations(self.argument_map, 2)):
             if n1.relations == [] and n2.relations == []:
                 continue
@@ -57,17 +59,23 @@ class MultimodalDataset(torch.utils.data.Dataset):
                 idx = [r.to_node_id for r in n2.relations].index(n1.id)
                 label = RELATION_TYPES[n2.relations[idx].type]
 
+            if label == RELATION_TYPES["RA"]:
+                num_ra += 1
+
             if label == 0:
-                no_relation_sequence_pairs.append(
-                    Sample(n1, n2, torch.tensor([label], dtype=torch.long))
-                )
+                if self.qt_complete and n1.episode != n2.episode: continue
+                if counter % 10 == 0:
+                    no_relation_sequence_pairs.append(
+                        Sample(n1, n2, torch.tensor([label], dtype=torch.long))
+                    )
+                counter += 1
             else:
                 relation_sequence_pairs.append(
                     Sample(n1, n2, torch.tensor([label], dtype=torch.long))
                 )
 
         self.sequence_pairs.extend(relation_sequence_pairs)
-        self.sequence_pairs.extend(random.sample(no_relation_sequence_pairs, len(relation_sequence_pairs)))
+        self.sequence_pairs.extend(random.sample(no_relation_sequence_pairs, num_ra))
 
         if train:
             self.sequence_pairs = self.sequence_pairs[
@@ -80,13 +88,14 @@ class MultimodalDataset(torch.utils.data.Dataset):
 
         print("------------ DATASET DATA -------------")
         print(f"length: {len(self)}")
+
         self.weights = {
             x: round(
                 [p.label for p in self.sequence_pairs].count(x)
                 / len(self.sequence_pairs),
                 2,
             )
-            for x in RELATION_TYPES
+            for x in [0, 1, 2, 3]
         }
         print(self.weights)
 
