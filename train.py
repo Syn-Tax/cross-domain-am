@@ -13,7 +13,8 @@ import tqdm
 import wandb
 import sys
 
-DATA_DIR = "data/Moral Maze/GreenBelt"
+DATA_DIR = "data/Question Time"
+QT_COMPLETE = True
 TRAIN_SPLIT = 0.8
 
 TEXT_ENCODER = "google-bert/bert-base-uncased"
@@ -125,6 +126,7 @@ def main():
         MAX_SAMPLES,
         train_test_split=TRAIN_SPLIT,
         train=True,
+        qt_complete=QT_COMPLETE
     )
     test_dataset = MultimodalDataset(
         DATA_DIR,
@@ -134,6 +136,7 @@ def main():
         MAX_SAMPLES,
         train_test_split=TRAIN_SPLIT,
         train=False,
+        qt_complete=QT_COMPLETE
     )
 
     train_dataloader = torch.utils.data.DataLoader(
