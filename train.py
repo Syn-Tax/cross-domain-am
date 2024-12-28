@@ -26,10 +26,10 @@ MAX_SAMPLES = 160_000
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
-BATCH_SIZE = 1
+BATCH_SIZE = 8
 EPOCHS = 5
 LEARNING_RATE = 1e-5
-DROPOUT = 0.8
+DROPOUT = 0.2
 
 # set seeds
 seed = 0
@@ -83,7 +83,7 @@ def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
         loss = loss_fn(logits, batch["label"])
 
         if "--log" in sys.argv:
-            wandb.log({"train_loss": loss})
+            wandb.log({"train_loss": loss, "lr": lr_scheduler.get_last_lr()[0]})
 
         # pre_params = model.parameters()
         loss.backward()
@@ -126,7 +126,7 @@ def main():
         MAX_SAMPLES,
         train_test_split=TRAIN_SPLIT,
         train=True,
-        qt_complete=QT_COMPLETE
+        qt_complete=QT_COMPLETE,
     )
     test_dataset = MultimodalDataset(
         DATA_DIR,
@@ -136,7 +136,7 @@ def main():
         MAX_SAMPLES,
         train_test_split=TRAIN_SPLIT,
         train=False,
-        qt_complete=QT_COMPLETE
+        qt_complete=QT_COMPLETE,
     )
 
     train_dataloader = torch.utils.data.DataLoader(
@@ -164,7 +164,7 @@ def main():
     model.to(device)
 
     loss = nn.CrossEntropyLoss(weight=class_weights)
-    optimizer = torch.optim.AdamW(model.parameters(), LEARNING_RATE)
+    optimizer = torch.optim.SGD(model.parameters(), LEARNING_RATE)
     lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer)
 
     for epoch in range(EPOCHS):

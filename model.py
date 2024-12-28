@@ -8,10 +8,12 @@ import transformers
 class ClassificationHead(nn.Module):
     def __init__(self, input_size, n_classes):
         super().__init__()
-        self.fc = nn.Linear(input_size, n_classes)
+        self.fc1 = nn.Linear(input_size, 64)
+        self.fc2 = nn.Linear(64, n_classes)
 
     def forward(self, x):
-        out = F.softmax(self.fc(x), dim=1)
+        out = F.sigmoid(self.fc1(x))
+        out = F.sigmoid(self.fc2(out))
         return out
 
 
@@ -47,7 +49,7 @@ class ConcatModel(nn.Module):
             text_hidden_size * 2 + audio_hidden_size * 2, n_classes
         )
 
-        self.freeze_encoders()
+        # self.freeze_encoders()
 
     def forward(self, audio1, text1, audio2, text2, **kwargs):
         batch_size = audio1["input_values"].size()[0]
