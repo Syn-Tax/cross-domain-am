@@ -76,6 +76,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
 
         self.sequence_pairs.extend(relation_sequence_pairs)
         self.sequence_pairs.extend(random.sample(no_relation_sequence_pairs, num_ra))
+        random.shuffle(self.sequence_pairs)
 
         if train:
             self.sequence_pairs = self.sequence_pairs[
@@ -184,11 +185,11 @@ if __name__ == "__main__":
 
 
     train_dataset = MultimodalDataset(
-        "data/Question Time", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=1, train=True, qt_complete=True
+        "data/Question Time", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=TRAIN_SPLIT, train=True, qt_complete=True
     )
-    # test_dataset = MultimodalDataset(
-    #     "data/Moral Maze/GreenBelt", train_test_split=TRAIN_SPLIT, train=False
-    # )
+    test_dataset = MultimodalDataset(
+        "data/Question Time", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=TRAIN_SPLIT, train=False, qt_complete=True
+    )
 
     # with open("data/Moral Maze/GreenBelt/train_dataset.pkl", "wb+") as f:
     #     pickle.dump(train_dataset, f)
