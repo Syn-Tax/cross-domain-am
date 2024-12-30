@@ -53,22 +53,23 @@ class ConcatModel(nn.Module):
         # self.freeze_encoders()
 
     def get_encoding(self, audio, text):
-        text_encoding = self.text_encoder(**text).last_hidden_state
-        text_encoding = self.text_dropout(text_encoding)
+        text_encoding = self.text_encoder(**text)[1]
+        text_encoding_pooled = self.text_dropout(text_encoding)
 
-        text_encoding_pooled = (text_encoding * text["attention_mask"][:, :, None]).sum(dim=1)
-        text_encoding_pooled = text_encoding / text["attention_mask"].sum(dim=1)[:, None]
-        text_encoding_pooled = text_encoding_pooled.mean(dim=1)
+        print(text_encoding.shape)
+        # print(text["attention_mask"].shape)
 
-        audio_encoding = self.audio_encoder(**audio).last_hidden_state
+        # text_encoding_pooled = (text_encoding * text["attention_mask"][:, :, None]).sum(dim=1)
+        # text_encoding_pooled = text_encoding / text["attention_mask"].sum(dim=1)[:, None]
+        # text_encoding_pooled = text_encoding.mean(dim=1)
+
+        audio_encoding = self.audio_encoder(**audio)[0]
         audio_encoding = self.audio_dropout(audio_encoding)
 
         audio_encoding_pooled = audio_encoding.mean(dim=1)
-        print(audio_encoding.shape)
-        print(audio_encoding_pooled.shape)
 
-        print(text_encoding.shape)
-        print(text_encoding_pooled.shape)
+        print(audio_encoding.shape)
+        # print(audio_encoding_pooled.shape)
         #audio_encoding = audio_encoding / audio["attention_mask"].sum(dim=1)[:, None]
 
         concat_encoding = torch.cat((text_encoding_pooled, audio_encoding_pooled), dim=-1)
