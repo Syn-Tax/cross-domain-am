@@ -28,7 +28,7 @@ class ConcatModel(nn.Module):
         dropout=0.5,
     ):
         super().__init__()
-        self.text_encoder = transformers.AutoModel.from_pretrained(
+        self.text_encoder = transformers.BertModel.from_pretrained(
             text_encoder_checkpoint
         )
         self.audio_encoder = transformers.AutoModel.from_pretrained(
@@ -46,15 +46,14 @@ class ConcatModel(nn.Module):
         self.text_dropout = nn.Dropout(p=dropout)
         self.audio_dropout = nn.Dropout(p=dropout)
 
-        self.head = ClassificationHead(
-            text_hidden_size * 2, n_classes
-        )
+        self.head = ClassificationHead(text_hidden_size * 2, n_classes)
 
         # self.freeze_encoders()
+        self.unfreeze_encoders()
 
     def get_encoding(self, audio, text):
-        text_encoding = self.text_encoder(**text)[1]
-        text_encoding_pooled = self.text_dropout(text_encoding)
+        text_encoding_pooled = self.text_encoder(**text)[1]
+        # text_encoding_pooled = self.text_dropout(text_encoding)
 
         # print(text_encoding.shape)
         # print(text["attention_mask"].shape)
@@ -70,7 +69,7 @@ class ConcatModel(nn.Module):
 
         # print(audio_encoding.shape)
         # print(audio_encoding_pooled.shape)
-        #audio_encoding = audio_encoding / audio["attention_mask"].sum(dim=1)[:, None]
+        # audio_encoding = audio_encoding / audio["attention_mask"].sum(dim=1)[:, None]
 
         # concat_encoding = torch.cat((text_encoding_pooled, audio_encoding_pooled), dim=-1)
 
@@ -82,12 +81,8 @@ class ConcatModel(nn.Module):
         seq1_encoding = self.get_encoding(audio1, text1)
         seq2_encoding = self.get_encoding(audio2, text2)
 
-
         hidden_vector = torch.cat(
-            (
-                seq1_encoding,
-                seq2_encoding
-            ),
+            (seq1_encoding, seq2_encoding),
             dim=-1,
         )
 

@@ -28,9 +28,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Training hyperparameters
 BATCH_SIZE = 8
 EPOCHS = 10
-LEARNING_RATE = 5e-5
+LEARNING_RATE = 1e-6
 DROPOUT = 0.2
-GRAD_ACCUMULATION_STEPS = 8
+GRAD_ACCUMULATION_STEPS = 1
 
 # set seeds
 seed = 0
