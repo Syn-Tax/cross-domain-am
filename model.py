@@ -8,12 +8,12 @@ import transformers
 class ClassificationHead(nn.Module):
     def __init__(self, input_size, n_classes):
         super().__init__()
-        self.fc1 = nn.Linear(input_size, 64)
-        self.fc2 = nn.Linear(64, n_classes)
+        self.fc1 = nn.Linear(input_size, 128)
+        self.fc2 = nn.Linear(128, n_classes)
 
     def forward(self, x):
-        out = F.sigmoid(self.fc1(x))
-        out = F.sigmoid(self.fc2(out))
+        out = F.relu(self.fc1(x))
+        out = self.fc2(out)
         return out
 
 
@@ -47,7 +47,7 @@ class ConcatModel(nn.Module):
         self.audio_dropout = nn.Dropout(p=dropout)
 
         self.head = ClassificationHead(
-            text_hidden_size * 2 + audio_hidden_size * 2, n_classes
+            text_hidden_size * 2, n_classes
         )
 
         # self.freeze_encoders()
@@ -56,29 +56,29 @@ class ConcatModel(nn.Module):
         text_encoding = self.text_encoder(**text)[1]
         text_encoding_pooled = self.text_dropout(text_encoding)
 
-        print(text_encoding.shape)
+        # print(text_encoding.shape)
         # print(text["attention_mask"].shape)
 
         # text_encoding_pooled = (text_encoding * text["attention_mask"][:, :, None]).sum(dim=1)
         # text_encoding_pooled = text_encoding / text["attention_mask"].sum(dim=1)[:, None]
         # text_encoding_pooled = text_encoding.mean(dim=1)
 
-        audio_encoding = self.audio_encoder(**audio)[0]
-        audio_encoding = self.audio_dropout(audio_encoding)
+        # audio_encoding = self.audio_encoder(**audio)[0]
+        # audio_encoding = self.audio_dropout(audio_encoding)
 
-        audio_encoding_pooled = audio_encoding.mean(dim=1)
+        # audio_encoding_pooled = audio_encoding.mean(dim=1)
 
-        print(audio_encoding.shape)
+        # print(audio_encoding.shape)
         # print(audio_encoding_pooled.shape)
         #audio_encoding = audio_encoding / audio["attention_mask"].sum(dim=1)[:, None]
 
-        concat_encoding = torch.cat((text_encoding_pooled, audio_encoding_pooled), dim=-1)
+        # concat_encoding = torch.cat((text_encoding_pooled, audio_encoding_pooled), dim=-1)
 
-        return concat_encoding
+        return text_encoding_pooled
 
     def forward(self, audio1, text1, audio2, text2, **kwargs):
-        print(audio1)
-        print(text1)
+        # print(audio1)
+        # print(text1)
         seq1_encoding = self.get_encoding(audio1, text1)
         seq2_encoding = self.get_encoding(audio2, text2)
 
