@@ -43,7 +43,8 @@ class ConcatModel(nn.Module):
         self.text_hidden_size = text_hidden_size
         self.audio_hidden_size = audio_hidden_size
 
-        self.dropout = nn.Dropout(p=dropout)
+        self.text_dropout = nn.Dropout(p=dropout)
+        self.audio_dropout = nn.Dropout(p=dropout)
 
         self.head = ClassificationHead(
             text_hidden_size * 2 + audio_hidden_size * 2, n_classes
@@ -51,29 +52,43 @@ class ConcatModel(nn.Module):
 
         # self.freeze_encoders()
 
+    def get_encoding(self, audio, text):
+        text_encoding = self.text_encoder(**text).last_hidden_state
+        text_encoding = self.text_dropout(text_encoding)
+
+        text_encoding_pooled = (text_encoding * text["attention_mask"][:, :, None]).sum(dim=1)
+        text_encoding_pooled = text_encoding / text["attention_mask"].sum(dim=1)[:, None]
+        text_encoding_pooled = text_encoding_pooled.mean(dim=1)
+
+        audio_encoding = self.audio_encoder(**audio).last_hidden_state
+        audio_encoding = self.audio_dropout(audio_encoding)
+
+        audio_encoding_pooled = audio_encoding.mean(dim=1)
+        print(audio_encoding.shape)
+        print(audio_encoding_pooled.shape)
+
+        print(text_encoding.shape)
+        print(text_encoding_pooled.shape)
+        #audio_encoding = audio_encoding / audio["attention_mask"].sum(dim=1)[:, None]
+
+        concat_encoding = torch.cat((text_encoding_pooled, audio_encoding_pooled), dim=-1)
+
+        return concat_encoding
+
     def forward(self, audio1, text1, audio2, text2, **kwargs):
-        batch_size = audio1["input_values"].size()[0]
-        audio1_encoding = self.audio_encoder(**audio1).last_hidden_state[:, -1, :]
-        text1_encoding = self.text_encoder(**text1).last_hidden_state[:, -1, :]
-        # print(text1_encoding.grad)
+        print(audio1)
+        print(text1)
+        seq1_encoding = self.get_encoding(audio1, text1)
+        seq2_encoding = self.get_encoding(audio2, text2)
 
-        audio2_encoding = self.audio_encoder(**audio2).last_hidden_state[:, -1, :]
-        text2_encoding = self.text_encoder(**text2).last_hidden_state[:, -1, :]
-
-        # print(audio1_encoding.requires_grad)
 
         hidden_vector = torch.cat(
             (
-                audio1_encoding.reshape((batch_size, self.audio_hidden_size)),
-                text1_encoding.reshape((batch_size, self.text_hidden_size)),
-                audio2_encoding.reshape((batch_size, self.audio_hidden_size)),
-                text2_encoding.reshape((batch_size, self.text_hidden_size)),
+                seq1_encoding,
+                seq2_encoding
             ),
             dim=-1,
         )
-
-        # print(hidden_vector.requires_grad)
-        hidden_vector = self.dropout(hidden_vector)
 
         return self.head(hidden_vector)
 

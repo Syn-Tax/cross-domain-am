@@ -13,8 +13,8 @@ import tqdm
 import wandb
 import sys
 
-DATA_DIR = "data/Question Time"
-QT_COMPLETE = True
+DATA_DIR = "data/Moral Maze/GreenBelt"
+QT_COMPLETE = False
 TRAIN_SPLIT = 0.8
 
 TEXT_ENCODER = "google-bert/bert-base-uncased"
@@ -27,7 +27,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
 BATCH_SIZE = 8
-EPOCHS = 5
+EPOCHS = 10
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 8
@@ -87,15 +87,13 @@ def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
 
         # pre_params = model.parameters()
         loss.backward()
-        lr_scheduler.step()
-        progress_bar.update(1)
 
         if i + 1 % GRAD_ACCUMULATION_STEPS == 0 or i + 1 == len(train_dataloader):
             optim.step()
             optim.zero_grad()
-        # print(model.head.fc.weight.grad)
 
-        # print(pre_params == model.parameters())
+        lr_scheduler.step()
+        progress_bar.update(1)
 
 
 def eval(test_dataloader, model, metrics):

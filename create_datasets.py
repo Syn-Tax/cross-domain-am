@@ -139,6 +139,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
             truncation=True,
             padding="max_length",
             return_tensors="pt",
+            return_attention_mask=True
         )
         audio2 = self.feature_extractor(
             n2_audio[0],
@@ -147,6 +148,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
             truncation=True,
             padding="max_length",
             return_tensors="pt",
+            return_attention_mask=True
         )
 
         return {
