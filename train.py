@@ -28,7 +28,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Training hyperparameters
 BATCH_SIZE = 8
 EPOCHS = 10
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 5e-5
 DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 8
 
@@ -80,7 +80,7 @@ def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
         batch = {k: v.to(device) for k, v in batch.items()}
         logits = model(**batch)
 
-        loss = loss_fn(logits, batch["label"]) / GRAD_ACCUMULATION_STEPS
+        loss = loss_fn(logits, batch["label"])
 
         if "--log" in sys.argv:
             wandb.log({"train_loss": loss, "lr": lr_scheduler.get_last_lr()[0]})
@@ -88,12 +88,16 @@ def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
         # pre_params = model.parameters()
         loss.backward()
 
+        # print(model.head.fc1.weight.grad)
+
         if i + 1 % GRAD_ACCUMULATION_STEPS == 0 or i + 1 == len(train_dataloader):
             optim.step()
             optim.zero_grad()
 
-        lr_scheduler.step()
+            lr_scheduler.step()
+
         progress_bar.update(1)
+        # return
 
 
 def eval(test_dataloader, model, metrics):
@@ -113,6 +117,8 @@ def eval(test_dataloader, model, metrics):
         targets = torch.cat((targets, batch_targets), dim=0)
 
         progress_bar.update(1)
+
+        # return
 
     metrics(logits, targets)
 
