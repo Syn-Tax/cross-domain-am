@@ -32,6 +32,17 @@ LEARNING_RATE = 4e-5
 DROPOUT = 0.1
 GRAD_ACCUMULATION_STEPS = 8
 
+config = {
+    "batch_size": BATCH_SIZE,
+    "epochs": EPOCHS,
+    "lr": LEARNING_RATE,
+    "data_dir": DATA_DIR,
+    "text": TEXT_ENCODER,
+    "audio": AUDIO_ENCODER,
+    "dropout": DROPOUT,
+    "merge_strategy": "concatenation",
+}
+
 # set seeds
 seed = 0
 random.seed(seed)
@@ -45,21 +56,13 @@ torch.backends.cudnn.benchmark = False
 if "--log" in sys.argv:
     wandb.init(
         project="cross-domain-am",
-        config={
-            "batch_size": BATCH_SIZE,
-            "epochs": EPOCHS,
-            "lr": LEARNING_RATE,
-            "data_dir": DATA_DIR,
-            "text": TEXT_ENCODER,
-            "audio": AUDIO_ENCODER,
-            "dropout": DROPOUT,
-            "merge_strategy": "concatenation",
-        },
+        config=config,
     )
 
 # load metrics
 f1 = evaluate.load("f1")
 accuracy = evaluate.load("accuracy")
+
 
 def move_batch(batch):
     out = {}
@@ -71,6 +74,7 @@ def move_batch(batch):
             out[key] = {k: v.to(device) for k, v in value.items()}
 
     return out
+
 
 def metrics_fn(logits, targets):
     preds = torch.argmax(logits, dim=-1)
@@ -89,17 +93,16 @@ def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
     progress_bar = tqdm.tqdm(range(len(train_dataloader)))
     for i, batch in enumerate(train_dataloader):
         batch = {k: v.to(device) for k, v in batch.items()}
-        # batch = move_batch(batch)
+
         logits = model(**batch)
 
         loss = loss_fn(logits, batch["label"])
 
         if "--log" in sys.argv:
-            wandb.log({"train_loss": loss, "lr": lr_scheduler.get_last_lr()[0]})
+            wandb.log(
+                {"train_loss": loss, "lr": torch.tensor(lr_scheduler.get_last_lr()[0])}
+            )
 
-        print(lr_scheduler.get_last_lr())
-
-        # pre_params = model.parameters()
         optim.zero_grad()
         loss.backward()
         optim.step()
@@ -179,12 +182,12 @@ def main():
 
     loss_fn = nn.CrossEntropyLoss(weight=class_weights)
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
-    #lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, warm_up_steps=0)
+    # lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, warm_up_steps=0)
     lr_scheduler = transformers.get_scheduler(
         name="linear",
         optimizer=optimizer,
         num_warmup_steps=0,
-        num_training_steps=(EPOCHS * len(train_dataloader))
+        num_training_steps=(EPOCHS * len(train_dataloader)),
     )
 
     for epoch in range(EPOCHS):
@@ -195,6 +198,11 @@ def main():
 
         model.eval()
         eval(test_dataloader, model, metrics_fn)
+
+    # save model
+    name = "".join([f"{k}-{v}" for k, v in config])
+    with open(f"models/{name}.pt", "w") as f:
+        torch.save(model, f)
 
 
 if __name__ == "__main__":
