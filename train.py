@@ -90,7 +90,7 @@ def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
     for i, batch in enumerate(train_dataloader):
         batch = {k: v.to(device) for k, v in batch.items()}
         # batch = move_batch(batch)
-        logits = model(**batch["text1"]).logits
+        logits = model(**batch)
 
         loss = loss_fn(logits, batch["label"])
 
