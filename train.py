@@ -92,7 +92,8 @@ def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
     model.train()
     progress_bar = tqdm.tqdm(range(len(train_dataloader)))
     for i, batch in enumerate(train_dataloader):
-        batch = {k: v.to(device) for k, v in batch.items()}
+        # batch = {k: v.to(device) for k, v in batch.items()}
+        batch = move_batch(batch)
 
         logits = model(**batch)
 

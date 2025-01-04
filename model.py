@@ -11,13 +11,15 @@ class ClassificationHead(nn.Module):
         self.input = nn.Linear(input_size, hidden_size)
         self.output = nn.Linear(hidden_size, n_classes)
 
-        self.hidden = [nn.Linear(hidden_size, hidden_size) for _ in range(num_hidden_layers)]
+        self.hidden = nn.ModuleList(
+            [nn.Linear(hidden_size, hidden_size) for _ in range(num_hidden_layers)]
+        )
 
-        nn.init.kaiming_normal(self.input.weight)
-        nn.init.kaiming_normal(self.output.weight)
+        nn.init.kaiming_normal_(self.input.weight)
+        nn.init.kaiming_normal_(self.output.weight)
 
         for layer in self.hidden:
-            nn.init.kaiming_normal(layer.weight)
+            nn.init.kaiming_normal_(layer.weight)
 
     def forward(self, x):
         out = F.relu(self.input(x))
@@ -59,7 +61,9 @@ class ConcatModel(nn.Module):
         self.text_dropout = nn.Dropout(p=dropout)
         self.audio_dropout = nn.Dropout(p=dropout)
 
-        self.head = ClassificationHead(text_hidden_size * 2 + audio_hidden_size * 2, n_classes)
+        self.head = ClassificationHead(
+            text_hidden_size * 2 + audio_hidden_size * 2, n_classes
+        )
 
         # self.freeze_encoders()
         # self.unfreeze_encoders()
@@ -84,7 +88,9 @@ class ConcatModel(nn.Module):
         # print(audio_encoding_pooled.shape)
         # audio_encoding = audio_encoding / audio["attention_mask"].sum(dim=1)[:, None]
 
-        concat_encoding = torch.cat((text_encoding_pooled, audio_encoding_pooled), dim=-1)
+        concat_encoding = torch.cat(
+            (text_encoding_pooled, audio_encoding_pooled), dim=-1
+        )
 
         return concat_encoding
 
