@@ -27,7 +27,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
 BATCH_SIZE = 8
-EPOCHS = 100
+EPOCHS = 120
 LEARNING_RATE = 4e-5
 DROPOUT = 0.1
 GRAD_ACCUMULATION_STEPS = 8
@@ -117,7 +117,8 @@ def eval(test_dataloader, model, metrics):
     targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
 
     for batch in test_dataloader:
-        batch = {k: v.to(device) for k, v in batch.items()}
+        # batch = {k: v.to(device) for k, v in batch.items()}
+        batch = move_batch(batch)
 
         with torch.no_grad():
             raw_logits = model(**batch)
