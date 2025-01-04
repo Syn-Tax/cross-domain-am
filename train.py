@@ -17,20 +17,20 @@ DATA_DIR = "data/Moral Maze/GreenBelt"
 QT_COMPLETE = False
 TRAIN_SPLIT = 0.8
 
-TEXT_ENCODER = "google-bert/bert-base-uncased"
-AUDIO_ENCODER = "facebook/wav2vec2-base"
+TEXT_ENCODER = "FacebookAI/roberta-large"
+AUDIO_ENCODER = "facebook/wav2vec2-large-960h"
 
-MAX_TOKENS = 128
-MAX_SAMPLES = 160_000
+MAX_TOKENS = 32
+MAX_SAMPLES = 16_000
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
 BATCH_SIZE = 8
-EPOCHS = 10
-LEARNING_RATE = 1e-6
-DROPOUT = 0.2
-GRAD_ACCUMULATION_STEPS = 1
+EPOCHS = 100
+LEARNING_RATE = 4e-5
+DROPOUT = 0.1
+GRAD_ACCUMULATION_STEPS = 8
 
 # set seeds
 seed = 0
@@ -61,6 +61,16 @@ if "--log" in sys.argv:
 f1 = evaluate.load("f1")
 accuracy = evaluate.load("accuracy")
 
+def move_batch(batch):
+    out = {}
+    for key, value in batch.items():
+        if key == "label":
+            out[key] = value.to(device)
+
+        else:
+            out[key] = {k: v.to(device) for k, v in value.items()}
+
+    return out
 
 def metrics_fn(logits, targets):
     preds = torch.argmax(logits, dim=-1)
@@ -75,29 +85,26 @@ def metrics_fn(logits, targets):
 
 
 def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
+    model.train()
     progress_bar = tqdm.tqdm(range(len(train_dataloader)))
     for i, batch in enumerate(train_dataloader):
         batch = {k: v.to(device) for k, v in batch.items()}
-        logits = model(**batch)
+        # batch = move_batch(batch)
+        logits = model(**batch["text1"]).logits
 
         loss = loss_fn(logits, batch["label"])
 
         if "--log" in sys.argv:
             wandb.log({"train_loss": loss, "lr": lr_scheduler.get_last_lr()[0]})
 
+        print(lr_scheduler.get_last_lr())
+
         # pre_params = model.parameters()
+        optim.zero_grad()
         loss.backward()
-
-        # print(model.head.fc1.weight.grad)
-
-        if i + 1 % GRAD_ACCUMULATION_STEPS == 0 or i + 1 == len(train_dataloader):
-            optim.step()
-            optim.zero_grad()
-
-            lr_scheduler.step()
-
+        optim.step()
+        lr_scheduler.step()
         progress_bar.update(1)
-        # return
 
 
 def eval(test_dataloader, model, metrics):
@@ -117,8 +124,6 @@ def eval(test_dataloader, model, metrics):
         targets = torch.cat((targets, batch_targets), dim=0)
 
         progress_bar.update(1)
-
-        # return
 
     metrics(logits, targets)
 
@@ -168,17 +173,25 @@ def main():
         audio_config.hidden_size,
         dropout=DROPOUT,
     )
+
+    # model = transformers.AutoModelForSequenceClassification.from_pretrained(TEXT_ENCODER, num_labels=4)
     model.to(device)
 
-    loss = nn.CrossEntropyLoss(weight=class_weights)
-    optimizer = torch.optim.SGD(model.parameters(), LEARNING_RATE)
-    lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer)
+    loss_fn = nn.CrossEntropyLoss(weight=class_weights)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
+    #lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, warm_up_steps=0)
+    lr_scheduler = transformers.get_scheduler(
+        name="linear",
+        optimizer=optimizer,
+        num_warmup_steps=0,
+        num_training_steps=(EPOCHS * len(train_dataloader))
+    )
 
     for epoch in range(EPOCHS):
         print(f"############# EPOCH {epoch} #############")
 
         model.train()
-        train(train_dataloader, model, loss, optimizer, lr_scheduler)
+        train(train_dataloader, model, loss_fn, optimizer, lr_scheduler)
 
         model.eval()
         eval(test_dataloader, model, metrics_fn)

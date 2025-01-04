@@ -28,7 +28,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
     ):
 
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(tokenizer)
-        self.feature_extractor = transformers.AutoFeatureExtractor.from_pretrained(
+        self.feature_extractor = transformers.AutoProcessor.from_pretrained(
             feature_extractor
         )
         self.data_dir = data_dir
@@ -119,6 +119,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
 
         text1 = self.tokenizer(
             sample.node_1.proposition,
+            # sample.node_2.proposition,
             max_length=self.max_tokens,
             truncation=True,
             padding="max_length",
@@ -158,6 +159,8 @@ class MultimodalDataset(torch.utils.data.Dataset):
             "text2": text2,
             "label": sample.label,
         }
+        # text1["label"] = sample.label
+        # return text1
 
 
 def collate_fn(data):
