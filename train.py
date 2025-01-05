@@ -202,7 +202,7 @@ def main():
         eval(test_dataloader, model, metrics_fn)
 
     # save model
-    name = "".join([f"{k}-{v}" for k, v in config])
+    name = "".join([f"{k}-{v}" for k, v in config.items()])
     with open(f"models/{name}.pt", "w") as f:
         torch.save(model, f)
 
