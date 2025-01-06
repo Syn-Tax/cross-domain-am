@@ -27,9 +27,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
 BATCH_SIZE = 4
-EPOCHS = 20
+EPOCHS = 5
 LEARNING_RATE = 1e-5
-DROPOUT = 0
+DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 8
 
 config = {
@@ -62,6 +62,8 @@ if "--log" in sys.argv:
 # load metrics
 f1 = evaluate.load("f1")
 accuracy = evaluate.load("accuracy")
+precision = evaluate.load("precision")
+recall = evaluate.load("recall")
 
 
 def move_batch(batch):
@@ -76,12 +78,26 @@ def move_batch(batch):
     return out
 
 
-def metrics_fn(logits, targets):
+def metrics_fn(logits, targets, step="eval"):
     preds = torch.argmax(logits, dim=-1)
-    f1_score = f1.compute(predictions=preds, references=targets, average="macro")["f1"]
+    macro_f1_score = f1.compute(predictions=preds, references=targets, labels=[0, 1, 2, 3], average="macro")["f1"]
+    micro_f1_score = f1.compute(predictions=preds, references=targets, labels=[0, 1, 2, 3], average="micro")["f1"]
+    class_f1_score = f1.compute(predictions=preds, references=targets, labels=[0, 1, 2, 3], average=None)["f1"]
     accuracy_score = accuracy.compute(predictions=preds, references=targets)["accuracy"]
+    precision_score = precision.compute(predictions=preds, references=targets)["precision"]
+    recall_score = recall.compute(predictions=preds, references=targets)["recall"]
 
-    res = {"f1": f1_score, "accuracy": accuracy_score}
+    res = {
+        f"{step}/macro_f1": macro_f1_score,
+        f"{step}/micro_f1": micro_f1_score,
+        f"{step}/NO_f1": class_f1_score[0],
+        f"{step}/RA_f1": class_f1_score[1],
+        f"{step}/CA_f1": class_f1_score[2],
+        f"{step}/MA_f1": class_f1_score[3],
+        f"{step}/accuracy": accuracy_score,
+        f"{step}/precision": precision_score,
+        f"{step}/recall": recall_score
+    }
     print(res)
 
     if "--log" in sys.argv:
@@ -97,7 +113,7 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
     loss.backward()
 
     if "--log" in sys.argv:
-        wandb.log({"train_loss": loss, "lr": lr_scheduler.get_last_lr()[0]})
+        wandb.log({"train_loss": loss, "lr": torch.tensor(lr_scheduler.get_last_lr()[0])})
 
     # print(logits)
     # print(batch["label"])
@@ -115,11 +131,11 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
 
 
 def eval(test_dataloader, model, metrics):
-    progress_bar = tqdm.tqdm(range(len(test_dataloader)))
+    progress_bar = tqdm.auto.tqdm(range(len(test_dataloader)))
     logits = torch.tensor([], dtype=torch.float, device=torch.device("cpu"))
     targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
 
-    for batch in test_dataloader:
+    for i, batch in enumerate(test_dataloader):
         # batch = {k: v.to(device) for k, v in batch.items()}
         batch = move_batch(batch)
 
@@ -133,7 +149,7 @@ def eval(test_dataloader, model, metrics):
 
         progress_bar.update(1)
 
-    metrics(logits, targets)
+    metrics(logits, targets, step="eval")
 
 
 def main():
@@ -198,17 +214,20 @@ def main():
         num_training_steps=(EPOCHS * len(train_dataloader)),
     )
 
-    batch = next(iter(train_dataloader))
 
     for epoch in range(EPOCHS):
         print(f"############# EPOCH {epoch} #############")
 
         model.train()
         # logits, targets = train_step(batch, 0, model, loss_fn, optimizer, lr_scheduler)
-        # metrics_fn(logits, targets)
 
+        # training loop
+        logits = torch.tensor([], dtype=torch.float, device=torch.device("cpu"))
+        targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
+
+        progress_bar = tqdm.auto.tqdm(range(len(train_dataloader)))
         for i, batch in enumerate(train_dataloader):
-            train_step(
+            batch_logits, batch_targets = train_step(
                 batch,
                 i,
                 model,
@@ -218,7 +237,15 @@ def main():
                 last_batch=(i == len(train_dataloader) - 1)
             )
 
+            logits = torch.cat((logits, batch_logits), dim=0)
+            targets = torch.cat((targets, batch_targets), dim=0)
 
+            progress_bar.update(1)
+
+        # get training metrics
+        metrics_fn(logits, targets, step="train")
+
+        # evaluate model
         model.eval()
         eval(
             test_dataloader,
@@ -227,7 +254,7 @@ def main():
         )
 
     # save model
-    name = "".join([f"{k}-{v}" for k, v in config.items()])
+    name = "".join([f"{k}-{v}" for k, v in config.items()]).replace("/", "-")
     with open(f"models/{name}.pt", "w") as f:
         torch.save(model, f)
 
