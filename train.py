@@ -56,6 +56,7 @@ torch.backends.cudnn.benchmark = False
 if "--log" in sys.argv:
     wandb.init(
         project="cross-domain-am",
+        name=f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]-{config['merge_strategy']}}",
         config=config,
     )
 
@@ -254,9 +255,14 @@ def main():
         )
 
     # save model
-    name = "".join([f"{k}-{v}" for k, v in config.items()]).replace("/", "-")
+    name = f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]-{config['merge_strategy']}}"
     with open(f"models/{name}.pt", "w") as f:
         torch.save(model, f)
+
+    # finish wandb run
+    if "--log" in sys.argv:
+        wandb.save(f"models/{name}.pt")
+        wandb.finish()
 
 
 if __name__ == "__main__":
