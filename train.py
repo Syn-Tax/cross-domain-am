@@ -114,7 +114,7 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
     loss.backward()
 
     if "--log" in sys.argv:
-        wandb.log({"train_loss": loss, "lr": torch.tensor(lr_scheduler.get_last_lr()[0])})
+        wandb.log({"train/train_loss": loss, "train/lr": torch.tensor(lr_scheduler.get_last_lr()[0])})
 
     # print(logits)
     # print(batch["label"])
