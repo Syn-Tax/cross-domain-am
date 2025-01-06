@@ -90,10 +90,10 @@ def metrics_fn(logits, targets, step="eval"):
     res = {
         f"{step}/macro_f1": macro_f1_score,
         f"{step}/micro_f1": micro_f1_score,
-        f"{step}/NO_f1": class_f1_score[0],
-        f"{step}/RA_f1": class_f1_score[1],
-        f"{step}/CA_f1": class_f1_score[2],
-        f"{step}/MA_f1": class_f1_score[3],
+        f"{step}/NO_f1": float(class_f1_score[0]),
+        f"{step}/RA_f1": float(class_f1_score[1]),
+        f"{step}/CA_f1": float(class_f1_score[2]),
+        f"{step}/MA_f1": float(class_f1_score[3]),
         f"{step}/accuracy": accuracy_score,
         f"{step}/macro_precision": precision_score,
         f"{step}/macro_recall": recall_score
