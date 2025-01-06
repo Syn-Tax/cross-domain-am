@@ -13,8 +13,8 @@ import tqdm
 import wandb
 import sys
 
-DATA_DIR = "data/Moral Maze/GreenBelt"
-QT_COMPLETE = False
+DATA_DIR = "data/Question Time"
+QT_COMPLETE = True
 TRAIN_SPLIT = 0.8
 
 TEXT_ENCODER = "FacebookAI/roberta-base"
@@ -27,7 +27,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
 BATCH_SIZE = 4
-EPOCHS = 30
+EPOCHS = 20
 LEARNING_RATE = 1e-5
 DROPOUT = 0
 GRAD_ACCUMULATION_STEPS = 8
