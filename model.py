@@ -41,7 +41,7 @@ class ConcatModel(nn.Module):
         dropout=0.5,
     ):
         super().__init__()
-        self.text_encoder = transformers.BertModel.from_pretrained(
+        self.text_encoder = transformers.AutoModel.from_pretrained(
             text_encoder_checkpoint
         )
         self.audio_encoder = transformers.AutoModel.from_pretrained(
