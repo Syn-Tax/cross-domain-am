@@ -56,7 +56,7 @@ torch.backends.cudnn.benchmark = False
 if "--log" in sys.argv:
     wandb.init(
         project="cross-domain-am",
-        name=f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]-{config['merge_strategy']}}",
+        name=f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]-{config['merge_strategy']}}-{EPOCHS}",
         config=config,
     )
 
