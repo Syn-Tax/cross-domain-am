@@ -17,8 +17,8 @@ DATA_DIR = "data/Moral Maze/GreenBelt"
 QT_COMPLETE = False
 TRAIN_SPLIT = 0.8
 
-TEXT_ENCODER = "FacebookAI/roberta-large"
-AUDIO_ENCODER = "facebook/wav2vec2-large-960h"
+TEXT_ENCODER = "FacebookAI/roberta-base"
+AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
 MAX_TOKENS = 32
 MAX_SAMPLES = 16_000
@@ -26,10 +26,10 @@ MAX_SAMPLES = 16_000
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Training hyperparameters
-BATCH_SIZE = 8
-EPOCHS = 100
-LEARNING_RATE = 4e-5
-DROPOUT = 0.1
+BATCH_SIZE = 4
+EPOCHS = 20
+LEARNING_RATE = 1e-5
+DROPOUT = 0
 GRAD_ACCUMULATION_STEPS = 8
 
 # set seeds
@@ -84,27 +84,30 @@ def metrics_fn(logits, targets):
         wandb.log(res)
 
 
-def train(train_dataloader, model, loss_fn, optim, lr_scheduler):
-    model.train()
-    progress_bar = tqdm.tqdm(range(len(train_dataloader)))
-    for i, batch in enumerate(train_dataloader):
-        batch = {k: v.to(device) for k, v in batch.items()}
-        # batch = move_batch(batch)
-        logits = model(**batch)
+def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=False):
+    # batch = {k: v.to(device) for k, v in batch.items()}
+    batch = move_batch(batch)
+    logits = model(**batch)
 
-        loss = loss_fn(logits, batch["label"])
+    loss = loss_fn(logits, batch["label"]) / GRAD_ACCUMULATION_STEPS
+    loss.backward()
 
-        if "--log" in sys.argv:
-            wandb.log({"train_loss": loss, "lr": lr_scheduler.get_last_lr()[0]})
+    if "--log" in sys.argv:
+        wandb.log({"train_loss": loss, "lr": lr_scheduler.get_last_lr()[0]})
 
-        print(lr_scheduler.get_last_lr())
+    print(logits)
+    print(batch["label"])
+    print(loss)
+    print(lr_scheduler.get_last_lr())
 
-        # pre_params = model.parameters()
-        optim.zero_grad()
-        loss.backward()
+    # pre_params = model.parameters()
+
+    if index % GRAD_ACCUMULATION_STEPS == 0 or last_batch:
         optim.step()
         lr_scheduler.step()
-        progress_bar.update(1)
+        optim.zero_grad()
+
+    return logits.to(torch.device("cpu")), batch["label"].to(torch.device("cpu"))
 
 
 def eval(test_dataloader, model, metrics):
@@ -113,7 +116,8 @@ def eval(test_dataloader, model, metrics):
     targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
 
     for batch in test_dataloader:
-        batch = {k: v.to(device) for k, v in batch.items()}
+        # batch = {k: v.to(device) for k, v in batch.items()}
+        batch = move_batch(batch)
 
         with torch.no_grad():
             raw_logits = model(**batch)
@@ -163,8 +167,10 @@ def main():
     audio_config = transformers.PretrainedConfig.from_pretrained(AUDIO_ENCODER)
 
     class_weights = torch.tensor(
-        [1 / v for k, v in train_dataset.weights.items()], device=device
+        [max(train_dataset.weights.values()) / v for k, v in train_dataset.weights.items()], device=device
     )
+
+    print(class_weights)
 
     model = ConcatModel(
         TEXT_ENCODER,
@@ -178,6 +184,7 @@ def main():
     model.to(device)
 
     loss_fn = nn.CrossEntropyLoss(weight=class_weights)
+    # loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
     #lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, warm_up_steps=0)
     lr_scheduler = transformers.get_scheduler(
@@ -187,14 +194,33 @@ def main():
         num_training_steps=(EPOCHS * len(train_dataloader))
     )
 
+    batch = next(iter(train_dataloader))
+
     for epoch in range(EPOCHS):
         print(f"############# EPOCH {epoch} #############")
 
         model.train()
-        train(train_dataloader, model, loss_fn, optimizer, lr_scheduler)
+        # logits, targets = train_step(batch, 0, model, loss_fn, optimizer, lr_scheduler)
+        # metrics_fn(logits, targets)
+
+        for i, batch in enumerate(train_dataloader):
+            train_step(
+                batch,
+                i,
+                model,
+                loss_fn,
+                optimizer,
+                lr_scheduler,
+                last_batch=(i == len(train_dataloader) - 1)
+            )
+
 
         model.eval()
-        eval(test_dataloader, model, metrics_fn)
+        eval(
+            test_dataloader,
+            model,
+            metrics_fn
+        )
 
 
 if __name__ == "__main__":

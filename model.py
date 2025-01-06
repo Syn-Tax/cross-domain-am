@@ -11,19 +11,19 @@ class ClassificationHead(nn.Module):
         self.input = nn.Linear(input_size, hidden_size)
         self.output = nn.Linear(hidden_size, n_classes)
 
-        self.hidden = [nn.Linear(hidden_size, hidden_size) for _ in range(num_hidden_layers)]
+        self.hidden = nn.ModuleList([nn.Linear(hidden_size, hidden_size) for _ in range(num_hidden_layers)])
 
-        nn.init.kaiming_normal(self.input.weight)
-        nn.init.kaiming_normal(self.output.weight)
+        nn.init.kaiming_normal_(self.input.weight)
+        nn.init.kaiming_normal_(self.output.weight)
 
         for layer in self.hidden:
-            nn.init.kaiming_normal(layer.weight)
+            nn.init.kaiming_normal_(layer.weight)
 
     def forward(self, x):
-        out = F.relu(self.input(x))
+        out = F.tanh(self.input(x))
 
         for layer in self.hidden:
-            out = F.relu(layer(out))
+            out = F.tanh(layer(out))
 
         out = self.output(out)
 
@@ -62,7 +62,7 @@ class ConcatModel(nn.Module):
         self.head = ClassificationHead(text_hidden_size * 2 + audio_hidden_size * 2, n_classes)
 
         # self.freeze_encoders()
-        # self.unfreeze_encoders()
+        self.unfreeze_encoders()
 
     def get_encoding(self, audio, text):
         text_encoding_pooled = self.text_encoder(**text)[1]
