@@ -84,8 +84,8 @@ def metrics_fn(logits, targets, step="eval"):
     micro_f1_score = f1.compute(predictions=preds, references=targets, labels=[0, 1, 2, 3], average="micro")["f1"]
     class_f1_score = f1.compute(predictions=preds, references=targets, labels=[0, 1, 2, 3], average=None)["f1"]
     accuracy_score = accuracy.compute(predictions=preds, references=targets)["accuracy"]
-    precision_score = precision.compute(predictions=preds, references=targets)["precision"]
-    recall_score = recall.compute(predictions=preds, references=targets)["recall"]
+    precision_score = precision.compute(predictions=preds, references=targets, average="macro")["precision"]
+    recall_score = recall.compute(predictions=preds, references=targets, average="macro")["recall"]
 
     res = {
         f"{step}/macro_f1": macro_f1_score,
@@ -95,8 +95,8 @@ def metrics_fn(logits, targets, step="eval"):
         f"{step}/CA_f1": class_f1_score[2],
         f"{step}/MA_f1": class_f1_score[3],
         f"{step}/accuracy": accuracy_score,
-        f"{step}/precision": precision_score,
-        f"{step}/recall": recall_score
+        f"{step}/macro_precision": precision_score,
+        f"{step}/macro_recall": recall_score
     }
     print(res)
 
