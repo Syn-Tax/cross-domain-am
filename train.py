@@ -256,8 +256,7 @@ def main():
 
     # save model
     name = f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}"
-    with open(f"models/{name}.pt", "w") as f:
-        torch.save(model, f)
+    torch.save(model.state_dict(), f"model/{name}.pt")
 
     # finish wandb run
     if "--log" in sys.argv:
