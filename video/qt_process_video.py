@@ -3,6 +3,9 @@ import tqdm
 import ffmpeg
 import os
 
+""" File to extract and resample audio from QT episodes using FFmpeg
+"""
+
 VIDEO_PATH = "raw_data/Question Time/episodes"
 AUDIO_PATH = "raw_data/Question Time"
 

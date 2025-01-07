@@ -1,9 +1,11 @@
 from yt_dlp import YoutubeDL
-from tqdm import tqdm
 import multiprocessing
 import json
 
-with open("QTepisodes.json", "r") as f:
+""" File to download QT episodes using yt-dlp
+"""
+
+with open("../QTepisodes.json", "r") as f:
     data = json.load(f)
 
 def download(args):
