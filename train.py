@@ -21,8 +21,8 @@ QT_COMPLETE = True
 TRAIN_SPLIT = 0.8
 
 # model parameters
-TEXT_ENCODER = "FacebookAI/roberta-base"
-AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
+TEXT_ENCODER = "FacebookAI/roberta-large"
+AUDIO_ENCODER = "facebook/wav2vec2-large-960h"
 
 MAX_TOKENS = 32
 MAX_SAMPLES = 16_000
@@ -32,7 +32,7 @@ MAX_SAMPLES = 16_000
 BATCH_SIZE = 4
 EPOCHS = 20
 LEARNING_RATE = 1e-5
-DROPOUT = 0.2
+DROPOUT = 0
 GRAD_ACCUMULATION_STEPS = 8
 
 # configuration dictionary passed to wandb
@@ -106,12 +106,22 @@ def metrics_fn(logits, targets, step="eval"):
     preds = torch.argmax(logits, dim=-1)
 
     # calculate metric scores
-    macro_f1_score = f1.compute(predictions=preds, references=targets, labels=[0, 1, 2, 3], average="macro")["f1"]
-    micro_f1_score = f1.compute(predictions=preds, references=targets, labels=[0, 1, 2, 3], average="micro")["f1"]
-    class_f1_score = f1.compute(predictions=preds, references=targets, labels=[0, 1, 2, 3], average=None)["f1"]
+    macro_f1_score = f1.compute(
+        predictions=preds, references=targets, labels=[0, 1, 2, 3], average="macro"
+    )["f1"]
+    micro_f1_score = f1.compute(
+        predictions=preds, references=targets, labels=[0, 1, 2, 3], average="micro"
+    )["f1"]
+    class_f1_score = f1.compute(
+        predictions=preds, references=targets, labels=[0, 1, 2, 3], average=None
+    )["f1"]
     accuracy_score = accuracy.compute(predictions=preds, references=targets)["accuracy"]
-    precision_score = precision.compute(predictions=preds, references=targets, average="macro")["precision"]
-    recall_score = recall.compute(predictions=preds, references=targets, average="macro")["recall"]
+    precision_score = precision.compute(
+        predictions=preds, references=targets, average="macro"
+    )["precision"]
+    recall_score = recall.compute(
+        predictions=preds, references=targets, average="macro"
+    )["recall"]
 
     # add metric scores to dictionary
     res = {
@@ -123,7 +133,7 @@ def metrics_fn(logits, targets, step="eval"):
         f"{step}/MA_f1": float(class_f1_score[3]),
         f"{step}/accuracy": accuracy_score,
         f"{step}/macro_precision": precision_score,
-        f"{step}/macro_recall": recall_score
+        f"{step}/macro_recall": recall_score,
     }
 
     # print out to the logs
@@ -162,7 +172,12 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
 
     # log loss and learning rate to wandb
     if "--log" in sys.argv:
-        wandb.log({"train/train_loss": loss, "train/lr": torch.tensor(lr_scheduler.get_last_lr()[0])})
+        wandb.log(
+            {
+                "train/train_loss": loss,
+                "train/lr": torch.tensor(lr_scheduler.get_last_lr()[0]),
+            }
+        )
 
     # after the gradient accumulation steps, update the model parameters
     if index % GRAD_ACCUMULATION_STEPS == 0 or last_batch:
@@ -243,7 +258,11 @@ def main():
 
     # calculate class weights for use in the weighted cross entropy loss
     class_weights = torch.tensor(
-        [max(train_dataset.weights.values()) / v for k, v in train_dataset.weights.items()], device=device
+        [
+            max(train_dataset.weights.values()) / v
+            for k, v in train_dataset.weights.items()
+        ],
+        device=device,
     )
 
     # load the model
@@ -275,7 +294,7 @@ def main():
         # create empty tensors for epoch's logits and targets to calculate training metrics
         logits = torch.tensor([], dtype=torch.float, device=torch.device("cpu"))
         targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
-        
+
         # loop through each batch in the training dataloader and perform a training step
         progress_bar = tqdm.auto.tqdm(range(len(train_dataloader)))
         for i, batch in enumerate(train_dataloader):
@@ -286,7 +305,7 @@ def main():
                 loss_fn,
                 optimizer,
                 lr_scheduler,
-                last_batch=(i == len(train_dataloader) - 1)
+                last_batch=(i == len(train_dataloader) - 1),
             )
 
             logits = torch.cat((logits, batch_logits), dim=0)
@@ -299,11 +318,7 @@ def main():
 
         # evaluate model
         model.eval()
-        eval(
-            test_dataloader,
-            model,
-            metrics_fn
-        )
+        eval(test_dataloader, model, metrics_fn)
 
     # save model
     name = f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}"
