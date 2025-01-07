@@ -6,7 +6,7 @@ import numpy as np
 import pickle
 from pathlib import Path
 from create_datasets import MultimodalDataset, collate_fn
-from model import ConcatModel
+from models.concat import ConcatLateModel
 import transformers
 import evaluate
 import tqdm
@@ -193,7 +193,7 @@ def main():
 
     print(class_weights)
 
-    model = ConcatModel(
+    model = ConcatLateModel(
         TEXT_ENCODER,
         AUDIO_ENCODER,
         text_config.hidden_size,
