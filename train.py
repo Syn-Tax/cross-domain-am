@@ -29,7 +29,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 4
 EPOCHS = 20
 LEARNING_RATE = 1e-5
-DROPOUT = 0
+DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 8
 
 config = {

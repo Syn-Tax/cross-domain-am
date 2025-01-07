@@ -11,7 +11,7 @@ from datastructs import Node, Sample
 
 
 RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
-TRAIN_SPLIT = 0.8
+TRAIN_SPLIT = 1
 
 
 class MultimodalDataset(torch.utils.data.Dataset):
@@ -98,7 +98,11 @@ class MultimodalDataset(torch.utils.data.Dataset):
             )
             for x in [0, 1, 2, 3]
         }
+        self.counts = {
+            x: [p.label for p in self.sequence_pairs].count(x) for x in [0, 1, 2, 3]
+        }
         print(self.weights)
+        print(self.counts)
 
     def __len__(self):
         return len(self.sequence_pairs)
@@ -190,11 +194,11 @@ if __name__ == "__main__":
 
 
     train_dataset = MultimodalDataset(
-        "data/Question Time", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=TRAIN_SPLIT, train=True, qt_complete=True
+        "data/Moral Maze/Hypocrisy", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=TRAIN_SPLIT, train=True, qt_complete=False
     )
-    test_dataset = MultimodalDataset(
-        "data/Question Time", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=TRAIN_SPLIT, train=False, qt_complete=True
-    )
+    # test_dataset = MultimodalDataset(
+    #     "data/Question Time", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=TRAIN_SPLIT, train=False, qt_complete=True
+    # )
 
     # with open("data/Moral Maze/GreenBelt/train_dataset.pkl", "wb+") as f:
     #     pickle.dump(train_dataset, f)
