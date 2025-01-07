@@ -1,12 +1,16 @@
 import re
 import pathlib
 
+""" File used to process raw transcripts contained in QT30 dataset
+    
+    NO LONGER USED DUE TO INACCURATE TRANSCRIPTS
+"""
+
 INPUT_PATH = "raw_data/Question Time"
 OUTPUT_PATH = "data/Question Time"
 
 line_regex = r"^\[.{0,10}[0-9]+:[0-9]+:[0-9]+\].*$"
 timestamp_regex = r"(\[.{0,10}[0-9]+:[0-9]+:[0-9]+\])"
-
 
 
 def process_transcript(path, out_path):

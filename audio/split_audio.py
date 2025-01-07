@@ -6,7 +6,12 @@ from tqdm import tqdm
 import pickle
 
 from datastructs import Node, Relation, Segment
-import alignment
+import audio.alignment as alignment
+
+"""
+    Script to split the audio file corresponding to an episode into
+    files containing only a single locution
+"""
 
 QT_EPISODE = "30.11November2021"
 
@@ -16,13 +21,24 @@ AUDIO_PATH = f"raw_data/Question Time/{QT_EPISODE}/audio.wav"
 
 OUT_PATH = f"data/Question Time/{QT_EPISODE}/audio/"
 
-PADDING = 0.1
+PADDING = 0.1 # number of seconds to include around the locution
 
 
 def clean_text(txt):
+    """Method to clean a transcript
+
+    Args:
+        txt (str): text to be cleaned
+
+    Returns:
+        str: cleaned text
+    """
+
+    # define regular expressions
     timestamp_regex = r"\[.{0,10}[0-9]+:[0-9]+:[0-9]+\]"
     punctuation_regex = r"[^a-z]"
 
+    # process transcript line
     transcript = " ".join(
         [
             ":".join(
@@ -37,73 +53,42 @@ def clean_text(txt):
         ]
     )
 
+    # substitute regular expressions
     transcript = re.sub(timestamp_regex, "", transcript)
     transcript = re.sub(punctuation_regex, " ", transcript)
 
+    # return cleaned transcript
     return " ".join(transcript.split())
 
 
-def get_span(locution, alignments, node):
-    locution = locution.split()
-    start_ind = -1
-    end_ind = -1
-
-    transcript = [a.word for a in alignments]
-
-    loc_len = len(locution)
-    f = 0
-
-    for i in (ind for ind, e in enumerate(transcript) if locution[0] in e):
-        f = i
-        if transcript[i : i + loc_len] == locution:
-            start_ind = i
-            end_ind = i + loc_len - 1
-            break
-
-    if start_ind == -1 or end_ind == -1:
-        if len(node.relations) == 0:
-            return
-        try:
-            print(transcript.index(locution[0]))
-        except:
-            pass
-        print("locution not found")
-        print(start_ind, end_ind)
-        print(f)
-        return
-
-    return Segment(
-        " ".join(locution), alignments[start_ind].start, alignments[end_ind].end
-    )
-
-
-def main(alignments_path, argument_map_path, audio_path):
+def main(argument_map_path, audio_path):
+    # load argument map
     with open(argument_map_path, "r") as f:
         argument_map = Node.schema().loads(f.read(), many=True)
 
+    # load audio
     waveform, sample_rate = torchaudio.load(audio_path)
 
+    # load forced alignment model
     bundle = torchaudio.pipelines.MMS_FA
 
     print("############ Calculating Emissions ################")
     emissions = alignment.calculate_emissions(waveform, sample_rate, bundle)
 
-    # with open("emissions.pkl", "wb+") as f:
-    #     pickle.dump(emissions, f)
-    # with open("emissions.pkl", "rb+") as f:
-    #     emissions = pickle.load(f)
-
     span_scores = []
     print("############ Getting Alignments ################")
 
+    # for each node get the audio containing its locution
     for i, node in enumerate(tqdm(argument_map)):
         cleaned_loc = clean_text(node.locution)
 
         span = alignment.get_span(emissions, bundle, cleaned_loc, waveform.size(1), sample_rate)
-        span_scores.append(span.score)
 
+        # save confidence scores
+        span_scores.append(span.score)
         argument_map[i].audio_score = span.score
 
+        # split audio data    
         node_audio = waveform[
             :,
             int((span.start - PADDING) * sample_rate) : int(
@@ -111,8 +96,10 @@ def main(alignments_path, argument_map_path, audio_path):
             ),
         ]
 
+        # save to new file containing node id
         torchaudio.save(f"{OUT_PATH}{node.id}.wav", node_audio, sample_rate)
 
+    # write argument map containing alignment confidence scores
     with open(argument_map_path, "w") as f:
         out = Node.schema().dumps(argument_map, many=True)
         f.write(out)
@@ -122,4 +109,4 @@ def main(alignments_path, argument_map_path, audio_path):
 
 
 if __name__ == "__main__":
-    main(ALIGNMENTS_PATH, ARGUMENT_MAP_PATH, AUDIO_PATH)
+    main(ARGUMENT_MAP_PATH, AUDIO_PATH)
