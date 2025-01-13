@@ -32,6 +32,7 @@ class Segment:
     score: Optional[float] = 0
 
 
+@dataclass_json
 @dataclass
 class Sample:
     node_1: Node

@@ -1,4 +1,3 @@
-import pickle
 import itertools
 import torch
 import torchaudio
@@ -11,7 +10,13 @@ from datastructs import Node, Sample
 
 
 RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
-TRAIN_SPLIT = 1
+SPLITS = [0.7, 0.1, 0.2]
+
+seed = 0
+random.seed(seed)
+torch.manual_seed(seed)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 
 class MultimodalDataset(torch.utils.data.Dataset):
@@ -25,9 +30,10 @@ class MultimodalDataset(torch.utils.data.Dataset):
         feature_extractor,
         max_tokens,
         max_samples,
-        train_test_split=1,
-        train=True,
-        qt_complete=False
+        train_test_split=[1, 0, 0],
+        split=0,
+        qt_complete=False,
+        process=True
     ):
         """Class constructor
 
@@ -37,8 +43,8 @@ class MultimodalDataset(torch.utils.data.Dataset):
             feature_extractor (str): audio model checkpoint
             max_tokens (int): maximum length to which to pad/truncate text sequences
             max_samples (int): maximum length to pad/truncate audio sequences
-            train_test_split (float, optional): proportion of data to be put in the training split. Defaults to 1.
-            train (bool, optional): whether the requested split is the training split. Defaults to True.
+            train_test_split (list[float], optional): proportion of data to be put into each split. Defaults to entirely training split.
+            split (int, optional): the requested split. Defaults to 0.
             qt_complete (bool, optional): whether the dataset is the complete QT30 set. Defaults to False.
         """
 
@@ -55,17 +61,21 @@ class MultimodalDataset(torch.utils.data.Dataset):
             feature_extractor
         )
 
+        if process:
+            self.sequence_pairs = MultimodalDataset.process(data_dir, train_test_split)[split]
+
+    def process(data_dir, qt_complete, splits):
         # load argument map
         with open(Path(data_dir) / "argument_map.json", "r") as f:
-            self.argument_map = Node.schema().loads(f.read(), many=True)
+            argument_map = Node.schema().loads(f.read(), many=True)
 
         # loop through all combinations of nodes (there must be a more efficient way to do this but it's only a minute or so on QT30)
-        self.sequence_pairs = []
+        sequence_pairs = []
         relation_sequence_pairs = []
         no_relation_sequence_pairs = []
         counter = 0
         num_ra = 0
-        for n1, n2 in tqdm(itertools.combinations(self.argument_map, 2)):
+        for n1, n2 in tqdm(itertools.combinations(argument_map, 2)):
             # ignore combinations where neither node has a relation
             if n1.relations == [] and n2.relations == []:
                 continue
@@ -86,7 +96,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
 
             # if there is no relation, add to separate list - this is used to sample the NO samples
             if label == 0:
-                if self.qt_complete and n1.episode != n2.episode: continue # we ignore nodes which are not in the same QT episode
+                if qt_complete and n1.episode != n2.episode: continue # we ignore nodes which are not in the same QT episode
                 if counter % 10 == 0: # only add every 10th sample to save memory
                     no_relation_sequence_pairs.append(
                         Sample(n1, n2, torch.tensor([label], dtype=torch.long))
@@ -98,41 +108,49 @@ class MultimodalDataset(torch.utils.data.Dataset):
                 )
 
         # add node pairs with relations
-        self.sequence_pairs.extend(relation_sequence_pairs)
+        sequence_pairs.extend(relation_sequence_pairs)
 
         # sample node pairs without relations for NO label
-        self.sequence_pairs.extend(random.sample(no_relation_sequence_pairs, num_ra))
+        sequence_pairs.extend(random.sample(no_relation_sequence_pairs, num_ra))
 
         # shuffle dataset
-        random.shuffle(self.sequence_pairs)
+        random.shuffle(sequence_pairs)
 
-        # split into training and testing splits
-        if train:
-            self.sequence_pairs = self.sequence_pairs[
-                : int(train_test_split * len(self.sequence_pairs))
-            ]
-        else:
-            self.sequence_pairs = self.sequence_pairs[
-                int(train_test_split * len(self.sequence_pairs)) :
-            ]
+        # get requested split
+        split_data = []
+        for s in range(len(splits)):
+            start = sum(splits[:s])
+            end = start+splits[s]
 
+            print(start)
+            print(end)
+
+            if end == 0: end = 1
+
+            split_data.append(sequence_pairs[int(start * len(sequence_pairs)):int(end * len(sequence_pairs))])
+
+        return split_data
+
+    def get_metrics(data):
         # calculate and display some dataset metrics
         print("------------ DATASET DATA -------------")
-        print(f"length: {len(self)}")
+        print(f"length: {len(data)}")
 
-        self.weights = {
+        weights = {
             x: round(
-                [p.label for p in self.sequence_pairs].count(x)
-                / len(self.sequence_pairs),
+                [p.label for p in data].count(x)
+                / len(data),
                 2,
             )
             for x in [0, 1, 2, 3]
         }
-        self.counts = {
-            x: [p.label for p in self.sequence_pairs].count(x) for x in [0, 1, 2, 3]
+        counts = {
+            x: [p.label for p in data].count(x) for x in [0, 1, 2, 3]
         }
-        print(self.weights)
-        print(self.counts)
+        print(weights)
+        print(counts)
+
+        return weights, counts
 
     def __len__(self):
         """Method to get the length of the dataset
@@ -208,6 +226,26 @@ class MultimodalDataset(torch.utils.data.Dataset):
             "text2": text2,
             "label": sample.label,
         }
+    
+    def save(self, path):
+        with open(path, "w") as f:
+            out = Sample.schema().dumps(self.sequence_pairs, many=True)
+            f.write(out)
+
+    def save(path, data):
+        with open(path, "w") as f:
+            out = Sample.schema().dumps(data, many=True)
+            f.write(out)
+
+    def load(path, data_dir, tokenizer, feature_extractor, max_tokens, max_samples, qt_complete=False):
+        s = MultimodalDataset(data_dir, tokenizer, feature_extractor, max_tokens, max_samples, qt_complete=qt_complete, process=False)
+
+        with open(path, "r") as f:
+            s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
+
+        s.weights, s.counts = MultimodalDataset.get_metrics(s.sequence_pairs)
+
+        return s
 
 
 def collate_fn(data):
@@ -241,13 +279,25 @@ if __name__ == "__main__":
     TEXT_ENCODER = "google-bert/bert-base-uncased"
     AUDIO_ENCODER = "facebook/wav2vec2-base"
 
-    MAX_TOKENS = 128
-    MAX_SAMPLES = 160_000
+    MAX_TOKENS = 32
+    MAX_SAMPLES = 16_000
 
+    data_dirs = []
+    qt_complete = []
 
-    train_dataset = MultimodalDataset(
-        "data/Moral Maze/Hypocrisy", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=TRAIN_SPLIT, train=True, qt_complete=False
-    )
-    test_dataset = MultimodalDataset(
-        "data/Moral Maze/Hypocrisy", TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, train_test_split=TRAIN_SPLIT, train=False, qt_complete=True
-    )
+    for i in range(len(data_dirs)):
+        print(f"############### {data_dirs[i].split('/')[-1]} ############")
+        splits = MultimodalDataset.process(data_dirs[i], qt_complete[i], SPLITS)
+        MultimodalDataset.get_metrics(splits[0])
+        MultimodalDataset.get_metrics(splits[1])
+        MultimodalDataset.get_metrics(splits[2])
+
+        MultimodalDataset.save(data_dirs[i] + "/train.json", splits[0])
+        MultimodalDataset.save(data_dirs[i] + "/eval.json", splits[1])
+        MultimodalDataset.save(data_dirs[i] + "/test.json", splits[2])
+
+        complete = splits[0]
+        complete.extend(splits[1])
+        complete.extend(splits[2])
+
+        MultimodalDataset.save(data_dirs[i] + "/complete.json", complete)
