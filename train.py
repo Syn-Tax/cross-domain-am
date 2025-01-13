@@ -30,7 +30,6 @@ CD_DIRS = [
     "data/Moral Maze/Welfare",
 ]
 QT_COMPLETE = True
-TRAIN_SPLIT = 0.8
 
 # model parameters
 TEXT_ENCODER = "FacebookAI/roberta-base"
@@ -42,9 +41,9 @@ MAX_SAMPLES = 16_000
 
 # Training hyperparameters
 BATCH_SIZE = 4
-EPOCHS = 30
+EPOCHS = 20
 LEARNING_RATE = 1e-5
-DROPOUT = 0.1
+DROPOUT = 0
 GRAD_ACCUMULATION_STEPS = 8
 
 # configuration dictionary passed to wandb
@@ -116,8 +115,10 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
 
 def main():
     # load/generate datasets
+    print("#### train ####")
     train_dataset = MultimodalDataset.load(ID_DATA_DIR + "/train.json", ID_DATA_DIR, TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, qt_complete=QT_COMPLETE)
 
+    print("#### eval ####")
     eval_dataset = MultimodalDataset.load(ID_DATA_DIR + "/eval.json", ID_DATA_DIR, TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, qt_complete=QT_COMPLETE)
 
     # create dataloaders for each dataset - batching and shuffling each set
@@ -125,11 +126,12 @@ def main():
         train_dataset, BATCH_SIZE, collate_fn=collate_fn, shuffle=True
     )
 
-    test_dataloader = torch.utils.data.DataLoader(
+    eval_dataloader = torch.utils.data.DataLoader(
         eval_dataset, BATCH_SIZE, collate_fn=collate_fn, shuffle=True
     )
 
     # load cross domain evaluation sets
+    print("#### cross domain ####")
     cd_dataloaders = load_cd(CD_DIRS, BATCH_SIZE, collate_fn, TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES)
 
     # calculate class weights for use in the weighted cross entropy loss
@@ -201,9 +203,10 @@ def main():
 
         # evaluate model
         model.eval()
-        id_eval(test_dataloader, model, metrics_fn, device)
+        id_eval(eval_dataloader, model, metrics_fn, device)
 
     # perform cross domain evaluation
+    model.eval()
     cd_eval(cd_dataloaders, [d.split("/")[-1] for d in CD_DIRS], model, metrics_fn, device)
 
     # save model
