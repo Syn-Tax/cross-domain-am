@@ -99,12 +99,12 @@ class MultimodalDataset(torch.utils.data.Dataset):
                 if qt_complete and n1.episode != n2.episode: continue # we ignore nodes which are not in the same QT episode
                 if counter % 10 == 0: # only add every 10th sample to save memory
                     no_relation_sequence_pairs.append(
-                        Sample(n1, n2, torch.tensor([label], dtype=torch.long))
+                        Sample(n1, n2, label)
                     )
                 counter += 1
             else:
                 relation_sequence_pairs.append(
-                    Sample(n1, n2, torch.tensor([label], dtype=torch.long))
+                    Sample(n1, n2, label)
                 )
 
         # add node pairs with relations
@@ -224,7 +224,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
             "text1": text1,
             "audio2": audio2,
             "text2": text2,
-            "label": sample.label,
+            "label": torch.tensor([sample.label], dtype=torch.long),
         }
     
     def save(self, path):
@@ -282,8 +282,20 @@ if __name__ == "__main__":
     MAX_TOKENS = 32
     MAX_SAMPLES = 16_000
 
-    data_dirs = []
-    qt_complete = []
+    data_dirs = [
+        "data/Question Time",
+        "data/Moral Maze/Banking",
+        "data/Moral Maze/DDay",
+        "data/Moral Maze/Empire",
+        "data/Moral Maze/Families",
+        "data/Moral Maze/GreenBelt",
+        "data/Moral Maze/Hypocrisy",
+        "data/Moral Maze/Money",
+        "data/Moral Maze/Syria",
+        "data/Moral Maze/Welfare",
+    ]
+
+    qt_complete = [True, False, False, False, False, False, False, False, False, False]
 
     for i in range(len(data_dirs)):
         print(f"############### {data_dirs[i].split('/')[-1]} ############")

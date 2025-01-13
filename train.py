@@ -11,18 +11,30 @@ import sys
 
 from create_datasets import MultimodalDataset, collate_fn
 from models.concat import ConcatLateModel
+from eval import metrics_fn, id_eval, cd_eval, load_cd
+from utils import move_batch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # data parameters
-DATA_DIR = "data/Moral Maze/GreenBelt"
-QT_COMPLETE = False
+ID_DATA_DIR = "data/Question Time"
+CD_DIRS = [
+    "data/Moral Maze/Banking",
+    "data/Moral Maze/Empire",
+    "data/Moral Maze/Families",
+    "data/Moral Maze/GreenBelt",
+    "data/Moral Maze/Hypocrisy",
+    "data/Moral Maze/Money",
+    "data/Moral Maze/Syria",
+    "data/Moral Maze/Welfare",
+]
+QT_COMPLETE = True
 TRAIN_SPLIT = 0.8
 
 # model parameters
-TEXT_ENCODER = "FacebookAI/roberta-large"
-AUDIO_ENCODER = "facebook/wav2vec2-large-960h"
+TEXT_ENCODER = "FacebookAI/roberta-base"
+AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
 MAX_TOKENS = 32
 MAX_SAMPLES = 16_000
@@ -40,7 +52,7 @@ config = {
     "batch_size": BATCH_SIZE,
     "epochs": EPOCHS,
     "lr": LEARNING_RATE,
-    "data_dir": DATA_DIR,
+    "data_dir": ID_DATA_DIR,
     "text": TEXT_ENCODER,
     "audio": AUDIO_ENCODER,
     "dropout": DROPOUT,
@@ -55,86 +67,6 @@ np.random.seed(seed)
 torch.manual_seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
-
-
-# load metrics
-f1 = evaluate.load("f1")
-accuracy = evaluate.load("accuracy")
-precision = evaluate.load("precision")
-recall = evaluate.load("recall")
-
-
-def move_batch(batch):
-    """Method to move a batch to the required device
-
-    This is required to deal with the nested dict batch structure
-
-    Args:
-        batch (dict): the minibatch of tensors
-
-    Returns:
-        dict: the same minibatch but all tensors are on the required device
-    """
-    out = {}
-    for key, value in batch.items():
-        if key == "label":
-            out[key] = value.to(device)
-
-        else:
-            out[key] = {k: v.to(device) for k, v in value.items()}
-
-    return out
-
-
-def metrics_fn(logits, targets, step="eval"):
-    """Method to calculate the metric scores for a specific set of logits and target labels
-
-    Args:
-        logits (torch.Tensor): the logit outputs of the model
-        targets (torch.Tensor): the target labels - 1st dimensions of logits and targets must match
-        step (str, optional): the training or eval step (used to log to wandb). Defaults to "eval".
-    """
-
-    # calculate the predicted labels from logits
-    preds = torch.argmax(logits, dim=-1)
-
-    # calculate metric scores
-    macro_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2, 3], average="macro"
-    )["f1"]
-    micro_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2, 3], average="micro"
-    )["f1"]
-    class_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2, 3], average=None
-    )["f1"]
-    accuracy_score = accuracy.compute(predictions=preds, references=targets)["accuracy"]
-    precision_score = precision.compute(
-        predictions=preds, references=targets, average="macro"
-    )["precision"]
-    recall_score = recall.compute(
-        predictions=preds, references=targets, average="macro"
-    )["recall"]
-
-    # add metric scores to dictionary
-    res = {
-        f"{step}/macro_f1": macro_f1_score,
-        f"{step}/micro_f1": micro_f1_score,
-        f"{step}/NO_f1": float(class_f1_score[0]),
-        f"{step}/RA_f1": float(class_f1_score[1]),
-        f"{step}/CA_f1": float(class_f1_score[2]),
-        f"{step}/MA_f1": float(class_f1_score[3]),
-        f"{step}/accuracy": accuracy_score,
-        f"{step}/macro_precision": precision_score,
-        f"{step}/macro_recall": recall_score,
-    }
-
-    # print out to the logs
-    print(res)
-
-    # log metrics to wandb
-    if "--log" in sys.argv:
-        wandb.log(res)
 
 
 def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=False):
@@ -154,7 +86,7 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
     """
 
     # move the batch to the required device
-    batch = move_batch(batch)
+    batch = move_batch(batch, device)
 
     # get model outputs
     logits = model(**batch)
@@ -182,63 +114,11 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
     return logits.to(torch.device("cpu")), batch["label"].to(torch.device("cpu"))
 
 
-def eval(test_dataloader, model, metrics):
-    """Method to evaluate model performance on a certain test dataset
-
-    Args:
-        test_dataloader (torch.utils.data.DataLoader): the test dataloader on which to evaluate
-        model (torch.nn.Module): the model to evaluate
-        metrics (function): the metric calculation method
-    """
-
-    # initialise some variables - importantly logits and targets to store complete arrays
-    progress_bar = tqdm.auto.tqdm(range(len(test_dataloader)))
-    logits = torch.tensor([], dtype=torch.float, device=torch.device("cpu"))
-    targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
-
-    # loop through each batch in the test dataloader
-    for i, batch in enumerate(test_dataloader):
-        # move the batch to the required device
-        batch = move_batch(batch)
-
-        # without calculating gradients, get the model outputsh
-        with torch.no_grad():
-            raw_logits = model(**batch)
-
-        # move logits and targets back to the CPU and add them to the total tensors
-        batch_logits = raw_logits.to(torch.device("cpu"))
-        batch_targets = batch["label"].to(torch.device("cpu"))
-        logits = torch.cat((logits, batch_logits), dim=0)
-        targets = torch.cat((targets, batch_targets), dim=0)
-
-        progress_bar.update(1)
-
-    # calculate and log the metrics
-    metrics(logits, targets, step="eval")
-
-
 def main():
     # load/generate datasets
-    train_dataset = MultimodalDataset(
-        DATA_DIR,
-        TEXT_ENCODER,
-        AUDIO_ENCODER,
-        MAX_TOKENS,
-        MAX_SAMPLES,
-        train_test_split=TRAIN_SPLIT,
-        train=True,
-        qt_complete=QT_COMPLETE,
-    )
-    test_dataset = MultimodalDataset(
-        DATA_DIR,
-        TEXT_ENCODER,
-        AUDIO_ENCODER,
-        MAX_TOKENS,
-        MAX_SAMPLES,
-        train_test_split=TRAIN_SPLIT,
-        train=False,
-        qt_complete=QT_COMPLETE,
-    )
+    train_dataset = MultimodalDataset.load(ID_DATA_DIR + "/train.json", ID_DATA_DIR, TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, qt_complete=QT_COMPLETE)
+
+    eval_dataset = MultimodalDataset.load(ID_DATA_DIR + "/eval.json", ID_DATA_DIR, TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, qt_complete=QT_COMPLETE)
 
     # create dataloaders for each dataset - batching and shuffling each set
     train_dataloader = torch.utils.data.DataLoader(
@@ -246,8 +126,11 @@ def main():
     )
 
     test_dataloader = torch.utils.data.DataLoader(
-        test_dataset, BATCH_SIZE, collate_fn=collate_fn, shuffle=True
+        eval_dataset, BATCH_SIZE, collate_fn=collate_fn, shuffle=True
     )
+
+    # load cross domain evaluation sets
+    cd_dataloaders = load_cd(CD_DIRS, BATCH_SIZE, collate_fn, TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES)
 
     # calculate class weights for use in the weighted cross entropy loss
     class_weights = torch.tensor(
@@ -269,7 +152,7 @@ def main():
     if "--log" in sys.argv:
         wandb.init(
             project="cross-domain-am",
-            name=f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}",
+            name=f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}",
             config=config,
         )
 
@@ -318,10 +201,13 @@ def main():
 
         # evaluate model
         model.eval()
-        eval(test_dataloader, model, metrics_fn)
+        id_eval(test_dataloader, model, metrics_fn, device)
+
+    # perform cross domain evaluation
+    cd_eval(cd_dataloaders, [d.split("/")[-1] for d in CD_DIRS], model, metrics_fn, device)
 
     # save model
-    name = f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}"
+    name = f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}"
     torch.save(model.state_dict(), f"saves/{name}.pt")
 
     # finish wandb run
