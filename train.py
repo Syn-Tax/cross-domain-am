@@ -16,8 +16,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # data parameters
-DATA_DIR = "data/Question Time"
-QT_COMPLETE = True
+DATA_DIR = "data/Moral Maze/GreenBelt"
+QT_COMPLETE = False
 TRAIN_SPLIT = 0.8
 
 # model parameters
@@ -30,9 +30,9 @@ MAX_SAMPLES = 16_000
 
 # Training hyperparameters
 BATCH_SIZE = 4
-EPOCHS = 20
+EPOCHS = 30
 LEARNING_RATE = 1e-5
-DROPOUT = 0
+DROPOUT = 0.1
 GRAD_ACCUMULATION_STEPS = 8
 
 # configuration dictionary passed to wandb
@@ -56,13 +56,6 @@ torch.manual_seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-# initialise wandb
-if "--log" in sys.argv:
-    wandb.init(
-        project="cross-domain-am",
-        name=f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}",
-        config=config,
-    )
 
 # load metrics
 f1 = evaluate.load("f1")
@@ -272,6 +265,13 @@ def main():
         dropout=DROPOUT,
     )
     model.to(device)
+    # initialise wandb
+    if "--log" in sys.argv:
+        wandb.init(
+            project="cross-domain-am",
+            name=f"{DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}",
+            config=config,
+        )
 
     # load loss function, optimiser and linear learning rate scheduler
     loss_fn = nn.CrossEntropyLoss(weight=class_weights)
