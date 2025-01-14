@@ -19,12 +19,12 @@ import audio.alignment as alignment
 # ARGUMENT_MAP_PATH = f"data/Question Time/{QT_EPISODE}/argument_map.json"
 # AUDIO_PATH = f"raw_data/Question Time/{QT_EPISODE}/audio.wav"
 
-ARGUMENT_MAP_PATH = f"data/Moral Maze/Welfare/argument_map.json"
-AUDIO_PATH = f"raw_data/Moral Maze/Welfare/audio_16000.wav"
+ARGUMENT_MAP_PATH = f"data/Moral Maze/Hypocrisy/argument_map.json"
+AUDIO_PATH = f"raw_data/Moral Maze/Hypocrisy/audio_16000.wav"
 
-OUT_PATH = f"data/Moral Maze/Welfare/audio/"
+OUT_PATH = f"data/Moral Maze/Hypocrisy/audio/"
 
-PADDING = 0.1 # number of seconds to include around the locution
+PADDING = 0.1  # number of seconds to include around the locution
 
 
 def clean_text(txt):
@@ -87,13 +87,15 @@ def main(argument_map_path, audio_path):
     for i, node in enumerate(tqdm(argument_map)):
         cleaned_loc = clean_text(node.locution)
 
-        span = alignment.get_span(emissions, bundle, cleaned_loc, waveform.size(1), sample_rate)
+        span = alignment.get_span(
+            emissions, bundle, cleaned_loc, waveform.size(1), sample_rate
+        )
 
         # save confidence scores
         span_scores.append(span.score)
         argument_map[i].audio_score = span.score
 
-        # split audio data    
+        # split audio data
         node_audio = waveform[
             :,
             int((span.start - PADDING) * sample_rate) : int(

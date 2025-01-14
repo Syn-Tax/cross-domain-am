@@ -13,7 +13,7 @@ TRANSCRIPT_PATH = f"data/Question Time/{QT_EPISODE}/transcript.txt"
 
 OUT_PATH = f"data/Question Time/{QT_EPISODE}/alignments.json"
 
-CHUNK_LEN = 5 # chunk audio into 5 second increments
+CHUNK_LEN = 5  # chunk audio into 5 second increments
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -28,7 +28,8 @@ def align(emission, tokens):
     Returns:
         torch.Tensor, torch.Tensor: alignments and confidence scores per timestep
     """
-    targets = torch.tensor([tokens], dtype=torch.int32, device=device)
+    targets = torch.tensor([tokens], dtype=torch.int32, device=torch.device("cpu"))
+    emission = emission.to(torch.device("cpu"))
     alignments, scores = F.forced_align(emission, targets, blank=0)
 
     alignments, scores = alignments[0], scores[0]
@@ -108,7 +109,9 @@ def get_span(emissions, bundle, transcript, waveform_len, sample_rate):
     dictionary["*"] = len(dictionary)
 
     # add dimension for star token
-    star_dim = torch.zeros((1, emissions.size(1), 1), device=emissions.device, dtype=emissions.dtype)
+    star_dim = torch.zeros(
+        (1, emissions.size(1), 1), device=emissions.device, dtype=emissions.dtype
+    )
     emissions = torch.cat((emissions, star_dim), 2)
 
     # split transcript and add beginning and end star tokens
@@ -134,9 +137,4 @@ def get_span(emissions, bundle, transcript, waveform_len, sample_rate):
     score = sum([s.score for s in token_spans]) / len(token_spans)
 
     # construct and return span data
-    return Segment(
-        transcript,
-        transcript_start,
-        transcript_end,
-        score
-    )
+    return Segment(transcript, transcript_start, transcript_end, score)

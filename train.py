@@ -116,10 +116,26 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
 def main():
     # load/generate datasets
     print("#### train ####")
-    train_dataset = MultimodalDataset.load(ID_DATA_DIR + "/train.json", ID_DATA_DIR, TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, qt_complete=QT_COMPLETE)
+    train_dataset = MultimodalDataset.load(
+        ID_DATA_DIR + "/train.json",
+        ID_DATA_DIR,
+        TEXT_ENCODER,
+        AUDIO_ENCODER,
+        MAX_TOKENS,
+        MAX_SAMPLES,
+        qt_complete=QT_COMPLETE,
+    )
 
     print("#### eval ####")
-    eval_dataset = MultimodalDataset.load(ID_DATA_DIR + "/eval.json", ID_DATA_DIR, TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES, qt_complete=QT_COMPLETE)
+    eval_dataset = MultimodalDataset.load(
+        ID_DATA_DIR + "/eval.json",
+        ID_DATA_DIR,
+        TEXT_ENCODER,
+        AUDIO_ENCODER,
+        MAX_TOKENS,
+        MAX_SAMPLES,
+        qt_complete=QT_COMPLETE,
+    )
 
     # create dataloaders for each dataset - batching and shuffling each set
     train_dataloader = torch.utils.data.DataLoader(
@@ -132,7 +148,15 @@ def main():
 
     # load cross domain evaluation sets
     print("#### cross domain ####")
-    cd_dataloaders = load_cd(CD_DIRS, BATCH_SIZE, collate_fn, TEXT_ENCODER, AUDIO_ENCODER, MAX_TOKENS, MAX_SAMPLES)
+    cd_dataloaders = load_cd(
+        CD_DIRS,
+        BATCH_SIZE,
+        collate_fn,
+        TEXT_ENCODER,
+        AUDIO_ENCODER,
+        MAX_TOKENS,
+        MAX_SAMPLES,
+    )
 
     # calculate class weights for use in the weighted cross entropy loss
     class_weights = torch.tensor(
@@ -207,7 +231,9 @@ def main():
 
     # perform cross domain evaluation
     model.eval()
-    cd_eval(cd_dataloaders, [d.split("/")[-1] for d in CD_DIRS], model, metrics_fn, device)
+    cd_eval(
+        cd_dataloaders, [d.split("/")[-1] for d in CD_DIRS], model, metrics_fn, device
+    )
 
     # save model
     name = f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}"
