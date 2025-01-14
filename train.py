@@ -18,18 +18,18 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # data parameters
-ID_DATA_DIR = "data/Question Time"
+ID_DATA_DIR = "data/Moral Maze/GreenBelt"
 CD_DIRS = [
     "data/Moral Maze/Banking",
     "data/Moral Maze/Empire",
     "data/Moral Maze/Families",
-    "data/Moral Maze/GreenBelt",
+    # "data/Moral Maze/GreenBelt",
     "data/Moral Maze/Hypocrisy",
     "data/Moral Maze/Money",
     "data/Moral Maze/Syria",
     "data/Moral Maze/Welfare",
 ]
-QT_COMPLETE = True
+QT_COMPLETE = False
 
 # model parameters
 TEXT_ENCODER = "FacebookAI/roberta-base"
