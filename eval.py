@@ -124,3 +124,5 @@ def load_cd(data_dirs, batch_size, collate_fn, text_encoder, audio_encoder, max_
         )
 
         dataloaders.append(dataloader)
+
+    return dataloaders
