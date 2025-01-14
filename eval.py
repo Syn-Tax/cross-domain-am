@@ -13,6 +13,7 @@ accuracy = evaluate.load("accuracy")
 precision = evaluate.load("precision")
 recall = evaluate.load("recall")
 
+
 def metrics_fn(logits, targets, step="eval"):
     """Method to calculate the metric scores for a specific set of logits and target labels
 
@@ -113,11 +114,28 @@ def cd_eval(dataloaders, datasets, model, metrics, device):
         eval(loader, model, metrics, device, loader=dataset)
 
 
-def load_cd(data_dirs, batch_size, collate_fn, text_encoder, audio_encoder, max_tokens, max_samples, qt_complete=False):
+def load_cd(
+    data_dirs,
+    batch_size,
+    collate_fn,
+    text_encoder,
+    audio_encoder,
+    max_tokens,
+    max_samples,
+    qt_complete=False,
+):
     dataloaders = []
 
     for dir in data_dirs:
-        dataset = MultimodalDataset.load(dir + "/complete.json", dir, text_encoder, audio_encoder, max_tokens, max_samples, qt_complete=qt_complete)
+        dataset = MultimodalDataset.load(
+            dir + "/complete.json",
+            dir,
+            text_encoder,
+            audio_encoder,
+            max_tokens,
+            max_samples,
+            qt_complete=qt_complete,
+        )
 
         dataloader = torch.utils.data.DataLoader(
             dataset, batch_size, collate_fn=collate_fn, shuffle=True

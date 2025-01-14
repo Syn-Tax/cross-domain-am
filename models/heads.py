@@ -9,8 +9,24 @@ class MLPMultilayerClassificationHead(nn.Module):
     activation function: tanh
     """
 
-    def __init__(self, input_size, n_classes, hidden_size=128, num_hidden_layers=4):
+    def __init__(
+        self,
+        input_size,
+        n_classes,
+        hidden_size=128,
+        num_hidden_layers=4,
+        activation="relu",
+    ):
         super().__init__()
+
+        if activation == "relu":
+            self.activation = F.relu
+        elif activation == "gelu":
+            self.activation = F.gelu
+        elif activation == "tanh":
+            self.activation = F.tanh
+        elif activation == "sigmoid":
+            self.activation = F.sigmoid
 
         # create input and output layers
         self.input = nn.Linear(input_size, hidden_size)
@@ -32,10 +48,10 @@ class MLPMultilayerClassificationHead(nn.Module):
     def forward(self, x):
 
         # calculate model outputs
-        out = F.tanh(self.input(x))
+        out = self.activation(self.input(x))
 
         for layer in self.hidden:
-            out = F.tanh(layer(out))
+            out = self.activation(layer(out))
 
         # final layer has no activation function for use with cross entropy loss
         out = self.output(out)

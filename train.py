@@ -76,7 +76,9 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=False, log=False):
+def train_step(
+    batch, index, model, loss_fn, optim, lr_scheduler, last_batch=False, log=False
+):
     """Method to complete one training step
 
     Args:
@@ -121,7 +123,19 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
     return logits.to(torch.device("cpu")), batch["label"].to(torch.device("cpu"))
 
 
-def main(batch_size, lr, l2, dropout, head_size, head_layers, log=False, init=True):
+def main(
+    batch_size,
+    lr,
+    l2,
+    dropout,
+    head_size,
+    head_layers,
+    optim,
+    activation,
+    weighted_loss,
+    log=False,
+    init=True,
+):
     # load/generate datasets
     print("#### train ####")
     train_dataset = MultimodalDataset.load(
@@ -182,6 +196,7 @@ def main(batch_size, lr, l2, dropout, head_size, head_layers, log=False, init=Tr
         head_hidden_layers=head_layers,
         head_hidden_size=head_size,
         dropout=dropout,
+        activation=activation,
     )
     model.to(device)
     # initialise wandb
@@ -193,10 +208,20 @@ def main(batch_size, lr, l2, dropout, head_size, head_layers, log=False, init=Tr
         )
 
     # load loss function, optimiser and linear learning rate scheduler
-    loss_fn = nn.CrossEntropyLoss(weight=class_weights)
-    optimizer = torch.optim.AdamW(
-        model.parameters(), lr=lr, weight_decay=l2
-    )
+    if weighted_loss:
+        loss_fn = nn.CrossEntropyLoss(weight=class_weights)
+    else:
+        loss_fn = nn.CrossEntropyLoss()
+
+    if optim == "adamw":
+        optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=l2)
+    elif optim == "adam":
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2)
+    elif optim == "sgd":
+        optimizer = torch.optim.SGD(model.parameters(), lr=lr, weight_decay=l2)
+    elif optim == "rmsprop":
+        optimizer = torch.optim.RMSprop(model.parameters(), lr=lr, weight_decay=l2)
+
     lr_scheduler = transformers.get_scheduler(
         name="linear",
         optimizer=optimizer,
@@ -227,6 +252,7 @@ def main(batch_size, lr, l2, dropout, head_size, head_layers, log=False, init=Tr
                 optimizer,
                 lr_scheduler,
                 last_batch=(i == len(train_dataloader) - 1),
+                log=log,
             )
 
             logits = torch.cat((logits, batch_logits), dim=0)

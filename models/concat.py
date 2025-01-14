@@ -20,6 +20,7 @@ class ConcatLateModel(nn.Module):
         head_hidden_layers=4,
         head_hidden_size=128,
         dropout=0.5,
+        activation="relu",
     ):
         super().__init__()
 
@@ -51,6 +52,7 @@ class ConcatLateModel(nn.Module):
             n_classes,
             head_hidden_size,
             head_hidden_layers,
+            activation,
         )
 
         # allow encoders to be trained
