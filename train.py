@@ -61,6 +61,8 @@ config = {
     "audio": AUDIO_ENCODER,
     "dropout": DROPOUT,
     "weight_decay": WEIGHT_DECAY,
+    "head_size": HEAD_HIDDEN_SIZE,
+    "head_layers": HEAD_HIDDEN_LAYERS,
     "merge_strategy": "concatenation",
 }
 
@@ -74,7 +76,7 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=False):
+def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=False, log=False):
     """Method to complete one training step
 
     Args:
@@ -101,7 +103,7 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
     loss.backward()
 
     # log loss and learning rate to wandb
-    if "--log" in sys.argv:
+    if log:
         wandb.log(
             {
                 "train/train_loss": loss,
@@ -119,7 +121,7 @@ def train_step(batch, index, model, loss_fn, optim, lr_scheduler, last_batch=Fal
     return logits.to(torch.device("cpu")), batch["label"].to(torch.device("cpu"))
 
 
-def main():
+def main(batch_size, lr, l2, dropout, head_size, head_layers, log=False, init=True):
     # load/generate datasets
     print("#### train ####")
     train_dataset = MultimodalDataset.load(
@@ -145,18 +147,18 @@ def main():
 
     # create dataloaders for each dataset - batching and shuffling each set
     train_dataloader = torch.utils.data.DataLoader(
-        train_dataset, BATCH_SIZE, collate_fn=collate_fn, shuffle=True
+        train_dataset, batch_size, collate_fn=collate_fn, shuffle=True
     )
 
     eval_dataloader = torch.utils.data.DataLoader(
-        eval_dataset, BATCH_SIZE, collate_fn=collate_fn, shuffle=True
+        eval_dataset, batch_size, collate_fn=collate_fn, shuffle=True
     )
 
     # load cross domain evaluation sets
     print("#### cross domain ####")
     cd_dataloaders = load_cd(
         CD_DIRS,
-        BATCH_SIZE,
+        batch_size,
         collate_fn,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -177,13 +179,13 @@ def main():
     model = ConcatLateModel(
         TEXT_ENCODER,
         AUDIO_ENCODER,
-        head_hidden_layers=HEAD_HIDDEN_LAYERS,
-        head_hidden_size=HEAD_HIDDEN_SIZE,
-        dropout=DROPOUT,
+        head_hidden_layers=head_layers,
+        head_hidden_size=head_size,
+        dropout=dropout,
     )
     model.to(device)
     # initialise wandb
-    if "--log" in sys.argv:
+    if log and init:
         wandb.init(
             project="cross-domain-am",
             name=f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}",
@@ -193,7 +195,7 @@ def main():
     # load loss function, optimiser and linear learning rate scheduler
     loss_fn = nn.CrossEntropyLoss(weight=class_weights)
     optimizer = torch.optim.AdamW(
-        model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY
+        model.parameters(), lr=lr, weight_decay=l2
     )
     lr_scheduler = transformers.get_scheduler(
         name="linear",
@@ -240,19 +242,19 @@ def main():
         id_eval(eval_dataloader, model, metrics_fn, device)
 
     # perform cross domain evaluation
-    model.eval()
-    cd_eval(
-        cd_dataloaders, [d.split("/")[-1] for d in CD_DIRS], model, metrics_fn, device
-    )
+    # model.eval()
+    # cd_eval(
+    #     cd_dataloaders, [d.split("/")[-1] for d in CD_DIRS], model, metrics_fn, device
+    # )
 
     # save model
-    name = f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}"
-    torch.save(model.state_dict(), f"saves/{name}.pt")
+    # name = f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}"
+    # torch.save(model.state_dict(), f"saves/{name}.pt")
 
-    # finish wandb run
-    if "--log" in sys.argv:
-        wandb.save(f"saves/{name}.pt")
-        wandb.finish()
+    # # finish wandb run
+    # if "--log" in sys.argv:
+    #     wandb.save(f"saves/{name}.pt")
+    #     wandb.finish()
 
 
 if __name__ == "__main__":
