@@ -38,13 +38,18 @@ AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 MAX_TOKENS = 32
 MAX_SAMPLES = 16_000
 
+HEAD_HIDDEN_LAYERS = 8
+HEAD_HIDDEN_SIZE = 256
+
 
 # Training hyperparameters
 BATCH_SIZE = 4
 EPOCHS = 20
-LEARNING_RATE = 1e-5
-DROPOUT = 0
-GRAD_ACCUMULATION_STEPS = 8
+LEARNING_RATE = 3e-6
+DROPOUT = 0.1
+GRAD_ACCUMULATION_STEPS = 1
+
+WEIGHT_DECAY = 0
 
 # configuration dictionary passed to wandb
 config = {
@@ -55,6 +60,7 @@ config = {
     "text": TEXT_ENCODER,
     "audio": AUDIO_ENCODER,
     "dropout": DROPOUT,
+    "weight_decay": WEIGHT_DECAY,
     "merge_strategy": "concatenation",
 }
 
@@ -171,6 +177,8 @@ def main():
     model = ConcatLateModel(
         TEXT_ENCODER,
         AUDIO_ENCODER,
+        head_hidden_layers=HEAD_HIDDEN_LAYERS,
+        head_hidden_size=HEAD_HIDDEN_SIZE,
         dropout=DROPOUT,
     )
     model.to(device)
@@ -184,7 +192,9 @@ def main():
 
     # load loss function, optimiser and linear learning rate scheduler
     loss_fn = nn.CrossEntropyLoss(weight=class_weights)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
+    optimizer = torch.optim.AdamW(
+        model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY
+    )
     lr_scheduler = transformers.get_scheduler(
         name="linear",
         optimizer=optimizer,

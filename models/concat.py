@@ -3,13 +3,13 @@ import torch.nn.functional as F
 import torch.nn as nn
 import transformers
 
-from models.heads import MLPClassificationHead
+from models.heads import *
 
 
 class ConcatLateModel(nn.Module):
     """Multimodal classification model
-        fusion strategy: late concatenation
-        classification head: Multi-layer perceptron
+    fusion strategy: late concatenation
+    classification head: Multi-layer perceptron
     """
 
     def __init__(
@@ -17,6 +17,8 @@ class ConcatLateModel(nn.Module):
         text_encoder_checkpoint,
         audio_encoder_checkpoint,
         n_classes=4,
+        head_hidden_layers=4,
+        head_hidden_size=128,
         dropout=0.5,
     ):
         super().__init__()
@@ -37,7 +39,6 @@ class ConcatLateModel(nn.Module):
             audio_encoder_checkpoint
         )
 
-
         # initialise dropout layers
         self.text_dropout = nn.Dropout(p=dropout)
         self.audio_dropout = nn.Dropout(p=dropout)
@@ -46,11 +47,14 @@ class ConcatLateModel(nn.Module):
         self.text_hidden_size = self.text_config.hidden_size
         self.audio_hidden_size = self.audio_config.hidden_size
         self.head = MLPClassificationHead(
-            self.text_hidden_size * 2 + self.audio_hidden_size * 2, n_classes
+            self.text_hidden_size * 2 + self.audio_hidden_size * 2,
+            n_classes,
+            head_hidden_size,
+            head_hidden_layers,
         )
 
         # allow encoders to be trained
-        self.unfreeze_encoders()
+        # self.freeze_encoders()
 
     def get_encoding(self, audio, text):
         """Method to get the encoding for a single sequence
@@ -108,8 +112,7 @@ class ConcatLateModel(nn.Module):
         return self.head(hidden_vector)
 
     def freeze_encoders(self):
-        """Method to freeze the encoders' learning
-        """
+        """Method to freeze the encoders' learning"""
         # freeze text encoder
         for param in self.text_encoder.named_parameters():
             param[1].requires_grad = False
@@ -119,8 +122,7 @@ class ConcatLateModel(nn.Module):
             param[1].requires_grad = False
 
     def unfreeze_encoders(self):
-        """Method to unfreeze the encoders' learning
-        """
+        """Method to unfreeze the encoders' learning"""
         # unfreeze the text encoder
         for param in self.text_encoder.named_parameters():
             param[1].requires_grad = True
