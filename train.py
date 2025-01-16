@@ -127,12 +127,15 @@ def main(
     batch_size,
     lr,
     l2,
-    dropout,
+    text_dropout,
+    audio_dropout,
     head_size,
     head_layers,
     optim,
     activation,
     weighted_loss,
+    freeze_encoders,
+    initialisation,
     log=False,
     init=True,
 ):
@@ -195,8 +198,11 @@ def main(
         AUDIO_ENCODER,
         head_hidden_layers=head_layers,
         head_hidden_size=head_size,
-        dropout=dropout,
+        text_dropout=text_dropout,
+        audio_dropout=audio_dropout,
         activation=activation,
+        freeze_encoders=freeze_encoders,
+        initialisation=initialisation,
     )
     model.to(device)
     # initialise wandb

@@ -16,6 +16,7 @@ class MLPMultilayerClassificationHead(nn.Module):
         hidden_size=128,
         num_hidden_layers=4,
         activation="relu",
+        initialisation="kaiming_normal",
     ):
         super().__init__()
 
@@ -38,12 +39,30 @@ class MLPMultilayerClassificationHead(nn.Module):
         )
 
         # initialise input and output layers
-        nn.init.kaiming_normal_(self.input.weight)
-        nn.init.kaiming_normal_(self.output.weight)
+        if initialisation == "kaiming_normal":
+            init = nn.init.kaiming_normal_
+        elif initialisation == "kaiming_uniform":
+            init = nn.init.kaiming_uniform_
+        elif initialisation == "uniform":
+            init = nn.init.uniform_
+        elif initialisation == "normal":
+            init = nn.init.normal_
+        elif initialisation == "xavier_uniform":
+            init = nn.init.xavier_uniform_
+        elif initialisation == "xavier_normal":
+            init = nn.init.xavier_normal_
 
-        # initialise hidden layers
-        for layer in self.hidden:
-            nn.init.kaiming_normal_(layer.weight)
+        if initialisation != None:
+            init(self.input.weight)
+            init(self.input.bias)
+
+            init(self.output.weight)
+            init(self.output.bias)
+
+            # initialise hidden layers
+            for layer in self.hidden:
+                init(layer.weight)
+                init(layer.bias)
 
     def forward(self, x):
 

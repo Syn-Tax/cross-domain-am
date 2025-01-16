@@ -19,8 +19,11 @@ class ConcatLateModel(nn.Module):
         n_classes=4,
         head_hidden_layers=4,
         head_hidden_size=128,
-        dropout=0.5,
+        text_dropout=0.5,
+        audio_dropout=0.5,
         activation="relu",
+        freeze_encoders=False,
+        initialisation="kaiming_normal",
     ):
         super().__init__()
 
@@ -41,8 +44,8 @@ class ConcatLateModel(nn.Module):
         )
 
         # initialise dropout layers
-        self.text_dropout = nn.Dropout(p=dropout)
-        self.audio_dropout = nn.Dropout(p=dropout)
+        self.text_dropout = nn.Dropout(p=text_dropout)
+        self.audio_dropout = nn.Dropout(p=audio_dropout)
 
         # initialise classification head
         self.text_hidden_size = self.text_config.hidden_size
@@ -53,10 +56,14 @@ class ConcatLateModel(nn.Module):
             head_hidden_size,
             head_hidden_layers,
             activation,
+            initialisation,
         )
 
         # allow encoders to be trained
-        # self.freeze_encoders()
+        if freeze_encoders:
+            self.freeze_encoders()
+        else:
+            self.unfreeze_encoders()
 
     def get_encoding(self, audio, text):
         """Method to get the encoding for a single sequence
