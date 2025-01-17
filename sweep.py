@@ -22,6 +22,8 @@ def train(con=None):
             con["weighted_loss"],
             con["freeze_encoders"],
             con["initialisation"],
+            con["text_encoder_dropout"],
+            con["audio_encoder_dropout"],
             log=True,
             init=False,
         )
@@ -40,6 +42,8 @@ parameters = {
     "lr": {"min": 1e-6, "max": 1e-5},
     "text_dropout": {"min": 0.0, "max": 0.8},
     "audio_dropout": {"min": 0.0, "max": 0.8},
+    "text_encoder_dropout": {"min": 0.0, "max": 0.5},
+    "audio_encoder_dropout": {"min": 0.0, "max": 0.5},
     "weight_decay": {"min": 1e-7, "max": 1e-3},
     "head_size": {"values": [32, 64, 128, 256]},
     "head_layers": {"values": [0, 1, 2, 4, 8]},

@@ -19,6 +19,8 @@ class ConcatLateModel(nn.Module):
         n_classes=4,
         head_hidden_layers=4,
         head_hidden_size=128,
+        text_encoder_dropout=0.2,
+        audio_encoder_dropout=0.2,
         text_dropout=0.5,
         audio_dropout=0.5,
         activation="relu",
@@ -28,19 +30,22 @@ class ConcatLateModel(nn.Module):
         super().__init__()
 
         # load encoder configurations
-        self.text_config = transformers.PretrainedConfig.from_pretrained(
+        self.text_config = transformers.RobertaConfig.from_pretrained(
             text_encoder_checkpoint
         )
-        self.audio_config = transformers.PretrainedConfig.from_pretrained(
+        self.text_config.hidden_dropout_prob = text_encoder_dropout
+
+        self.audio_config = transformers.Wav2Vec2Config.from_pretrained(
             audio_encoder_checkpoint
         )
+        self.audio_config.hidden_dropout = audio_encoder_dropout
 
         # load encoder models
-        self.text_encoder = transformers.AutoModel.from_pretrained(
-            text_encoder_checkpoint
+        self.text_encoder = transformers.RobertaModel.from_pretrained(
+            text_encoder_checkpoint, config=self.text_config
         )
-        self.audio_encoder = transformers.AutoModel.from_pretrained(
-            audio_encoder_checkpoint
+        self.audio_encoder = transformers.Wav2Vec2Model.from_pretrained(
+            audio_encoder_checkpoint, config=self.audio_config
         )
 
         # initialise dropout layers

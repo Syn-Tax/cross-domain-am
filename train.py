@@ -38,18 +38,18 @@ AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 MAX_TOKENS = 32
 MAX_SAMPLES = 16_000
 
-HEAD_HIDDEN_LAYERS = 8
+HEAD_HIDDEN_LAYERS = 0
 HEAD_HIDDEN_SIZE = 256
 
 
 # Training hyperparameters
-BATCH_SIZE = 4
-EPOCHS = 20
-LEARNING_RATE = 3e-6
-DROPOUT = 0.1
+BATCH_SIZE = 16
+EPOCHS = 30
+LEARNING_RATE = 1e-5
+DROPOUT = 0.5
 GRAD_ACCUMULATION_STEPS = 1
 
-WEIGHT_DECAY = 0
+WEIGHT_DECAY = 1e-4
 
 # configuration dictionary passed to wandb
 config = {
@@ -136,6 +136,8 @@ def main(
     weighted_loss,
     freeze_encoders,
     initialisation,
+    text_encoder_dropout,
+    audio_encoder_dropout,
     log=False,
     init=True,
 ):
@@ -200,6 +202,8 @@ def main(
         head_hidden_size=head_size,
         text_dropout=text_dropout,
         audio_dropout=audio_dropout,
+        text_encoder_dropout=text_encoder_dropout,
+        audio_encoder_dropout=audio_encoder_dropout,
         activation=activation,
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
@@ -290,4 +294,19 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+    main(
+        BATCH_SIZE,
+        LEARNING_RATE,
+        WEIGHT_DECAY,
+        DROPOUT,
+        DROPOUT,
+        HEAD_HIDDEN_SIZE,
+        HEAD_HIDDEN_LAYERS,
+        "adamw",
+        "tanh",
+        True,
+        False,
+        "kaiming_normal",
+        ("--log" in sys.argv),
+        True,
+    )
