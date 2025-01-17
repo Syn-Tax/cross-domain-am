@@ -10,7 +10,7 @@ import wandb
 import sys
 
 from create_datasets import MultimodalDataset, collate_fn
-from models.concat import ConcatLateModel
+from models import ConcatLateModel
 from eval import metrics_fn, id_eval, cd_eval, load_cd
 from utils import move_batch
 
@@ -35,21 +35,21 @@ QT_COMPLETE = False
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
-MAX_TOKENS = 32
-MAX_SAMPLES = 16_000
+MAX_TOKENS = 64
+MAX_SAMPLES = 160_000
 
-HEAD_HIDDEN_LAYERS = 0
+HEAD_HIDDEN_LAYERS = 1
 HEAD_HIDDEN_SIZE = 256
 
 
 # Training hyperparameters
 BATCH_SIZE = 16
 EPOCHS = 30
-LEARNING_RATE = 1e-5
-DROPOUT = 0.5
+LEARNING_RATE = 1e-3
+DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 1
 
-WEIGHT_DECAY = 1e-4
+WEIGHT_DECAY = 5e-3
 
 # configuration dictionary passed to wandb
 config = {
@@ -302,11 +302,13 @@ if __name__ == "__main__":
         DROPOUT,
         HEAD_HIDDEN_SIZE,
         HEAD_HIDDEN_LAYERS,
-        "adamw",
-        "tanh",
+        "adam",
+        "relu",
         True,
-        False,
-        "kaiming_normal",
+        True,
+        None,
+        0.1,
+        0.1,
         ("--log" in sys.argv),
         True,
     )
