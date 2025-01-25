@@ -15,7 +15,7 @@ precision = evaluate.load("precision")
 recall = evaluate.load("recall")
 
 
-def metrics_fn(logits, targets, loss_fn, step="eval"):
+def metrics_fn(predictions, step="eval"):
     """Method to calculate the metric scores for a specific set of logits and target labels
 
     Args:
@@ -23,9 +23,11 @@ def metrics_fn(logits, targets, loss_fn, step="eval"):
         targets (torch.Tensor): the target labels - 1st dimensions of logits and targets must match
         step (str, optional): the training or eval step (used to log to wandb). Defaults to "eval".
     """
+    preds = predictions.predictions
+    targets = predictions.label_ids
 
     # calculate the predicted labels from logits
-    preds = torch.argmax(logits, dim=-1)
+    # preds = torch.argmax(logits, dim=-1)
 
     # calculate metric scores
     macro_f1_score = f1.compute(
@@ -44,13 +46,13 @@ def metrics_fn(logits, targets, loss_fn, step="eval"):
 
     precision_score = precision.compute(
         predictions=preds, references=targets, average="macro"
-    )["precision"]
+    )["pt"]
 
     recall_score = recall.compute(
         predictions=preds, references=targets, average="macro"
     )["recall"]
 
-    loss = loss_fn(logits, targets)
+    # loss = loss_fn(logits, targets)
 
     # add metric scores to dictionary
     res = {

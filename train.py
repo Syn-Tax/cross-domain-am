@@ -19,7 +19,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # data parameters
-ID_DATA_DIR = "data/Question Time"
+ID_DATA_DIR = "data/Moral Maze/GreenBelt"
 CD_DIRS = [
     "data/Moral Maze/Banking",
     "data/Moral Maze/Empire",
@@ -30,7 +30,7 @@ CD_DIRS = [
     "data/Moral Maze/Syria",
     "data/Moral Maze/Welfare",
 ]
-QT_COMPLETE = True
+QT_COMPLETE = False
 
 # model parameters
 TEXT_ENCODER = "FacebookAI/roberta-base"
@@ -268,44 +268,67 @@ def main(
         num_training_steps=num_training_steps,
     )
 
+    training_args = transformers.TrainingArguments(
+        eval_strategy="epoch",
+        per_device_train_batch_size=batch_size,
+        per_device_eval_batch_size=batch_size,
+        gradient_accumulation_steps=GRAD_ACCUMULATION_STEPS,
+        learning_rate=lr,
+        weight_decay=l2,
+        num_train_epochs=epochs,
+        lr_scheduler_type="linear",
+        warmup_ratio=0.1,
+    )
+
+    trainer = transformers.Trainer(
+        model,
+        training_args,
+        collate_fn,
+        train_dataset,
+        eval_dataset,
+        compute_metrics=metrics_fn
+    )
+
+    trainer.train()
+
     # epoch loop
-    for epoch in range(epochs):
-        print(f"############# EPOCH {epoch} #############")
+    # for epoch in range(epochs):
+    #     print(f"############# EPOCH {epoch} #############")
 
-        model.train()
+    #     model.train()
 
-        ############ training loop
+    #     ############ training loop
 
-        # create empty tensors for epoch's logits and targets to calculate training metrics
-        logits = torch.tensor([], dtype=torch.float, device=torch.device("cpu"))
-        targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
+    #     # create empty tensors for epoch's logits and targets to calculate training metrics
+    #     logits = torch.tensor([], dtype=torch.float, device=torch.device("cpu"))
+    #     targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
 
-        # loop through each batch in the training dataloader and perform a training step
-        progress_bar = tqdm.auto.tqdm(range(len(train_dataloader)))
-        for i, batch in enumerate(train_dataloader):
-            batch_logits, batch_targets = train_step(
-                batch,
-                i,
-                model,
-                loss_fn,
-                optimizer,
-                lr_scheduler,
-                grad_clip,
-                last_batch=(i == len(train_dataloader) - 1),
-                log=log,
-            )
+    #     # loop through each batch in the training dataloader and perform a training step
+    #     progress_bar = tqdm.auto.tqdm(range(len(train_dataloader)))
+    #     for i, batch in enumerate(train_dataloader):
+    #         batch_logits, batch_targets = train_step(
+    #             batch,
+    #             i,
+    #             model,
+    #             loss_fn,
+    #             optimizer,
+    #             lr_scheduler,
+    #             grad_clip,
+    #             last_batch=(i == len(train_dataloader) - 1),
+    #             log=log,
+    #         )
 
-            logits = torch.cat((logits, batch_logits), dim=0)
-            targets = torch.cat((targets, batch_targets), dim=0)
+    #         logits = torch.cat((logits, batch_logits), dim=0)
+    #         targets = torch.cat((targets, batch_targets), dim=0)
 
-            progress_bar.update(1)
+    #         progress_bar.update(1)
 
-        # get training metrics
-        metrics_fn(logits, targets, loss_fn_cpu, step="train")
+    #     # get training metrics
+    #     metrics_fn(logits, targets, loss_fn_cpu, step="train")
 
-        # evaluate model
-        model.eval()
-        id_eval(eval_dataloader, model, metrics_fn, loss_fn_cpu, device)
+    #     # evaluate model
+    #     model.eval()
+    #     id_eval(eval_dataloader, model, metrics_fn, loss_fn_cpu, device)
 
     # perform cross domain evaluation
     # model.eval()
