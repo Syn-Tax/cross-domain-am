@@ -8,9 +8,10 @@ import evaluate
 import tqdm
 import wandb
 import sys
+import time
 
-from create_datasets import MultimodalDataset, collate_fn
-from models import ConcatLateModel
+from create_datasets import UnimodalDataset, collate_fn
+from models import *
 from eval import metrics_fn, id_eval, cd_eval, load_cd
 from utils import move_batch
 
@@ -18,7 +19,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # data parameters
-ID_DATA_DIR = "data/Moral Maze/GreenBelt"
+ID_DATA_DIR = "data/Question Time"
 CD_DIRS = [
     "data/Moral Maze/Banking",
     "data/Moral Maze/Empire",
@@ -29,27 +30,27 @@ CD_DIRS = [
     "data/Moral Maze/Syria",
     "data/Moral Maze/Welfare",
 ]
-QT_COMPLETE = False
+QT_COMPLETE = True
 
 # model parameters
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
 MAX_TOKENS = 64
-MAX_SAMPLES = 160_000
+MAX_SAMPLES = 120_000
 
-HEAD_HIDDEN_LAYERS = 1
+HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
-
 # Training hyperparameters
-BATCH_SIZE = 16
-EPOCHS = 30
-LEARNING_RATE = 1e-3
+BATCH_SIZE = 64
+EPOCHS = 50
+LEARNING_RATE = 1e-5
 DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 1
 
-WEIGHT_DECAY = 5e-3
+WEIGHT_DECAY = 0.05
+GRAD_CLIP = 1
 
 # configuration dictionary passed to wandb
 config = {
@@ -77,7 +78,15 @@ torch.backends.cudnn.benchmark = False
 
 
 def train_step(
-    batch, index, model, loss_fn, optim, lr_scheduler, last_batch=False, log=False
+    batch,
+    index,
+    model,
+    loss_fn,
+    optim,
+    lr_scheduler,
+    grad_clip,
+    last_batch=False,
+    log=False,
 ):
     """Method to complete one training step
 
@@ -98,7 +107,7 @@ def train_step(
     batch = move_batch(batch, device)
 
     # get model outputs
-    logits = model(**batch)
+    logits = model(**(batch["text1"])).logits
 
     # calculate loss and perform backward pass
     loss = loss_fn(logits, batch["label"]) / GRAD_ACCUMULATION_STEPS
@@ -115,6 +124,7 @@ def train_step(
 
     # after the gradient accumulation steps, update the model parameters
     if index % GRAD_ACCUMULATION_STEPS == 0 or last_batch:
+        torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
         optim.step()
         lr_scheduler.step()
         optim.zero_grad()
@@ -124,6 +134,7 @@ def train_step(
 
 
 def main(
+    epochs,
     batch_size,
     lr,
     l2,
@@ -138,12 +149,13 @@ def main(
     initialisation,
     text_encoder_dropout,
     audio_encoder_dropout,
+    grad_clip,
     log=False,
     init=True,
 ):
     # load/generate datasets
     print("#### train ####")
-    train_dataset = MultimodalDataset.load(
+    train_dataset = UnimodalDataset.load(
         ID_DATA_DIR + "/train.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -154,7 +166,7 @@ def main(
     )
 
     print("#### eval ####")
-    eval_dataset = MultimodalDataset.load(
+    eval_dataset = UnimodalDataset.load(
         ID_DATA_DIR + "/eval.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -175,38 +187,50 @@ def main(
 
     # load cross domain evaluation sets
     print("#### cross domain ####")
-    cd_dataloaders = load_cd(
-        CD_DIRS,
-        batch_size,
-        collate_fn,
-        TEXT_ENCODER,
-        AUDIO_ENCODER,
-        MAX_TOKENS,
-        MAX_SAMPLES,
-    )
+    # cd_dataloaders = load_cd(
+    #     CD_DIRS,
+    #     batch_size,
+    #     collate_fn,
+    #     TEXT_ENCODER,
+    #     AUDIO_ENCODER,
+    #     MAX_TOKENS,
+    #     MAX_SAMPLES,
+    # )
 
     # calculate class weights for use in the weighted cross entropy loss
-    class_weights = torch.tensor(
-        [
-            max(train_dataset.weights.values()) / v
-            for k, v in train_dataset.weights.items()
-        ],
+    class_weights = [
+        max(train_dataset.weights.values()) / v
+        for k, v in train_dataset.weights.items()
+    ]
+
+    class_weights_t = torch.tensor(
+        class_weights,
         device=device,
     )
 
+    # class_weights_cpu = torch.tensor(class_weights, device=torch.device("cpu"))
+
     # load the model
-    model = ConcatLateModel(
-        TEXT_ENCODER,
-        AUDIO_ENCODER,
-        head_hidden_layers=head_layers,
-        head_hidden_size=head_size,
-        text_dropout=text_dropout,
-        audio_dropout=audio_dropout,
-        text_encoder_dropout=text_encoder_dropout,
-        audio_encoder_dropout=audio_encoder_dropout,
-        activation=activation,
-        freeze_encoders=freeze_encoders,
-        initialisation=initialisation,
+    # model = TextOnlyModel(
+    #     TEXT_ENCODER,
+    #     AUDIO_ENCODER,
+    #     head_hidden_layers=head_layers,
+    #     head_hidden_size=head_size,
+    #     text_dropout=text_dropout,
+    #     audio_dropout=audio_dropout,
+    #     text_encoder_dropout=text_encoder_dropout,
+    #     audio_encoder_dropout=audio_encoder_dropout,
+    #     activation=activation,
+    #     freeze_encoders=freeze_encoders,
+    #     initialisation=initialisation,
+    # )
+    model_config = transformers.RobertaConfig.from_pretrained(TEXT_ENCODER)
+    model_config.classifier_dropout = text_dropout
+    model_config.hidden_dropout_prob = text_encoder_dropout
+    model_config.num_labels = 4
+
+    model = transformers.RobertaForSequenceClassification.from_pretrained(
+        TEXT_ENCODER, config=model_config
     )
     model.to(device)
     # initialise wandb
@@ -219,28 +243,33 @@ def main(
 
     # load loss function, optimiser and linear learning rate scheduler
     if weighted_loss:
-        loss_fn = nn.CrossEntropyLoss(weight=class_weights)
+        loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
     else:
         loss_fn = nn.CrossEntropyLoss()
 
-    if optim == "adamw":
-        optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=l2)
-    elif optim == "adam":
-        optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2)
-    elif optim == "sgd":
-        optimizer = torch.optim.SGD(model.parameters(), lr=lr, weight_decay=l2)
-    elif optim == "rmsprop":
-        optimizer = torch.optim.RMSprop(model.parameters(), lr=lr, weight_decay=l2)
+    loss_fn_cpu = nn.CrossEntropyLoss()
 
+    get_params = filter(lambda p: p.requires_grad, model.parameters())
+
+    if optim == "adamw":
+        optimizer = torch.optim.AdamW(get_params, lr=lr, weight_decay=l2)
+    elif optim == "adam":
+        optimizer = torch.optim.Adam(get_params, lr=lr, weight_decay=l2)
+    elif optim == "sgd":
+        optimizer = torch.optim.SGD(get_params, lr=lr, weight_decay=l2)
+    elif optim == "rmsprop":
+        optimizer = torch.optim.RMSprop(get_params, lr=lr, weight_decay=l2)
+
+    num_training_steps = epochs * len(train_dataloader)
     lr_scheduler = transformers.get_scheduler(
         name="linear",
         optimizer=optimizer,
-        num_warmup_steps=0,
-        num_training_steps=(EPOCHS * len(train_dataloader)),
+        num_warmup_steps=0.1 * num_training_steps,
+        num_training_steps=num_training_steps,
     )
 
     # epoch loop
-    for epoch in range(EPOCHS):
+    for epoch in range(epochs):
         print(f"############# EPOCH {epoch} #############")
 
         model.train()
@@ -261,6 +290,7 @@ def main(
                 loss_fn,
                 optimizer,
                 lr_scheduler,
+                grad_clip,
                 last_batch=(i == len(train_dataloader) - 1),
                 log=log,
             )
@@ -271,11 +301,11 @@ def main(
             progress_bar.update(1)
 
         # get training metrics
-        metrics_fn(logits, targets, step="train")
+        metrics_fn(logits, targets, loss_fn_cpu, step="train")
 
         # evaluate model
         model.eval()
-        id_eval(eval_dataloader, model, metrics_fn, device)
+        id_eval(eval_dataloader, model, metrics_fn, loss_fn_cpu, device)
 
     # perform cross domain evaluation
     # model.eval()
@@ -295,6 +325,7 @@ def main(
 
 if __name__ == "__main__":
     main(
+        EPOCHS,
         BATCH_SIZE,
         LEARNING_RATE,
         WEIGHT_DECAY,
@@ -302,13 +333,14 @@ if __name__ == "__main__":
         DROPOUT,
         HEAD_HIDDEN_SIZE,
         HEAD_HIDDEN_LAYERS,
-        "adam",
-        "relu",
-        True,
-        True,
+        "adamw",
+        "gelu",
+        False,
+        False,
         None,
         0.1,
-        0.1,
+        0,
+        GRAD_CLIP,
         ("--log" in sys.argv),
         True,
     )

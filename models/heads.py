@@ -54,15 +54,12 @@ class MLPMultilayerClassificationHead(nn.Module):
 
         if initialisation != None:
             init(self.input.weight)
-            init(self.input.bias)
 
             init(self.output.weight)
-            init(self.output.bias)
 
             # initialise hidden layers
             for layer in self.hidden:
                 init(layer.weight)
-                init(layer.bias)
 
     def forward(self, x):
 

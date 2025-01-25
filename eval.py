@@ -3,6 +3,7 @@ import evaluate
 import wandb
 import tqdm
 import sys
+import time
 
 from utils import move_batch
 from create_datasets import MultimodalDataset
@@ -14,7 +15,7 @@ precision = evaluate.load("precision")
 recall = evaluate.load("recall")
 
 
-def metrics_fn(logits, targets, step="eval"):
+def metrics_fn(logits, targets, loss_fn, step="eval"):
     """Method to calculate the metric scores for a specific set of logits and target labels
 
     Args:
@@ -49,6 +50,8 @@ def metrics_fn(logits, targets, step="eval"):
         predictions=preds, references=targets, average="macro"
     )["recall"]
 
+    loss = loss_fn(logits, targets)
+
     # add metric scores to dictionary
     res = {
         f"{step}/macro_f1": macro_f1_score,
@@ -60,6 +63,7 @@ def metrics_fn(logits, targets, step="eval"):
         f"{step}/accuracy": accuracy_score,
         f"{step}/macro_precision": precision_score,
         f"{step}/macro_recall": recall_score,
+        f"{step}/epoch_loss": float(loss),
     }
 
     # print out to the logs
@@ -70,7 +74,7 @@ def metrics_fn(logits, targets, step="eval"):
         wandb.log(res)
 
 
-def eval(eval_dataloader, model, metrics, device, loader="ID"):
+def eval(eval_dataloader, model, metrics, loss_fn, device, loader="ID"):
     """Method to evaluate model performance on a certain test dataset
 
     Args:
@@ -91,7 +95,7 @@ def eval(eval_dataloader, model, metrics, device, loader="ID"):
 
         # without calculating gradients, get the model outputsh
         with torch.no_grad():
-            raw_logits = model(**batch)
+            raw_logits = model(**(batch["text1"])).logits
 
         # move logits and targets back to the CPU and add them to the total tensors
         batch_logits = raw_logits.to(torch.device("cpu"))
@@ -102,16 +106,16 @@ def eval(eval_dataloader, model, metrics, device, loader="ID"):
         progress_bar.update(1)
 
     # calculate and log the metrics
-    metrics(logits, targets, step=f"eval/{loader}")
+    metrics(logits, targets, loss_fn, step=f"eval/{loader}")
 
 
-def id_eval(eval_dataloader, model, metrics, device):
-    eval(eval_dataloader, model, metrics, device)
+def id_eval(eval_dataloader, model, metrics, loss_fn, device):
+    eval(eval_dataloader, model, metrics, loss_fn, device)
 
 
-def cd_eval(dataloaders, datasets, model, metrics, device):
+def cd_eval(dataloaders, datasets, model, metrics, loss_fn, device):
     for loader, dataset in zip(dataloaders, datasets):
-        eval(loader, model, metrics, device, loader=dataset)
+        eval(loader, model, metrics, device, loss_fn, loader=dataset)
 
 
 def load_cd(
