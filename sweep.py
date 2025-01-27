@@ -10,8 +10,8 @@ def train(con=None):
         con = wandb.config
 
         main(
-            con["epochs"],
-            16,
+            20,
+            64,
             2e-5,
             con["weight_decay"],
             con["text_dropout"],
@@ -36,14 +36,13 @@ def train(con=None):
 
 sweep_config = {
     "method": "bayes",
-    "metric": {"goal": "maximize", "name": "eval/ID/macro_f1"},
+    "metric": {"goal": "maximize", "name": "eval/eval/macro_f1"},
 }
 
 parameters = {
-    "epochs": {"min": 1, "max": 50},
-    "weight_decay": {"min": 1e-7, "max": 1e-3},
+    "weight_decay": {"min": 1e-5, "max": 1e-1},
     "text_dropout": {"min": 0.0, "max": 0.8},
-    "text_encoder_dropout": {"min": 0.0, "max": 0.3},
+    "text_encoder_dropout": {"min": 0.0, "max": 0.2},
     "grad_clip": {"min": 0.3, "max": 2.0},
 }
 

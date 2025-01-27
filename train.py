@@ -10,7 +10,7 @@ import wandb
 import sys
 import time
 
-from create_datasets import UnimodalDataset, collate_fn
+from create_datasets import UnimodalDataset, collate_fn, collate_fn_raw
 from models import *
 from eval import metrics_fn, id_eval, cd_eval, load_cd
 from utils import move_batch
@@ -19,7 +19,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # data parameters
-ID_DATA_DIR = "data/Moral Maze/GreenBelt"
+ID_DATA_DIR = "data/Question Time"
 CD_DIRS = [
     "data/Moral Maze/Banking",
     "data/Moral Maze/Empire",
@@ -30,7 +30,7 @@ CD_DIRS = [
     "data/Moral Maze/Syria",
     "data/Moral Maze/Welfare",
 ]
-QT_COMPLETE = False
+QT_COMPLETE = True
 
 # model parameters
 TEXT_ENCODER = "FacebookAI/roberta-base"
@@ -44,12 +44,12 @@ HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
 BATCH_SIZE = 64
-EPOCHS = 50
+EPOCHS = 25
 LEARNING_RATE = 1e-5
-DROPOUT = 0.2
-GRAD_ACCUMULATION_STEPS = 1
+DROPOUT = 0.5
+GRAD_ACCUMULATION_STEPS = 4
 
-WEIGHT_DECAY = 0.05
+WEIGHT_DECAY = 1e-2
 GRAD_CLIP = 1
 
 # configuration dictionary passed to wandb
@@ -242,12 +242,10 @@ def main(
         )
 
     # load loss function, optimiser and linear learning rate scheduler
-    if weighted_loss:
-        loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
-    else:
-        loss_fn = nn.CrossEntropyLoss()
+    loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
 
-    loss_fn_cpu = nn.CrossEntropyLoss()
+    def calc_loss(outputs, targets, num_items_in_batch=None):
+        return loss_fn(outputs.logits, targets)
 
     get_params = filter(lambda p: p.requires_grad, model.parameters())
 
@@ -269,6 +267,7 @@ def main(
     )
 
     training_args = transformers.TrainingArguments(
+        output_dir="models/",
         eval_strategy="epoch",
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
@@ -283,10 +282,11 @@ def main(
     trainer = transformers.Trainer(
         model,
         training_args,
-        collate_fn,
-        train_dataset,
-        eval_dataset,
-        compute_metrics=metrics_fn
+        collate_fn_raw,
+        compute_loss_func=calc_loss,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        compute_metrics=metrics_fn,
     )
 
     trainer.train()
@@ -358,10 +358,10 @@ if __name__ == "__main__":
         HEAD_HIDDEN_LAYERS,
         "adamw",
         "gelu",
-        False,
+        True,
         False,
         None,
-        0.1,
+        0.15,
         0,
         GRAD_CLIP,
         ("--log" in sys.argv),

@@ -4,6 +4,7 @@ import wandb
 import tqdm
 import sys
 import time
+import numpy as np
 
 from utils import move_batch
 from create_datasets import MultimodalDataset
@@ -23,11 +24,11 @@ def metrics_fn(predictions, step="eval"):
         targets (torch.Tensor): the target labels - 1st dimensions of logits and targets must match
         step (str, optional): the training or eval step (used to log to wandb). Defaults to "eval".
     """
-    preds = predictions.predictions
+    logits = predictions.predictions
     targets = predictions.label_ids
 
     # calculate the predicted labels from logits
-    # preds = torch.argmax(logits, dim=-1)
+    preds = np.argmax(logits, axis=-1)
 
     # calculate metric scores
     macro_f1_score = f1.compute(
@@ -46,7 +47,7 @@ def metrics_fn(predictions, step="eval"):
 
     precision_score = precision.compute(
         predictions=preds, references=targets, average="macro"
-    )["pt"]
+    )["precision"]
 
     recall_score = recall.compute(
         predictions=preds, references=targets, average="macro"
@@ -65,7 +66,7 @@ def metrics_fn(predictions, step="eval"):
         f"{step}/accuracy": accuracy_score,
         f"{step}/macro_precision": precision_score,
         f"{step}/macro_recall": recall_score,
-        f"{step}/epoch_loss": float(loss),
+        # f"{step}/epoch_loss": float(loss),
     }
 
     # print out to the logs
@@ -74,6 +75,8 @@ def metrics_fn(predictions, step="eval"):
     # log metrics to wandb
     if "--log" in sys.argv:
         wandb.log(res)
+
+    return res
 
 
 def eval(eval_dataloader, model, metrics, loss_fn, device, loader="ID"):

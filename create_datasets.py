@@ -141,12 +141,12 @@ class MultimodalDataset(torch.utils.data.Dataset):
 
         weights = {
             x: round(
-                [p.label for p in data].count(x) / len(data),
+                [p.labels for p in data].count(x) / len(data),
                 2,
             )
             for x in [0, 1, 2, 3]
         }
-        counts = {x: [p.label for p in data].count(x) for x in [0, 1, 2, 3]}
+        counts = {x: [p.labels for p in data].count(x) for x in [0, 1, 2, 3]}
         print(weights)
         print(counts)
 
@@ -237,7 +237,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
             "text1": text1,
             "audio2": audio2,
             "text2": text2,
-            "label": torch.tensor([sample.label], dtype=torch.long),
+            "label": torch.tensor([sample.labels], dtype=torch.long),
         }
 
     def save(self, path):
@@ -399,12 +399,12 @@ class UnimodalDataset(torch.utils.data.Dataset):
 
         weights = {
             x: round(
-                [p.label for p in data].count(x) / len(data),
+                [p.labels for p in data].count(x) / len(data),
                 2,
             )
             for x in [0, 1, 2, 3]
         }
-        counts = {x: [p.label for p in data].count(x) for x in [0, 1, 2, 3]}
+        counts = {x: [p.labels for p in data].count(x) for x in [0, 1, 2, 3]}
         print(weights)
         print(counts)
 
@@ -444,13 +444,7 @@ class UnimodalDataset(torch.utils.data.Dataset):
         audio2 = torch.tensor([])
 
         # return the sample
-        return {
-            "audio1": audio1,
-            "text1": text1,
-            "audio2": audio2,
-            "text2": text2,
-            "label": torch.tensor([sample.label], dtype=torch.long),
-        }
+        return {"labels": torch.tensor([sample.labels], dtype=torch.long), **text1}
 
     def save(self, path):
         with open(path, "w") as f:
@@ -471,7 +465,7 @@ class UnimodalDataset(torch.utils.data.Dataset):
         max_samples,
         qt_complete=False,
     ):
-        s = MultimodalDataset(
+        s = UnimodalDataset(
             data_dir,
             tokenizer,
             feature_extractor,
@@ -484,7 +478,7 @@ class UnimodalDataset(torch.utils.data.Dataset):
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
 
-        s.weights, s.counts = MultimodalDataset.get_metrics(s.sequence_pairs)
+        s.weights, s.counts = UnimodalDataset.get_metrics(s.sequence_pairs)
 
         return s
 
@@ -502,7 +496,7 @@ def collate_fn(data):
 
     for sample in data[1:]:
         for root_k in data[0].keys():
-            if root_k != "label":
+            if root_k != "labels":
                 for k in data[0][root_k].keys():
                     output[root_k][k] = torch.cat(
                         (output[root_k][k], sample[root_k][k]), dim=0
@@ -510,6 +504,16 @@ def collate_fn(data):
 
             else:
                 output[root_k] = torch.cat((output[root_k], sample[root_k]), dim=0)
+
+    return output
+
+
+def collate_fn_raw(data):
+    output = data[0]
+
+    for sample in data[1:]:
+        for k in data[0].keys():
+            output[k] = torch.cat((output[k], sample[k]), dim=0)
 
     return output
 
