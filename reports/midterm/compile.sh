@@ -1,1 +1,1 @@
-pandoc main.md --pdf-engine=pdflatex -o final.pdf --filter pandoc-secnos --filter pandoc-eqnos --filter pandoc-tablenos --filter pandoc-fignos --citeproc --csl ../ieee.csl
+pandoc main.md --pdf-engine=pdflatex -o final.pdf --filter pandoc-crossref --filter pandoc-secnos --filter pandoc-eqnos --filter pandoc-tablenos --filter pandoc-fignos --citeproc --csl ../ieee.csl -M cref=false

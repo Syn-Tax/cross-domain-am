@@ -17,6 +17,8 @@ def main():
     with open(QT_OMISSIONS, "r") as f:
         qt_omissions = [e.strip() for e in f.readlines()]
 
+    qt_omissions = []
+
     # get filepaths to each episode - ignoring omitted episodes
     paths = [p for p in pathlib.Path(QT_PATH).iterdir() if p.is_dir() and p.name not in qt_omissions]
 

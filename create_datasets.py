@@ -336,18 +336,14 @@ class UnimodalDataset(torch.utils.data.Dataset):
         num_ra = 0
         for n1, n2 in tqdm(itertools.combinations(argument_map, 2)):
             # ignore combinations where neither node has a relation
-            if n1.relations == [] and n2.relations == []:
-                continue
+            # if n1.relations == [] and n2.relations == []:
+            #     continue
 
             # check for the label type
             label = 0
             if n2.id in [r.to_node_id for r in n1.relations]:
                 idx = [r.to_node_id for r in n1.relations].index(n2.id)
                 label = RELATION_TYPES[n1.relations[idx].type]
-
-            if n1.id in [r.to_node_id for r in n2.relations]:
-                idx = [r.to_node_id for r in n2.relations].index(n1.id)
-                label = RELATION_TYPES[n2.relations[idx].type]
 
             # add to counter if RA relationh
             if label == RELATION_TYPES["RA"]:
@@ -545,12 +541,15 @@ if __name__ == "__main__":
         MultimodalDataset.get_metrics(splits[1])
         MultimodalDataset.get_metrics(splits[2])
 
-        MultimodalDataset.save(data_dirs[i] + "/train.json", splits[0])
-        MultimodalDataset.save(data_dirs[i] + "/eval.json", splits[1])
-        MultimodalDataset.save(data_dirs[i] + "/test.json", splits[2])
+        # MultimodalDataset.save(data_dirs[i] + "/train.json", splits[0])
+        # MultimodalDataset.save(data_dirs[i] + "/eval.json", splits[1])
+        # MultimodalDataset.save(data_dirs[i] + "/test.json", splits[2])
 
         complete = splits[0]
         complete.extend(splits[1])
         complete.extend(splits[2])
 
-        MultimodalDataset.save(data_dirs[i] + "/complete.json", complete)
+        # MultimodalDataset.save(data_dirs[i] + "/complete.json", complete)
+
+        print("############## COMPLETE #############")
+        MultimodalDataset.get_metrics(complete)

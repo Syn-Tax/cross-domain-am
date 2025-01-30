@@ -19,10 +19,10 @@ import audio.alignment as alignment
 # ARGUMENT_MAP_PATH = f"data/Question Time/{QT_EPISODE}/argument_map.json"
 # AUDIO_PATH = f"raw_data/Question Time/{QT_EPISODE}/audio.wav"
 
-ARGUMENT_MAP_PATH = f"data/Moral Maze/Hypocrisy/argument_map.json"
-AUDIO_PATH = f"raw_data/Moral Maze/Hypocrisy/audio_16000.wav"
+ARGUMENT_MAP_PATH = f"data/Moral Maze/GreenBelt/argument_map.json"
+AUDIO_PATH = f"raw_data/Moral Maze/GreenBelt/audio_16000.mp3"
 
-OUT_PATH = f"data/Moral Maze/Hypocrisy/audio/"
+OUT_PATH = f"data/Moral Maze/GreenBelt/audio/"
 
 PADDING = 0.1  # number of seconds to include around the locution
 
