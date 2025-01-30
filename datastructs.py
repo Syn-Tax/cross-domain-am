@@ -37,4 +37,4 @@ class Segment:
 class Sample:
     node_1: Node
     node_2: Node
-    label: int
+    labels: int
