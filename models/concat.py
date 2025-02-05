@@ -252,7 +252,7 @@ class TextOnlyModel(nn.Module):
         # return classification logits
         logits = self.head(hidden_vector)
 
-        return {'logits': logits, 'loss': 10}
+        return {'logits': logits}
 
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""

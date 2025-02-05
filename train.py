@@ -76,6 +76,14 @@ torch.manual_seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
+class LossTrainer(transformers.Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        labels = inputs.pop("labels")
+        outputs = model(**inputs)
+        loss = self.compute_loss_func(outputs, labels)
+
+        return (loss, outputs) if return_outputs else loss
+
 
 def train_step(
     batch,
@@ -245,7 +253,7 @@ def main(
     loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
 
     def calc_loss(outputs, targets, num_items_in_batch=None):
-        return loss_fn(outputs.logits, targets)
+        return loss_fn(outputs['logits'], targets)
 
     get_params = filter(lambda p: p.requires_grad, model.parameters())
 
@@ -277,10 +285,11 @@ def main(
         num_train_epochs=epochs,
         lr_scheduler_type="linear",
         warmup_ratio=0.1,
-        report_to="none"
+        report_to="none",
+        remove_unused_columns=False,
     )
 
-    trainer = transformers.Trainer(
+    trainer = LossTrainer(
         model,
         training_args,
         collate_fn,
