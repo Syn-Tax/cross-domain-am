@@ -128,7 +128,9 @@ class ConcatLateModel(nn.Module):
         )
 
         # return classification logits
-        return self.head(hidden_vector)
+        logits = self.head(hidden_vector)
+
+        return{'logits': logits}
 
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""
@@ -248,7 +250,9 @@ class TextOnlyModel(nn.Module):
         hidden_vector = self.get_encoding(audio1, text1)
 
         # return classification logits
-        return self.head(hidden_vector)
+        logits = self.head(hidden_vector)
+
+        return {'logits': logits, 'loss': 10}
 
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""

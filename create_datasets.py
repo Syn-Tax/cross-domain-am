@@ -237,7 +237,7 @@ class MultimodalDataset(torch.utils.data.Dataset):
             "text1": text1,
             "audio2": audio2,
             "text2": text2,
-            "label": torch.tensor([sample.labels], dtype=torch.long),
+            "labels": torch.tensor([sample.labels], dtype=torch.long),
         }
 
     def save(self, path):
@@ -488,6 +488,8 @@ def collate_fn(data):
     Returns:
         dict: batch
     """
+
+    # print(data)
     output = data[0]
 
     for sample in data[1:]:

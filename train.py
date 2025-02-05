@@ -10,7 +10,7 @@ import wandb
 import sys
 import time
 
-from create_datasets import UnimodalDataset, collate_fn, collate_fn_raw
+from create_datasets import *
 from models import *
 from eval import metrics_fn, id_eval, cd_eval, load_cd
 from utils import move_batch
@@ -155,7 +155,7 @@ def main(
 ):
     # load/generate datasets
     print("#### train ####")
-    train_dataset = UnimodalDataset.load(
+    train_dataset = MultimodalDataset.load(
         ID_DATA_DIR + "/train.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -166,7 +166,7 @@ def main(
     )
 
     print("#### eval ####")
-    eval_dataset = UnimodalDataset.load(
+    eval_dataset = MultimodalDataset.load(
         ID_DATA_DIR + "/eval.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -211,27 +211,27 @@ def main(
     # class_weights_cpu = torch.tensor(class_weights, device=torch.device("cpu"))
 
     # load the model
-    # model = TextOnlyModel(
-    #     TEXT_ENCODER,
-    #     AUDIO_ENCODER,
-    #     head_hidden_layers=head_layers,
-    #     head_hidden_size=head_size,
-    #     text_dropout=text_dropout,
-    #     audio_dropout=audio_dropout,
-    #     text_encoder_dropout=text_encoder_dropout,
-    #     audio_encoder_dropout=audio_encoder_dropout,
-    #     activation=activation,
-    #     freeze_encoders=freeze_encoders,
-    #     initialisation=initialisation,
-    # )
-    model_config = transformers.RobertaConfig.from_pretrained(TEXT_ENCODER)
-    model_config.classifier_dropout = text_dropout
-    model_config.hidden_dropout_prob = text_encoder_dropout
-    model_config.num_labels = 4
-
-    model = transformers.RobertaForSequenceClassification.from_pretrained(
-        TEXT_ENCODER, config=model_config
+    model = TextOnlyModel(
+        TEXT_ENCODER,
+        AUDIO_ENCODER,
+        head_hidden_layers=head_layers,
+        head_hidden_size=head_size,
+        text_dropout=text_dropout,
+        audio_dropout=audio_dropout,
+        text_encoder_dropout=text_encoder_dropout,
+        audio_encoder_dropout=audio_encoder_dropout,
+        activation=activation,
+        freeze_encoders=freeze_encoders,
+        initialisation=initialisation,
     )
+    # model_config = transformers.RobertaConfig.from_pretrained(TEXT_ENCODER)
+    # model_config.classifier_dropout = text_dropout
+    # model_config.hidden_dropout_prob = text_encoder_dropout
+    # model_config.num_labels = 4
+
+    # model = transformers.RobertaForSequenceClassification.from_pretrained(
+    #     TEXT_ENCODER, config=model_config
+    # )
     model.to(device)
     # initialise wandb
     if log and init:
@@ -277,12 +277,13 @@ def main(
         num_train_epochs=epochs,
         lr_scheduler_type="linear",
         warmup_ratio=0.1,
+        report_to="none"
     )
 
     trainer = transformers.Trainer(
         model,
         training_args,
-        collate_fn_raw,
+        collate_fn,
         compute_loss_func=calc_loss,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
@@ -290,51 +291,6 @@ def main(
     )
 
     trainer.train()
-
-    # epoch loop
-    # for epoch in range(epochs):
-    #     print(f"############# EPOCH {epoch} #############")
-
-    #     model.train()
-
-    #     ############ training loop
-
-    #     # create empty tensors for epoch's logits and targets to calculate training metrics
-    #     logits = torch.tensor([], dtype=torch.float, device=torch.device("cpu"))
-    #     targets = torch.tensor([], dtype=torch.int, device=torch.device("cpu"))
-
-    #     # loop through each batch in the training dataloader and perform a training step
-    #     progress_bar = tqdm.auto.tqdm(range(len(train_dataloader)))
-    #     for i, batch in enumerate(train_dataloader):
-    #         batch_logits, batch_targets = train_step(
-    #             batch,
-    #             i,
-    #             model,
-    #             loss_fn,
-    #             optimizer,
-    #             lr_scheduler,
-    #             grad_clip,
-    #             last_batch=(i == len(train_dataloader) - 1),
-    #             log=log,
-    #         )
-
-    #         logits = torch.cat((logits, batch_logits), dim=0)
-    #         targets = torch.cat((targets, batch_targets), dim=0)
-
-    #         progress_bar.update(1)
-
-    #     # get training metrics
-    #     metrics_fn(logits, targets, loss_fn_cpu, step="train")
-
-    #     # evaluate model
-    #     model.eval()
-    #     id_eval(eval_dataloader, model, metrics_fn, loss_fn_cpu, device)
-
-    # perform cross domain evaluation
-    # model.eval()
-    # cd_eval(
-    #     cd_dataloaders, [d.split("/")[-1] for d in CD_DIRS], model, metrics_fn, device
-    # )
 
     # save model
     # name = f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}"
