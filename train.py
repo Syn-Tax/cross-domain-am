@@ -36,6 +36,9 @@ QT_COMPLETE = True
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
+dataset_type = MultimodalDatasetConcat
+model_type = ConcatEarlyLateModel
+
 MAX_TOKENS = 64
 MAX_SAMPLES = 120_000
 
@@ -85,62 +88,6 @@ class LossTrainer(transformers.Trainer):
         return (loss, outputs) if return_outputs else loss
 
 
-def train_step(
-    batch,
-    index,
-    model,
-    loss_fn,
-    optim,
-    lr_scheduler,
-    grad_clip,
-    last_batch=False,
-    log=False,
-):
-    """Method to complete one training step
-
-    Args:
-        batch (dict): minibatch to be trained on
-        index (int): index of the current batch in the dataloader
-        model (torch.nn.Module): the model to be trained
-        loss_fn (torch.nn.Module): loss/cost function
-        optim (torch.optimizer): the model's optimiser
-        lr_scheduler (_type_): learning rate scheduler
-        last_batch (bool, optional): whether this is the last batch of an epoch. Defaults to False.
-
-    Returns:
-        torch.Tensor: the logit and target tensors on the CPU to allow training metric calculation
-    """
-
-    # move the batch to the required device
-    batch = move_batch(batch, device)
-
-    # get model outputs
-    logits = model(**(batch["text1"])).logits
-
-    # calculate loss and perform backward pass
-    loss = loss_fn(logits, batch["label"]) / GRAD_ACCUMULATION_STEPS
-    loss.backward()
-
-    # log loss and learning rate to wandb
-    if log:
-        wandb.log(
-            {
-                "train/train_loss": loss,
-                "train/lr": torch.tensor(lr_scheduler.get_last_lr()[0]),
-            }
-        )
-
-    # after the gradient accumulation steps, update the model parameters
-    if index % GRAD_ACCUMULATION_STEPS == 0 or last_batch:
-        torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
-        optim.step()
-        lr_scheduler.step()
-        optim.zero_grad()
-
-    # return the logit and target tensors
-    return logits.to(torch.device("cpu")), batch["label"].to(torch.device("cpu"))
-
-
 def main(
     epochs,
     batch_size,
@@ -163,7 +110,7 @@ def main(
 ):
     # load/generate datasets
     print("#### train ####")
-    train_dataset = MultimodalDatasetConcat.load(
+    train_dataset = dataset_type.load(
         ID_DATA_DIR + "/train.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -174,7 +121,7 @@ def main(
     )
 
     print("#### eval ####")
-    eval_dataset = MultimodalDatasetConcat.load(
+    eval_dataset = dataset_type.load(
         ID_DATA_DIR + "/eval.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -182,15 +129,6 @@ def main(
         MAX_TOKENS,
         MAX_SAMPLES,
         qt_complete=QT_COMPLETE,
-    )
-
-    # create dataloaders for each dataset - batching and shuffling each set
-    train_dataloader = torch.utils.data.DataLoader(
-        train_dataset, batch_size, collate_fn=collate_fn, shuffle=True
-    )
-
-    eval_dataloader = torch.utils.data.DataLoader(
-        eval_dataset, batch_size, collate_fn=collate_fn, shuffle=True
     )
 
     # load cross domain evaluation sets
@@ -219,7 +157,7 @@ def main(
     # class_weights_cpu = torch.tensor(class_weights, device=torch.device("cpu"))
 
     # load the model
-    model = ConcatEarlyLateModel(
+    model = model_type(
         TEXT_ENCODER,
         AUDIO_ENCODER,
         head_hidden_layers=head_layers,
@@ -232,15 +170,9 @@ def main(
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
     )
-    # model_config = transformers.RobertaConfig.from_pretrained(TEXT_ENCODER)
-    # model_config.classifier_dropout = text_dropout
-    # model_config.hidden_dropout_prob = text_encoder_dropout
-    # model_config.num_labels = 4
 
-    # model = transformers.RobertaForSequenceClassification.from_pretrained(
-    #     TEXT_ENCODER, config=model_config
-    # )
     model.to(device)
+
     # initialise wandb
     if log and init:
         wandb.init(
