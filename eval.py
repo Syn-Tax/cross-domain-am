@@ -7,7 +7,7 @@ import time
 import numpy as np
 
 from utils import move_batch
-from create_datasets import MultimodalDataset
+from create_datasets import *
 
 # load metrics
 f1 = evaluate.load("f1")
@@ -131,12 +131,13 @@ def load_cd(
     audio_encoder,
     max_tokens,
     max_samples,
+    dataset_type,
     qt_complete=False,
 ):
     dataloaders = []
 
     for dir in data_dirs:
-        dataset = MultimodalDataset.load(
+        dataset = dataset_type.load(
             dir + "/complete.json",
             dir,
             text_encoder,

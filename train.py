@@ -163,7 +163,7 @@ def main(
 ):
     # load/generate datasets
     print("#### train ####")
-    train_dataset = MultimodalDataset.load(
+    train_dataset = MultimodalDatasetConcat.load(
         ID_DATA_DIR + "/train.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -174,7 +174,7 @@ def main(
     )
 
     print("#### eval ####")
-    eval_dataset = MultimodalDataset.load(
+    eval_dataset = MultimodalDatasetConcat.load(
         ID_DATA_DIR + "/eval.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -219,7 +219,7 @@ def main(
     # class_weights_cpu = torch.tensor(class_weights, device=torch.device("cpu"))
 
     # load the model
-    model = TextOnlyModel(
+    model = ConcatEarlyLateModel(
         TEXT_ENCODER,
         AUDIO_ENCODER,
         head_hidden_layers=head_layers,
@@ -266,14 +266,6 @@ def main(
     elif optim == "rmsprop":
         optimizer = torch.optim.RMSprop(get_params, lr=lr, weight_decay=l2)
 
-    num_training_steps = epochs * len(train_dataloader)
-    lr_scheduler = transformers.get_scheduler(
-        name="linear",
-        optimizer=optimizer,
-        num_warmup_steps=0.1 * num_training_steps,
-        num_training_steps=num_training_steps,
-    )
-
     training_args = transformers.TrainingArguments(
         output_dir="models/",
         eval_strategy="epoch",
@@ -298,6 +290,10 @@ def main(
         eval_dataset=eval_dataset,
         compute_metrics=metrics_fn,
     )
+
+    for batch in trainer.get_eval_dataloader(eval_dataset):
+        print(batch)
+        break
 
     trainer.train()
 

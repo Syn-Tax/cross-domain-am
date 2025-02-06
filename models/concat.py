@@ -13,7 +13,7 @@ UNFREEZE = [
 UNFREEZE_STARTSWITH = []
 
 
-class ConcatLateModel(nn.Module):
+class ConcatLateLateModel(nn.Module):
     """Multimodal classification model
     fusion strategy: late concatenation
     classification head: Multi-layer perceptron
@@ -153,8 +153,8 @@ class ConcatLateModel(nn.Module):
             param[1].requires_grad = True
 
 
-class TextOnlyModel(nn.Module):
-    """text only classification model
+class ConcatEarlyLateModel(nn.Module):
+    """Multimodal classification model
     fusion strategy: late concatenation
     classification head: Multi-layer perceptron
     """
@@ -182,18 +182,28 @@ class TextOnlyModel(nn.Module):
         )
         self.text_config.hidden_dropout_prob = text_encoder_dropout
 
+        self.audio_config = transformers.Wav2Vec2Config.from_pretrained(
+            audio_encoder_checkpoint
+        )
+        self.audio_config.hidden_dropout = audio_encoder_dropout
+
         # load encoder models
         self.text_encoder = transformers.RobertaModel.from_pretrained(
             text_encoder_checkpoint, config=self.text_config
         )
+        self.audio_encoder = transformers.Wav2Vec2Model.from_pretrained(
+            audio_encoder_checkpoint, config=self.audio_config
+        )
 
         # initialise dropout layers
         self.text_dropout = nn.Dropout(p=text_dropout)
+        self.audio_dropout = nn.Dropout(p=audio_dropout)
 
         # initialise classification head
         self.text_hidden_size = self.text_config.hidden_size
-        self.head = MLPClassificationHead(
-            self.text_hidden_size,
+        self.audio_hidden_size = self.audio_config.hidden_size
+        self.head = MLPMultilayerClassificationHead(
+            self.text_hidden_size + self.audio_hidden_size,
             n_classes,
             head_hidden_size,
             head_hidden_layers,
@@ -204,8 +214,6 @@ class TextOnlyModel(nn.Module):
         # allow encoders to be trained
         if freeze_encoders:
             self.freeze_encoders()
-        else:
-            self.unfreeze_encoders()
 
     def get_encoding(self, audio, text):
         """Method to get the encoding for a single sequence
@@ -222,52 +230,56 @@ class TextOnlyModel(nn.Module):
         text_encoding_pooled = self.text_encoder(**text)[1]
         text_encoding_pooled = self.text_dropout(text_encoding_pooled)
 
-        return text_encoding_pooled
+        # get raw audio encodings
+        audio_encoding = self.audio_encoder(**audio)[0]
+        audio_encoding = self.audio_dropout(audio_encoding)
 
-    def forward(self, audio1, text1, audio2, text2, **kwargs):
+        # pool audio encodings using mean
+        audio_encoding_pooled = audio_encoding.mean(dim=1)
+
+        # concatenate text and audio encodings
+        concat_encoding = torch.cat(
+            (text_encoding_pooled, audio_encoding_pooled), dim=-1
+        )
+
+        return concat_encoding
+
+    def forward(self, audio, text, **kwargs):
         """Model's forward method
 
         Args:
-            audio1 (dict): audio data for sequence 1
-            text1 (dict): text data for sequence 1
-            audio2 (dict): audio data for sequence 2
-            text2 (dict): text data for sequence 2
+            audio (dict): audio data
+            text (dict): text data
 
         Returns:
             torch.Tensor: classification logits
         """
 
         # get individual sequence encodings
-        # seq1_encoding = self.get_encoding(audio1, text1)
-        # seq2_encoding = self.get_encoding(audio2, text2)
-
-        # concatenate sequence encodings into single hidden vector
-        # hidden_vector = torch.cat(
-        #     (seq1_encoding, seq2_encoding),
-        #     dim=-1,
-        # )
-
-        hidden_vector = self.get_encoding(audio1, text1)
+        hidden_vector = self.get_encoding(audio, text)
 
         # return classification logits
         logits = self.head(hidden_vector)
 
-        return {'logits': logits}
+        return{'logits': logits}
 
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""
         # freeze text encoder
-        for name, param in self.text_encoder.named_parameters():
-            print(name)
-            if name in UNFREEZE:
-                param.requires_grad = True
-            elif any([name.startswith(n) for n in UNFREEZE_STARTSWITH]):
-                param.requires_grad = True
-            else:
-                param.requires_grad = False
+        for param in self.text_encoder.named_parameters():
+            param[1].requires_grad = False
+
+        # freeze audio encoder
+        for param in self.audio_encoder.named_parameters():
+            param[1].requires_grad = False
 
     def unfreeze_encoders(self):
         """Method to unfreeze the encoders' learning"""
         # unfreeze the text encoder
-        for name, param in self.text_encoder.named_parameters():
-            param.requires_grad = True
+        for param in self.text_encoder.named_parameters():
+            param[1].requires_grad = True
+
+        # unfreeze the audio encoder
+        for param in self.audio_encoder.named_parameters():
+            param[1].requires_grad = True
+
