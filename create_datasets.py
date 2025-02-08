@@ -158,10 +158,7 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         )
 
         if process:
-            self.sequence_pairs = process(data_dir, train_test_split)[
-                split
-            ]
-
+            self.sequence_pairs = process(data_dir, train_test_split)[split]
 
     def __len__(self):
         """Method to get the length of the dataset"""
@@ -206,7 +203,9 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         self.sample_rate = rate
         n2_audio, _ = torchaudio.load(n2_audio_path)
 
-        text_proposition = f"{sample.node_1.proposition} </s> {sample.node_2.proposition}"
+        text_proposition = (
+            f"{sample.node_1.proposition} </s> {sample.node_2.proposition}"
+        )
 
         audio_cat = torch.tensor([0 for _ in range(int(rate * AUDIO_EOS_LEN))])
 
@@ -313,9 +312,7 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         )
 
         if process:
-            self.sequence_pairs = process(data_dir, train_test_split)[
-                split
-            ]
+            self.sequence_pairs = process(data_dir, train_test_split)[split]
 
     def __len__(self):
         """Method to get the length of the dataset"""
@@ -437,6 +434,113 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         return s
 
 
+class TextOnlyDatasetConcat(torch.utils.data.Dataset):
+    """Dataset containing multimodal sequence pairs"""
+
+    def __init__(
+        self,
+        data_dir,
+        tokenizer,
+        feature_extractor,
+        max_tokens,
+        max_samples,
+        train_test_split=[1, 0, 0],
+        split=0,
+        qt_complete=False,
+        process=True,
+    ):
+        """Class constructor
+
+        Args:
+            data_dir (str): path to data directory
+            tokenizer (str): text model checkpoint
+            feature_extractor (str): audio model checkpoint
+            max_tokens (int): maximum length to which to pad/truncate text sequences
+            max_samples (int): maximum length to pad/truncate audio sequences
+            train_test_split (list[float], optional): proportion of data to be put into each split. Defaults to entirely training split.
+            split (int, optional): the requested split. Defaults to 0.
+            qt_complete (bool, optional): whether the dataset is the complete QT30 set. Defaults to False.
+        """
+
+        self.data_dir = data_dir
+
+        self.max_tokens = max_tokens
+        self.max_samples = max_samples
+
+        self.qt_complete = qt_complete
+
+        # load tokenizer and feature extractor
+        self.tokenizer = transformers.AutoTokenizer.from_pretrained(tokenizer)
+        self.feature_extractor = transformers.AutoProcessor.from_pretrained(
+            feature_extractor
+        )
+
+        if process:
+            self.sequence_pairs = process(data_dir, train_test_split)[split]
+
+    def __len__(self):
+        """Method to get the length of the dataset"""
+        return len(self.sequence_pairs)
+
+    def __getitem__(self, idx):
+        """Method to get the item at a specific index
+
+        Args:
+            idx (int): index
+
+        Returns:
+            dict: sample
+        """
+
+        # get the relevant pair
+        sample = self.sequence_pairs[idx]
+
+        # tokenize the text sequences
+        text = f"{sample.node_1.proposition} </s> {sample.node_2.proposition}"
+
+        text1 = self.tokenizer(
+            text,
+            max_length=self.max_tokens * 2,
+            truncation=True,
+            padding="max_length",
+            return_tensors="pt",
+        )
+
+        # return the sample
+        return {"labels": torch.tensor([sample.labels], dtype=torch.long), **text1}
+
+    def save(self, path):
+        with open(path, "w") as f:
+            out = Sample.schema().dumps(self.sequence_pairs, many=True)
+            f.write(out)
+
+    def load(
+        path,
+        data_dir,
+        tokenizer,
+        feature_extractor,
+        max_tokens,
+        max_samples,
+        qt_complete=False,
+    ):
+        s = TextOnlyDatasetConcat(
+            data_dir,
+            tokenizer,
+            feature_extractor,
+            max_tokens,
+            max_samples,
+            qt_complete=qt_complete,
+            process=False,
+        )
+
+        with open(path, "r") as f:
+            s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
+
+        s.weights, s.counts = get_metrics(s.sequence_pairs)
+
+        return s
+
+
 def collate_fn(data):
     """Method to collate a series of samples into a batch
 
@@ -505,9 +609,9 @@ if __name__ == "__main__":
         get_metrics(splits[1])
         get_metrics(splits[2])
 
-        # MultimodalDataset.save(data_dirs[i] + "/train.json", splits[0])
-        # MultimodalDataset.save(data_dirs[i] + "/eval.json", splits[1])
-        # MultimodalDataset.save(data_dirs[i] + "/test.json", splits[2])
+        save(data_dirs[i] + "/train.json", splits[0])
+        save(data_dirs[i] + "/eval.json", splits[1])
+        save(data_dirs[i] + "/test.json", splits[2])
 
         complete = splits[0]
         complete.extend(splits[1])

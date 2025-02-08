@@ -39,8 +39,8 @@ AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 dataset_type = MultimodalDatasetConcat
 model_type = AudioOnlyEarlyModel
 
-MAX_TOKENS = 64
-MAX_SAMPLES = 120_000
+MAX_TOKENS = 128
+MAX_SAMPLES = 160_000
 
 HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
@@ -49,10 +49,10 @@ HEAD_HIDDEN_SIZE = 256
 BATCH_SIZE = 1
 EPOCHS = 25
 LEARNING_RATE = 1e-5
-DROPOUT = 0.5
+DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 4
 
-WEIGHT_DECAY = 1e-2
+WEIGHT_DECAY = 0
 GRAD_CLIP = 1
 
 # configuration dictionary passed to wandb
@@ -79,8 +79,11 @@ torch.manual_seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
+
 class LossTrainer(transformers.Trainer):
-    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+    def compute_loss(
+        self, model, inputs, return_outputs=False, num_items_in_batch=None
+    ):
         labels = inputs.pop("labels")
         outputs = model(**inputs)
         loss = self.compute_loss_func(outputs, labels)
@@ -182,10 +185,11 @@ def main(
         )
 
     # load loss function, optimiser and linear learning rate scheduler
-    loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
+    # loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
+    loss_fn = nn.CrossEntropyLoss()
 
     def calc_loss(outputs, targets, num_items_in_batch=None):
-        return loss_fn(outputs['logits'], targets)
+        return loss_fn(outputs["logits"], targets)
 
     get_params = filter(lambda p: p.requires_grad, model.parameters())
 
@@ -199,8 +203,9 @@ def main(
         optimizer = torch.optim.RMSprop(get_params, lr=lr, weight_decay=l2)
 
     training_args = transformers.TrainingArguments(
-        output_dir="models/",
+        output_dir="saves/",
         eval_strategy="epoch",
+        logging_steps=1,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         gradient_accumulation_steps=GRAD_ACCUMULATION_STEPS,
@@ -209,8 +214,10 @@ def main(
         num_train_epochs=epochs,
         lr_scheduler_type="linear",
         warmup_ratio=0.1,
-        report_to="none",
+        report_to="wandb" if "--log" in sys.argv else "none",
         remove_unused_columns=False,
+        label_names=["labels"],
+        bf16=True,
     )
 
     trainer = LossTrainer(
@@ -249,7 +256,7 @@ if __name__ == "__main__":
         "gelu",
         True,
         False,
-        None,
+        "kaiming_normal",
         0.15,
         0,
         GRAD_CLIP,

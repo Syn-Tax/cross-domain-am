@@ -5,6 +5,10 @@ import tqdm
 import sys
 import time
 import numpy as np
+import sklearn.metrics as skm
+import seaborn as sn
+import pandas as pd
+import matplotlib.pyplot as plt
 
 from utils import move_batch
 from create_datasets import *
@@ -54,6 +58,16 @@ def metrics_fn(predictions, step="eval"):
     )["recall"]
 
     # loss = loss_fn(logits, targets)
+    class_names = ["NO", "RA", "CA", "MA"]
+
+    cm = skm.confusion_matrix(targets, preds)
+    df = pd.DataFrame(
+        cm / np.sum(cm, axis=1)[:, None],
+        index=[i for i in class_names],
+        columns=[i for i in class_names],
+    )
+    plt.figure(figsize=(12, 7))
+    sn.heatmap(df, annot=True)
 
     # add metric scores to dictionary
     res = {
@@ -74,7 +88,7 @@ def metrics_fn(predictions, step="eval"):
 
     # log metrics to wandb
     if "--log" in sys.argv:
-        wandb.log(res)
+        wandb.log({"conf_mat": wandb.Image(plt), **res})
 
     return res
 

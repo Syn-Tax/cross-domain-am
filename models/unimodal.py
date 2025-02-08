@@ -3,8 +3,11 @@ import torch.nn.functional as F
 import torch.nn as nn
 import transformers
 
+import time
+
 from models.multimodal import *
 from models.heads import *
+
 
 class TextOnlyEarlyModel(nn.Module):
     """text only classification model
@@ -75,7 +78,7 @@ class TextOnlyEarlyModel(nn.Module):
 
         return text_encoding_pooled
 
-    def forward(self, audio, text, **kwargs):
+    def forward(self, text=None, **kwargs):
         """Model's forward method
 
         Args:
@@ -93,7 +96,9 @@ class TextOnlyEarlyModel(nn.Module):
         # return classification logits
         logits = self.head(hidden_vector)
 
-        return {'logits': logits}
+        time.sleep(0.1)
+
+        return {"logits": logits}
 
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""
@@ -203,7 +208,7 @@ class AudioOnlyEarlyModel(nn.Module):
         # return classification logits
         logits = self.head(hidden_vector)
 
-        return {'logits': logits}
+        return {"logits": logits}
 
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""
