@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 import torch.nn as nn
 import transformers
+import time
 
 from models.heads import *
 
@@ -130,7 +131,7 @@ class ConcatLateLateModel(nn.Module):
         # return classification logits
         logits = self.head(hidden_vector)
 
-        return{'logits': logits}
+        return {"logits": logits}
 
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""
@@ -261,7 +262,9 @@ class ConcatEarlyLateModel(nn.Module):
         # return classification logits
         logits = self.head(hidden_vector)
 
-        return{'logits': logits}
+        time.sleep(0.1)
+
+        return {"logits": logits}
 
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""
@@ -282,4 +285,3 @@ class ConcatEarlyLateModel(nn.Module):
         # unfreeze the audio encoder
         for param in self.audio_encoder.named_parameters():
             param[1].requires_grad = True
-

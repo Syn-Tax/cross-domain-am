@@ -158,10 +158,7 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         )
 
         if process:
-            self.sequence_pairs = process(data_dir, train_test_split)[
-                split
-            ]
-
+            self.sequence_pairs = process(data_dir, train_test_split)[split]
 
     def __len__(self):
         """Method to get the length of the dataset"""
@@ -206,7 +203,9 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         self.sample_rate = rate
         n2_audio, _ = torchaudio.load(n2_audio_path)
 
-        text_proposition = f"{sample.node_1.proposition} </s> {sample.node_2.proposition}"
+        text_proposition = (
+            f"{sample.node_1.proposition} </s> {sample.node_2.proposition}"
+        )
 
         audio_cat = torch.tensor([0 for _ in range(int(rate * AUDIO_EOS_LEN))])
 
@@ -313,9 +312,7 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         )
 
         if process:
-            self.sequence_pairs = process(data_dir, train_test_split)[
-                split
-            ]
+            self.sequence_pairs = process(data_dir, train_test_split)[split]
 
     def __len__(self):
         """Method to get the length of the dataset"""
@@ -479,10 +476,7 @@ class TextOnlyDatasetConcat(torch.utils.data.Dataset):
         )
 
         if process:
-            self.sequence_pairs = process(data_dir, train_test_split)[
-                split
-            ]
-
+            self.sequence_pairs = process(data_dir, train_test_split)[split]
 
     def __len__(self):
         """Method to get the length of the dataset"""
@@ -615,15 +609,15 @@ if __name__ == "__main__":
         get_metrics(splits[1])
         get_metrics(splits[2])
 
-        # MultimodalDataset.save(data_dirs[i] + "/train.json", splits[0])
-        # MultimodalDataset.save(data_dirs[i] + "/eval.json", splits[1])
-        # MultimodalDataset.save(data_dirs[i] + "/test.json", splits[2])
+        save(data_dirs[i] + "/train.json", splits[0])
+        save(data_dirs[i] + "/eval.json", splits[1])
+        save(data_dirs[i] + "/test.json", splits[2])
 
         complete = splits[0]
         complete.extend(splits[1])
         complete.extend(splits[2])
 
-        # MultimodalDataset.save(data_dirs[i] + "/complete.json", complete)
+        save(data_dirs[i] + "/complete.json", complete)
 
         print("############## COMPLETE #############")
         get_metrics(complete)

@@ -81,14 +81,30 @@ class MLPClassificationHead(nn.Module):
     activation function: tanh
     """
 
-    def __init__(self, input_size, n_classes, *args, **kwargs):
+    def __init__(
+        self, input_size, n_classes, *args, initialisation="kaiming_normal", **kwargs
+    ):
         super().__init__()
 
         # create input and output layers
         self.input = nn.Linear(input_size, n_classes)
 
         # initialise input and output layers
-        nn.init.kaiming_normal_(self.input.weight)
+        if initialisation == "kaiming_normal":
+            init = nn.init.kaiming_normal_
+        elif initialisation == "kaiming_uniform":
+            init = nn.init.kaiming_uniform_
+        elif initialisation == "uniform":
+            init = nn.init.uniform_
+        elif initialisation == "normal":
+            init = nn.init.normal_
+        elif initialisation == "xavier_uniform":
+            init = nn.init.xavier_uniform_
+        elif initialisation == "xavier_normal":
+            init = nn.init.xavier_normal_
+
+        if initialisation != None:
+            init(self.input.weight)
 
     def forward(self, x):
 

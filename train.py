@@ -36,20 +36,20 @@ QT_COMPLETE = True
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
-MAX_TOKENS = 64
+MAX_TOKENS = 128
 MAX_SAMPLES = 120_000
 
 HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 64
-EPOCHS = 25
+BATCH_SIZE = 16
+EPOCHS = 15
 LEARNING_RATE = 1e-5
-DROPOUT = 0.5
+DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 4
 
-WEIGHT_DECAY = 1e-2
+WEIGHT_DECAY = 0
 GRAD_CLIP = 1
 
 # configuration dictionary passed to wandb
@@ -76,69 +76,16 @@ torch.manual_seed(seed)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
+
 class LossTrainer(transformers.Trainer):
-    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+    def compute_loss(
+        self, model, inputs, return_outputs=False, num_items_in_batch=None
+    ):
         labels = inputs.pop("labels")
         outputs = model(**inputs)
         loss = self.compute_loss_func(outputs, labels)
 
         return (loss, outputs) if return_outputs else loss
-
-
-def train_step(
-    batch,
-    index,
-    model,
-    loss_fn,
-    optim,
-    lr_scheduler,
-    grad_clip,
-    last_batch=False,
-    log=False,
-):
-    """Method to complete one training step
-
-    Args:
-        batch (dict): minibatch to be trained on
-        index (int): index of the current batch in the dataloader
-        model (torch.nn.Module): the model to be trained
-        loss_fn (torch.nn.Module): loss/cost function
-        optim (torch.optimizer): the model's optimiser
-        lr_scheduler (_type_): learning rate scheduler
-        last_batch (bool, optional): whether this is the last batch of an epoch. Defaults to False.
-
-    Returns:
-        torch.Tensor: the logit and target tensors on the CPU to allow training metric calculation
-    """
-
-    # move the batch to the required device
-    batch = move_batch(batch, device)
-
-    # get model outputs
-    logits = model(**(batch["text1"])).logits
-
-    # calculate loss and perform backward pass
-    loss = loss_fn(logits, batch["label"]) / GRAD_ACCUMULATION_STEPS
-    loss.backward()
-
-    # log loss and learning rate to wandb
-    if log:
-        wandb.log(
-            {
-                "train/train_loss": loss,
-                "train/lr": torch.tensor(lr_scheduler.get_last_lr()[0]),
-            }
-        )
-
-    # after the gradient accumulation steps, update the model parameters
-    if index % GRAD_ACCUMULATION_STEPS == 0 or last_batch:
-        torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
-        optim.step()
-        lr_scheduler.step()
-        optim.zero_grad()
-
-    # return the logit and target tensors
-    return logits.to(torch.device("cpu")), batch["label"].to(torch.device("cpu"))
 
 
 def main(
@@ -182,15 +129,6 @@ def main(
         MAX_TOKENS,
         MAX_SAMPLES,
         qt_complete=QT_COMPLETE,
-    )
-
-    # create dataloaders for each dataset - batching and shuffling each set
-    train_dataloader = torch.utils.data.DataLoader(
-        train_dataset, batch_size, collate_fn=collate_fn, shuffle=True
-    )
-
-    eval_dataloader = torch.utils.data.DataLoader(
-        eval_dataset, batch_size, collate_fn=collate_fn, shuffle=True
     )
 
     # load cross domain evaluation sets
@@ -250,10 +188,11 @@ def main(
         )
 
     # load loss function, optimiser and linear learning rate scheduler
-    loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
+    # loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
+    loss_fn = nn.CrossEntropyLoss()
 
     def calc_loss(outputs, targets, num_items_in_batch=None):
-        return loss_fn(outputs['logits'], targets)
+        return loss_fn(outputs["logits"], targets)
 
     get_params = filter(lambda p: p.requires_grad, model.parameters())
 
@@ -267,8 +206,9 @@ def main(
         optimizer = torch.optim.RMSprop(get_params, lr=lr, weight_decay=l2)
 
     training_args = transformers.TrainingArguments(
-        output_dir="models/",
+        output_dir="saves/",
         eval_strategy="epoch",
+        logging_steps=1,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         gradient_accumulation_steps=GRAD_ACCUMULATION_STEPS,
@@ -277,8 +217,10 @@ def main(
         num_train_epochs=epochs,
         lr_scheduler_type="linear",
         warmup_ratio=0.1,
-        report_to="none",
+        report_to="wandb" if "--log" in sys.argv else "none",
         remove_unused_columns=False,
+        label_names=["labels"],
+        bf16=True,
     )
 
     trainer = LossTrainer(
@@ -290,10 +232,6 @@ def main(
         eval_dataset=eval_dataset,
         compute_metrics=metrics_fn,
     )
-
-    for batch in trainer.get_eval_dataloader(eval_dataset):
-        print(batch)
-        break
 
     trainer.train()
 
@@ -321,7 +259,7 @@ if __name__ == "__main__":
         "gelu",
         True,
         False,
-        None,
+        "kaiming_normal",
         0.15,
         0,
         GRAD_CLIP,

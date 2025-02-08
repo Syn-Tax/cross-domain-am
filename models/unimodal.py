@@ -3,6 +3,12 @@ import torch.nn.functional as F
 import torch.nn as nn
 import transformers
 
+import time
+
+from models.heads import *
+from models.concat import *
+
+
 class TextOnlyModel(nn.Module):
     """text only classification model
     fusion strategy: late concatenation
@@ -57,7 +63,7 @@ class TextOnlyModel(nn.Module):
         else:
             self.unfreeze_encoders()
 
-    def get_encoding(self, audio, text):
+    def get_encoding(self, text):
         """Method to get the encoding for a single sequence
 
         Args:
@@ -74,7 +80,7 @@ class TextOnlyModel(nn.Module):
 
         return text_encoding_pooled
 
-    def forward(self, audio1, text1, audio2, text2, **kwargs):
+    def forward(self, text=None, **kwargs):
         """Model's forward method
 
         Args:
@@ -97,12 +103,14 @@ class TextOnlyModel(nn.Module):
         #     dim=-1,
         # )
 
-        hidden_vector = self.get_encoding(audio1, text1)
+        hidden_vector = self.get_encoding(text)
 
         # return classification logits
         logits = self.head(hidden_vector)
 
-        return {'logits': logits}
+        time.sleep(0.1)
+
+        return {"logits": logits}
 
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""
