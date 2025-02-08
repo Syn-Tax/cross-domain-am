@@ -37,7 +37,7 @@ TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
 dataset_type = MultimodalDatasetConcat
-model_type = ConcatEarlyLateModel
+model_type = AudioOnlyEarlyModel
 
 MAX_TOKENS = 64
 MAX_SAMPLES = 120_000
@@ -46,7 +46,7 @@ HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 64
+BATCH_SIZE = 1
 EPOCHS = 25
 LEARNING_RATE = 1e-5
 DROPOUT = 0.5
@@ -222,10 +222,6 @@ def main(
         eval_dataset=eval_dataset,
         compute_metrics=metrics_fn,
     )
-
-    for batch in trainer.get_eval_dataloader(eval_dataset):
-        print(batch)
-        break
 
     trainer.train()
 

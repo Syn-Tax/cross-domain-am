@@ -13,7 +13,7 @@ UNFREEZE = [
 UNFREEZE_STARTSWITH = []
 
 
-class ConcatLateLateModel(nn.Module):
+class MultimodalLateLateModel(nn.Module):
     """Multimodal classification model
     fusion strategy: late concatenation
     classification head: Multi-layer perceptron
@@ -33,6 +33,8 @@ class ConcatLateLateModel(nn.Module):
         activation="relu",
         freeze_encoders=False,
         initialisation="kaiming_normal",
+        sequence_fusion="concatenation",
+        modality_fusion="concatenation"
     ):
         super().__init__()
 
@@ -60,8 +62,15 @@ class ConcatLateLateModel(nn.Module):
         self.audio_dropout = nn.Dropout(p=audio_dropout)
 
         # initialise classification head
+        self.sequence_fusion = sequence_fusion
+        self.modality_fusion = modality_fusion
+
         self.text_hidden_size = self.text_config.hidden_size
         self.audio_hidden_size = self.audio_config.hidden_size
+
+        hidden_input_size = 0
+
+
         self.head = MLPMultilayerClassificationHead(
             self.text_hidden_size * 2 + self.audio_hidden_size * 2,
             n_classes,

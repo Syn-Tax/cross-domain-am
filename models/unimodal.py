@@ -3,8 +3,8 @@ import torch.nn.functional as F
 import torch.nn as nn
 import transformers
 
-from concat import *
-from heads import *
+from models.multimodal import *
+from models.heads import *
 
 class TextOnlyEarlyModel(nn.Module):
     """text only classification model
@@ -57,8 +57,6 @@ class TextOnlyEarlyModel(nn.Module):
         # allow encoders to be trained
         if freeze_encoders:
             self.freeze_encoders()
-        else:
-            self.unfreeze_encoders()
 
     def get_encoding(self, text):
         """Method to get the encoding for a single sequence
@@ -77,7 +75,7 @@ class TextOnlyEarlyModel(nn.Module):
 
         return text_encoding_pooled
 
-    def forward(self, text, **kwargs):
+    def forward(self, audio, text, **kwargs):
         """Model's forward method
 
         Args:
@@ -167,8 +165,6 @@ class AudioOnlyEarlyModel(nn.Module):
         # allow encoders to be trained
         if freeze_encoders:
             self.freeze_encoders()
-        else:
-            self.unfreeze_encoders()
 
     def get_encoding(self, audio):
         """Method to get the encoding for a single sequence
@@ -189,7 +185,7 @@ class AudioOnlyEarlyModel(nn.Module):
 
         return audio_encoding_pooled
 
-    def forward(self, audio, **kwargs):
+    def forward(self, audio, text, **kwargs):
         """Model's forward method
 
         Args:
@@ -212,7 +208,7 @@ class AudioOnlyEarlyModel(nn.Module):
     def freeze_encoders(self):
         """Method to freeze the encoders' learning"""
         # freeze text encoder
-        for name, param in self.text_encoder.named_parameters():
+        for name, param in self.audio_encoder.named_parameters():
             print(name)
             if name in UNFREEZE:
                 param.requires_grad = True
@@ -224,5 +220,5 @@ class AudioOnlyEarlyModel(nn.Module):
     def unfreeze_encoders(self):
         """Method to unfreeze the encoders' learning"""
         # unfreeze the text encoder
-        for name, param in self.text_encoder.named_parameters():
+        for name, param in self.audio_encoder.named_parameters():
             param.requires_grad = True
