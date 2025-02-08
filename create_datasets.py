@@ -617,7 +617,7 @@ if __name__ == "__main__":
         complete.extend(splits[1])
         complete.extend(splits[2])
 
-        save(data_dirs[i] + "/complete.json", complete)
+        # MultimodalDataset.save(data_dirs[i] + "/complete.json", complete)
 
         print("############## COMPLETE #############")
         get_metrics(complete)

@@ -36,15 +36,18 @@ QT_COMPLETE = True
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
+dataset_type = MultimodalDatasetConcat
+model_type = AudioOnlyEarlyModel
+
 MAX_TOKENS = 128
-MAX_SAMPLES = 120_000
+MAX_SAMPLES = 160_000
 
 HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 16
-EPOCHS = 15
+BATCH_SIZE = 1
+EPOCHS = 25
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 4
@@ -110,7 +113,7 @@ def main(
 ):
     # load/generate datasets
     print("#### train ####")
-    train_dataset = MultimodalDatasetConcat.load(
+    train_dataset = dataset_type.load(
         ID_DATA_DIR + "/train.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -121,7 +124,7 @@ def main(
     )
 
     print("#### eval ####")
-    eval_dataset = MultimodalDatasetConcat.load(
+    eval_dataset = dataset_type.load(
         ID_DATA_DIR + "/eval.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
@@ -157,7 +160,7 @@ def main(
     # class_weights_cpu = torch.tensor(class_weights, device=torch.device("cpu"))
 
     # load the model
-    model = ConcatEarlyLateModel(
+    model = model_type(
         TEXT_ENCODER,
         AUDIO_ENCODER,
         head_hidden_layers=head_layers,
@@ -170,15 +173,9 @@ def main(
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
     )
-    # model_config = transformers.RobertaConfig.from_pretrained(TEXT_ENCODER)
-    # model_config.classifier_dropout = text_dropout
-    # model_config.hidden_dropout_prob = text_encoder_dropout
-    # model_config.num_labels = 4
 
-    # model = transformers.RobertaForSequenceClassification.from_pretrained(
-    #     TEXT_ENCODER, config=model_config
-    # )
     model.to(device)
+
     # initialise wandb
     if log and init:
         wandb.init(
