@@ -12,7 +12,7 @@ from datastructs import Node, Sample
 RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
 SPLITS = [0.7, 0.1, 0.2]
 
-AUDIO_EOS_LEN = 2.5
+AUDIO_EOS_LEN = 7.5
 
 seed = 0
 random.seed(seed)

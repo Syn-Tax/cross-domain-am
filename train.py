@@ -37,20 +37,20 @@ TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
 dataset_type = MultimodalDatasetConcat
-model_type = AudioOnlyEarlyModel
+model_type = ConcatEarlyLateModel
 
 MAX_TOKENS = 128
-MAX_SAMPLES = 160_000
+MAX_SAMPLES = 400_000
 
 HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 1
-EPOCHS = 25
+BATCH_SIZE = 4
+EPOCHS = 15
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
-GRAD_ACCUMULATION_STEPS = 4
+GRAD_ACCUMULATION_STEPS = 8
 
 WEIGHT_DECAY = 0
 GRAD_CLIP = 1
@@ -67,7 +67,7 @@ config = {
     "weight_decay": WEIGHT_DECAY,
     "head_size": HEAD_HIDDEN_SIZE,
     "head_layers": HEAD_HIDDEN_LAYERS,
-    "merge_strategy": "concatenation",
+    "model": model_type.__name__,
 }
 
 # set seeds
@@ -180,13 +180,13 @@ def main(
     if log and init:
         wandb.init(
             project="cross-domain-am",
-            name=f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}",
+            name=f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{str(model_type.__name__)}-{EPOCHS}",
             config=config,
         )
 
     # load loss function, optimiser and linear learning rate scheduler
-    # loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
-    loss_fn = nn.CrossEntropyLoss()
+    loss_fn = nn.CrossEntropyLoss(weight=class_weights_t)
+    # loss_fn = nn.CrossEntropyLoss()
 
     def calc_loss(outputs, targets, num_items_in_batch=None):
         return loss_fn(outputs["logits"], targets)
@@ -233,13 +233,13 @@ def main(
     trainer.train()
 
     # save model
-    # name = f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{config['merge_strategy']}-{EPOCHS}"
-    # torch.save(model.state_dict(), f"saves/{name}.pt")
+    name = f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{model_type.__name__}-{EPOCHS}"
+    torch.save(model.state_dict(), f"saves/{name}.pt")
 
     # # finish wandb run
-    # if "--log" in sys.argv:
-    #     wandb.save(f"saves/{name}.pt")
-    #     wandb.finish()
+    if "--log" in sys.argv:
+        wandb.save(f"saves/{name}.pt")
+        wandb.finish()
 
 
 if __name__ == "__main__":

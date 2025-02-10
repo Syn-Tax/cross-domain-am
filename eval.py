@@ -68,6 +68,8 @@ def metrics_fn(predictions, step="eval"):
     )
     plt.figure(figsize=(12, 7))
     sn.heatmap(df, annot=True)
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True Label")
 
     # add metric scores to dictionary
     res = {
@@ -88,7 +90,10 @@ def metrics_fn(predictions, step="eval"):
 
     # log metrics to wandb
     if "--log" in sys.argv:
-        wandb.log({"conf_mat": wandb.Image(plt), **res})
+        try:
+            wandb.log({"conf_mat": wandb.Image(plt), **res})
+        except:
+            wandb.log({**res})
 
     return res
 
