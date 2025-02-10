@@ -37,7 +37,7 @@ TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
 dataset_type = MultimodalDatasetConcat
-model_type = ConcatEarlyLateModel
+model_type = TextOnlyEarlyModel
 
 MAX_TOKENS = 128
 MAX_SAMPLES = 400_000
@@ -173,8 +173,6 @@ def main(
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
     )
-
-    model.to(device)
 
     # initialise wandb
     if log and init:
