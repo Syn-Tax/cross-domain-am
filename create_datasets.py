@@ -23,7 +23,7 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-def process(data_dir, qt_complete, splits):
+def generate_pairs(data_dir, qt_complete, splits):
     # load argument map
     with open(Path(data_dir) / "argument_map.json", "r") as f:
         argument_map = Node.schema().loads(f.read(), many=True)
@@ -166,9 +166,81 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         if process:
             self.sequence_pairs = process(data_dir, train_test_split)[split]
 
+    @property
+    def sequence_pairs(self):
+        return self._sequence_pairs
+    
+    @sequence_pairs.setter
+    def sequence_pairs(self, pairs):
+        self._sequence_pairs = pairs
+
+        self.data = []
+
+        for sample in tqdm(self._sequence_pairs):
+            # load the audio data
+            if self.qt_complete:
+                n1_audio_path = str(
+                    Path(self.data_dir)
+                    / sample.node_1.episode
+                    / "audio"
+                    / (str(sample.node_1.id) + ".wav")
+                )
+                n2_audio_path = str(
+                    Path(self.data_dir)
+                    / sample.node_2.episode
+                    / "audio"
+                    / (str(sample.node_2.id) + ".wav")
+                )
+            else:
+                n1_audio_path = str(
+                    Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
+                )
+                n2_audio_path = str(
+                    Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
+                )
+
+            n1_audio, rate = torchaudio.load(n1_audio_path)
+            self.sample_rate = rate
+            n2_audio, _ = torchaudio.load(n2_audio_path)
+
+            text_proposition = (
+                f"{sample.node_1.proposition} </s> {sample.node_2.proposition}"
+            )
+
+            audio_cat = torch.tensor([0 for _ in range(int(rate * AUDIO_EOS_LEN))])
+
+            audio_proposition = torch.cat((n1_audio[0], audio_cat, n2_audio[0]))
+
+            # tokenize the text sequences
+            text = self.tokenizer(
+                text_proposition,
+                max_length=self.max_tokens,
+                truncation=True,
+                padding="max_length",
+                return_tensors="pt",
+            )
+
+            # process the audio sequences
+            audio = self.feature_extractor(
+                audio_proposition,
+                max_length=self.max_samples,
+                sampling_rate=rate,
+                truncation=True,
+                padding="max_length",
+                return_tensors="pt",
+                return_attention_mask=True,
+            )
+
+            # return the sample
+            self.data.append({
+                "text": text,
+                "audio": audio,
+                "labels": torch.tensor([sample.labels], dtype=torch.long),
+            })
+
     def __len__(self):
         """Method to get the length of the dataset"""
-        return len(self.sequence_pairs)
+        return len(self.data)
 
     def __getitem__(self, idx):
         """Method to get the item at a specific index
@@ -179,70 +251,8 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         Returns:
             dict: sample
         """
+        return self.data[idx]
 
-        # get the relevant pair
-        sample = self.sequence_pairs[idx]
-
-        # load the audio data
-        if self.qt_complete:
-            n1_audio_path = str(
-                Path(self.data_dir)
-                / sample.node_1.episode
-                / "audio"
-                / (str(sample.node_1.id) + ".wav")
-            )
-            n2_audio_path = str(
-                Path(self.data_dir)
-                / sample.node_2.episode
-                / "audio"
-                / (str(sample.node_2.id) + ".wav")
-            )
-        else:
-            n1_audio_path = str(
-                Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
-            )
-            n2_audio_path = str(
-                Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
-            )
-
-        n1_audio, rate = torchaudio.load(n1_audio_path)
-        self.sample_rate = rate
-        n2_audio, _ = torchaudio.load(n2_audio_path)
-
-        text_proposition = (
-            f"{sample.node_1.proposition} </s> {sample.node_2.proposition}"
-        )
-
-        audio_cat = torch.tensor([0 for _ in range(int(rate * AUDIO_EOS_LEN))])
-
-        audio_proposition = torch.cat((n1_audio[0], audio_cat, n2_audio[0]))
-
-        # tokenize the text sequences
-        text = self.tokenizer(
-            text_proposition,
-            max_length=self.max_tokens,
-            truncation=True,
-            padding="max_length",
-            return_tensors="pt",
-        )
-
-        # process the audio sequences
-        audio = self.feature_extractor(
-            audio_proposition,
-            max_length=self.max_samples,
-            sampling_rate=rate,
-            truncation=True,
-            padding="max_length",
-            return_tensors="pt",
-            return_attention_mask=True,
-        )
-
-        # return the sample
-        return {
-            "text": text,
-            "audio": audio,
-            "labels": torch.tensor([sample.labels], dtype=torch.long),
-        }
 
     def save(self, path):
         with open(path, "w") as f:
@@ -320,6 +330,88 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         if process:
             self.sequence_pairs = process(data_dir, train_test_split)[split]
 
+    @property
+    def sequence_pairs(self):
+        return self._sequence_pairs
+    
+    @sequence_pairs.setter
+    def sequence_pairs(self, pairs):
+        self._sequence_pairs = pairs
+        self.data = []
+
+        for sample in pairs:
+            # load the audio data
+            if self.qt_complete:
+                n1_audio_path = str(
+                    Path(self.data_dir)
+                    / sample.node_1.episode
+                    / "audio"
+                    / (str(sample.node_1.id) + ".wav")
+                )
+                n2_audio_path = str(
+                    Path(self.data_dir)
+                    / sample.node_2.episode
+                    / "audio"
+                    / (str(sample.node_2.id) + ".wav")
+                )
+            else:
+                n1_audio_path = str(
+                    Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
+                )
+                n2_audio_path = str(
+                    Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
+                )
+
+            n1_audio, rate = torchaudio.load(n1_audio_path)
+            self.sample_rate = rate
+            n2_audio, _ = torchaudio.load(n2_audio_path)
+
+            # tokenize the text sequences
+            text1 = self.tokenizer(
+                sample.node_1.proposition,
+                max_length=self.max_tokens,
+                truncation=True,
+                padding="max_length",
+                return_tensors="pt",
+            )
+            text2 = self.tokenizer(
+                sample.node_2.proposition,
+                max_length=self.max_tokens,
+                truncation=True,
+                padding="max_length",
+                return_tensors="pt",
+            )
+
+            # process the audio sequences
+            audio1 = self.feature_extractor(
+                n1_audio[0],
+                max_length=self.max_samples,
+                sampling_rate=rate,
+                truncation=True,
+                padding="max_length",
+                return_tensors="pt",
+                return_attention_mask=True,
+            )
+            audio2 = self.feature_extractor(
+                n2_audio[0],
+                max_length=self.max_samples,
+                sampling_rate=rate,
+                truncation=True,
+                padding="max_length",
+                return_tensors="pt",
+                return_attention_mask=True,
+            )
+
+            # return the sample
+            self.data.append({
+                "text1": text1,
+                "audio1": audio1,
+                "text2": text2,
+                "audio2": audio2,
+                "labels": torch.tensor([sample.labels], dtype=torch.long),
+            })
+
+
     def __len__(self):
         """Method to get the length of the dataset"""
         return len(self.sequence_pairs)
@@ -333,80 +425,8 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         Returns:
             dict: sample
         """
+        return self.data[idx]
 
-        # get the relevant pair
-        sample = self.sequence_pairs[idx]
-
-        # load the audio data
-        if self.qt_complete:
-            n1_audio_path = str(
-                Path(self.data_dir)
-                / sample.node_1.episode
-                / "audio"
-                / (str(sample.node_1.id) + ".wav")
-            )
-            n2_audio_path = str(
-                Path(self.data_dir)
-                / sample.node_2.episode
-                / "audio"
-                / (str(sample.node_2.id) + ".wav")
-            )
-        else:
-            n1_audio_path = str(
-                Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
-            )
-            n2_audio_path = str(
-                Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
-            )
-
-        n1_audio, rate = torchaudio.load(n1_audio_path)
-        self.sample_rate = rate
-        n2_audio, _ = torchaudio.load(n2_audio_path)
-
-        # tokenize the text sequences
-        text1 = self.tokenizer(
-            sample.node_1.proposition,
-            max_length=self.max_tokens,
-            truncation=True,
-            padding="max_length",
-            return_tensors="pt",
-        )
-        text2 = self.tokenizer(
-            sample.node_2.proposition,
-            max_length=self.max_tokens,
-            truncation=True,
-            padding="max_length",
-            return_tensors="pt",
-        )
-
-        # process the audio sequences
-        audio1 = self.feature_extractor(
-            n1_audio[0],
-            max_length=self.max_samples,
-            sampling_rate=rate,
-            truncation=True,
-            padding="max_length",
-            return_tensors="pt",
-            return_attention_mask=True,
-        )
-        audio2 = self.feature_extractor(
-            n2_audio[0],
-            max_length=self.max_samples,
-            sampling_rate=rate,
-            truncation=True,
-            padding="max_length",
-            return_tensors="pt",
-            return_attention_mask=True,
-        )
-
-        # return the sample
-        return {
-            "text1": text1,
-            "audio1": audio1,
-            "text2": text2,
-            "audio2": audio2,
-            "labels": torch.tensor([sample.labels], dtype=torch.long),
-        }
 
     def save(self, path):
         with open(path, "w") as f:
@@ -503,7 +523,7 @@ if __name__ == "__main__":
 
     for i in range(len(data_dirs)):
         print(f"############### {data_dirs[i].split('/')[-1]} ############")
-        splits = process(data_dirs[i], qt_complete[i], SPLITS)
+        splits = generate_pairs(data_dirs[i], qt_complete[i], SPLITS)
         get_metrics(splits[0])
         get_metrics(splits[1])
         get_metrics(splits[2])
