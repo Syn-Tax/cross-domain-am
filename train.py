@@ -9,13 +9,17 @@ import tqdm
 import wandb
 import sys
 import time
+import accelerate
 
 from create_datasets import *
 from models import *
 from eval import metrics_fn, id_eval, cd_eval, load_cd
 from utils import move_batch
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+accelerator = accelerate.Accelerator()
+device = accelerator.device
 
 
 # data parameters
@@ -24,7 +28,7 @@ CD_DIRS = [
     "data/Moral Maze/Banking",
     "data/Moral Maze/Empire",
     "data/Moral Maze/Families",
-    # "data/Moral Maze/GreenBelt",
+    "data/Moral Maze/GreenBelt",
     "data/Moral Maze/Hypocrisy",
     "data/Moral Maze/Money",
     "data/Moral Maze/Syria",
@@ -37,20 +41,20 @@ TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
 dataset_type = MultimodalDatasetConcat
-model_type = TextOnlyEarlyModel
+model_type = MultimodalEarlyLateModel
 
 MAX_TOKENS = 128
-MAX_SAMPLES = 400_000
+MAX_SAMPLES = 320_000
 
 HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 4
+BATCH_SIZE = 2
 EPOCHS = 15
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
-GRAD_ACCUMULATION_STEPS = 8
+GRAD_ACCUMULATION_STEPS = 16
 
 WEIGHT_DECAY = 0
 GRAD_CLIP = 1
@@ -67,6 +71,8 @@ config = {
     "weight_decay": WEIGHT_DECAY,
     "head_size": HEAD_HIDDEN_SIZE,
     "head_layers": HEAD_HIDDEN_LAYERS,
+    "max_tokens": MAX_TOKENS,
+    "max_samples": MAX_SAMPLES,
     "model": model_type.__name__,
 }
 
@@ -134,18 +140,6 @@ def main(
         qt_complete=QT_COMPLETE,
     )
 
-    # load cross domain evaluation sets
-    print("#### cross domain ####")
-    # cd_dataloaders = load_cd(
-    #     CD_DIRS,
-    #     batch_size,
-    #     collate_fn,
-    #     TEXT_ENCODER,
-    #     AUDIO_ENCODER,
-    #     MAX_TOKENS,
-    #     MAX_SAMPLES,
-    # )
-
     # calculate class weights for use in the weighted cross entropy loss
     class_weights = [
         max(train_dataset.weights.values()) / v
@@ -173,6 +167,9 @@ def main(
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
     )
+    # model = nn.DataParallel(model)
+    # model.to(device)
+    model = accelerator.prepare(model)
 
     # initialise wandb
     if log and init:
@@ -216,6 +213,12 @@ def main(
         remove_unused_columns=False,
         label_names=["labels"],
         bf16=True,
+        load_best_model_at_end=True,
+        save_total_limit=2,
+        metric_for_best_model="eval_macro_f1",
+        save_strategy="epoch",
+        dataloader_num_workers=0,
+        torch_empty_cache_steps=10,
     )
 
     trainer = LossTrainer(
@@ -233,6 +236,19 @@ def main(
     # save model
     name = f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{model_type.__name__}-{EPOCHS}"
     torch.save(model.state_dict(), f"saves/{name}.pt")
+
+    # cross-domain evaluation
+    print("#### cross domain ####")
+    cd_datasets = load_cd(
+        CD_DIRS,
+        TEXT_ENCODER,
+        AUDIO_ENCODER,
+        MAX_TOKENS,
+        MAX_SAMPLES,
+        dataset_type,
+    )
+
+    cd_eval(cd_datasets, [x.split("/")[-1] for x in CD_DIRS], trainer)
 
     # # finish wandb run
     if "--log" in sys.argv:

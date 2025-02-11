@@ -96,7 +96,7 @@ class TextOnlyEarlyModel(nn.Module):
         # return classification logits
         logits = self.head(hidden_vector)
 
-        time.sleep(0.1)
+        # time.sleep(0.1)
 
         return {"logits": logits}
 

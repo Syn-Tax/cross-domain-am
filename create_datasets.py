@@ -510,7 +510,7 @@ class AudioOnlyDatasetConcat(torch.utils.data.Dataset):
         max_samples,
         qt_complete=False,
     ):
-        s = MultimodalDatasetConcat(
+        s = AudioOnlyDatasetConcat(
             data_dir,
             tokenizer,
             feature_extractor,

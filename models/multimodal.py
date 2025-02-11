@@ -2,7 +2,6 @@ import torch
 import torch.nn.functional as F
 import torch.nn as nn
 import transformers
-import time
 
 from models.heads import *
 
@@ -35,7 +34,7 @@ class MultimodalLateLateModel(nn.Module):
         freeze_encoders=False,
         initialisation="kaiming_normal",
         sequence_fusion="concatenation",
-        modality_fusion="concatenation"
+        modality_fusion="concatenation",
     ):
         super().__init__()
 
@@ -69,10 +68,7 @@ class MultimodalLateLateModel(nn.Module):
         self.text_hidden_size = self.text_config.hidden_size
         self.audio_hidden_size = self.audio_config.hidden_size
 
-        hidden_input_size = 0
-
-
-        self.head = MLPMultilayerClassificationHead(
+        self.head = MLPClassificationHead(
             self.text_hidden_size * 2 + self.audio_hidden_size * 2,
             n_classes,
             head_hidden_size,
@@ -163,7 +159,7 @@ class MultimodalLateLateModel(nn.Module):
             param[1].requires_grad = True
 
 
-class ConcatEarlyLateModel(nn.Module):
+class MultimodalEarlyLateModel(nn.Module):
     """Multimodal classification model
     fusion strategy: late concatenation
     classification head: Multi-layer perceptron
@@ -212,7 +208,7 @@ class ConcatEarlyLateModel(nn.Module):
         # initialise classification head
         self.text_hidden_size = self.text_config.hidden_size
         self.audio_hidden_size = self.audio_config.hidden_size
-        self.head = MLPMultilayerClassificationHead(
+        self.head = MLPClassificationHead(
             self.text_hidden_size + self.audio_hidden_size,
             n_classes,
             head_hidden_size,
@@ -270,8 +266,6 @@ class ConcatEarlyLateModel(nn.Module):
 
         # return classification logits
         logits = self.head(hidden_vector)
-
-        time.sleep(0.1)
 
         return {"logits": logits}
 
