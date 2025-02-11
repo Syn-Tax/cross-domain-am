@@ -73,27 +73,25 @@ def metrics_fn(predictions, step="eval"):
 
     # add metric scores to dictionary
     res = {
-        f"{step}/macro_f1": macro_f1_score,
-        f"{step}/micro_f1": micro_f1_score,
-        f"{step}/NO_f1": float(class_f1_score[0]),
-        f"{step}/RA_f1": float(class_f1_score[1]),
-        f"{step}/CA_f1": float(class_f1_score[2]),
-        f"{step}/MA_f1": float(class_f1_score[3]),
-        f"{step}/accuracy": accuracy_score,
-        f"{step}/macro_precision": precision_score,
-        f"{step}/macro_recall": recall_score,
+        f"macro_f1": macro_f1_score,
+        f"micro_f1": micro_f1_score,
+        f"NO_f1": float(class_f1_score[0]),
+        f"RA_f1": float(class_f1_score[1]),
+        f"CA_f1": float(class_f1_score[2]),
+        f"MA_f1": float(class_f1_score[3]),
+        f"accuracy": accuracy_score,
+        f"macro_precision": precision_score,
+        f"macro_recall": recall_score,
         # f"{step}/epoch_loss": float(loss),
     }
 
-    # print out to the logs
     print(res)
 
     # log metrics to wandb
     if "--log" in sys.argv:
-        try:
-            wandb.log({"conf_mat": wandb.Image(plt), **res})
-        except:
-            wandb.log({**res})
+        wandb.log({"conf_mat": wandb.Image(plt)})
+
+    plt.close()
 
     return res
 
@@ -137,15 +135,14 @@ def id_eval(eval_dataloader, model, metrics, loss_fn, device):
     eval(eval_dataloader, model, metrics, loss_fn, device)
 
 
-def cd_eval(dataloaders, datasets, model, metrics, loss_fn, device):
-    for loader, dataset in zip(dataloaders, datasets):
-        eval(loader, model, metrics, device, loss_fn, loader=dataset)
+def cd_eval(datasets, dataset_names, trainer):
+    for dataset, name in zip(datasets, dataset_names):
+        print(f"#################### {name} ####################")
+        trainer.predict(dataset, metric_key_prefix=f"test/{name}")
 
 
 def load_cd(
     data_dirs,
-    batch_size,
-    collate_fn,
     text_encoder,
     audio_encoder,
     max_tokens,
@@ -153,7 +150,7 @@ def load_cd(
     dataset_type,
     qt_complete=False,
 ):
-    dataloaders = []
+    datasets = []
 
     for dir in data_dirs:
         dataset = dataset_type.load(
@@ -166,10 +163,6 @@ def load_cd(
             qt_complete=qt_complete,
         )
 
-        dataloader = torch.utils.data.DataLoader(
-            dataset, batch_size, collate_fn=collate_fn, shuffle=True
-        )
+        datasets.append(dataset)
 
-        dataloaders.append(dataloader)
-
-    return dataloaders
+    return datasets
