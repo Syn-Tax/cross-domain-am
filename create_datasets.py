@@ -36,8 +36,8 @@ def process(data_dir, qt_complete, splits):
     num_ra = 0
     for n1, n2 in tqdm(itertools.combinations(argument_map, 2)):
         # ignore combinations where neither node has a relation
-        if n1.relations == [] and n2.relations == []:
-            continue
+        # if n1.relations == [] and n2.relations == []:
+        #     continue
 
         # check for the label type
         label = 0
@@ -760,15 +760,15 @@ if __name__ == "__main__":
         get_metrics(splits[1])
         get_metrics(splits[2])
 
-        save(data_dirs[i] + "/train.json", splits[0])
-        save(data_dirs[i] + "/eval.json", splits[1])
-        save(data_dirs[i] + "/test.json", splits[2])
+        save(data_dirs[i] + "/train-3.json", splits[0])
+        save(data_dirs[i] + "/eval-3.json", splits[1])
+        save(data_dirs[i] + "/test-3.json", splits[2])
 
         complete = splits[0]
         complete.extend(splits[1])
         complete.extend(splits[2])
 
-        # MultimodalDataset.save(data_dirs[i] + "/complete.json", complete)
+        save(data_dirs[i] + "/complete-3.json", complete)
 
         print("############## COMPLETE #############")
         get_metrics(complete)
