@@ -9,7 +9,7 @@ import random
 from datastructs import Node, Sample
 
 
-RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
+RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 1}
 SPLITS = [0.7, 0.1, 0.2]
 
 CA_OVERSAMPLING_RATE = 3
