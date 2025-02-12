@@ -51,7 +51,7 @@ HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
 BATCH_SIZE = 2
-EPOCHS = 15
+EPOCHS = 30
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
 GRAD_ACCUMULATION_STEPS = 16
@@ -120,7 +120,7 @@ def main(
     # load/generate datasets
     print("#### train ####")
     train_dataset = dataset_type.load(
-        ID_DATA_DIR + "/train.json",
+        ID_DATA_DIR + "/train-3.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -131,7 +131,7 @@ def main(
 
     print("#### eval ####")
     eval_dataset = dataset_type.load(
-        ID_DATA_DIR + "/eval.json",
+        ID_DATA_DIR + "/eval-3.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -166,6 +166,7 @@ def main(
         activation=activation,
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
+        n_classes=3,
     )
     # model = nn.DataParallel(model)
     # model.to(device)
@@ -238,17 +239,17 @@ def main(
     torch.save(model.state_dict(), f"saves/{name}.pt")
 
     # cross-domain evaluation
-    print("#### cross domain ####")
-    cd_datasets = load_cd(
-        CD_DIRS,
-        TEXT_ENCODER,
-        AUDIO_ENCODER,
-        MAX_TOKENS,
-        MAX_SAMPLES,
-        dataset_type,
-    )
+    # print("#### cross domain ####")
+    # cd_datasets = load_cd(
+    #     CD_DIRS,
+    #     TEXT_ENCODER,
+    #     AUDIO_ENCODER,
+    #     MAX_TOKENS,
+    #     MAX_SAMPLES,
+    #     dataset_type,
+    # )
 
-    cd_eval(cd_datasets, [x.split("/")[-1] for x in CD_DIRS], trainer)
+    # cd_eval(cd_datasets, [x.split("/")[-1] for x in CD_DIRS], trainer)
 
     # # finish wandb run
     if "--log" in sys.argv:

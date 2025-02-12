@@ -89,7 +89,10 @@ def metrics_fn(predictions, step="eval"):
 
     # log metrics to wandb
     if "--log" in sys.argv:
-        wandb.log({"conf_mat": wandb.Image(plt)})
+        try:
+            wandb.log({"conf_mat": wandb.Image(plt)})
+        except:
+            pass
 
     plt.close()
 
