@@ -40,8 +40,8 @@ QT_COMPLETE = True
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
-dataset_type = MultimodalDatasetConcat
-model_type = MultimodalEarlyLateModel
+dataset_type = TextOnlyDatasetConcat
+model_type = TextOnlyEarlyModel
 
 MAX_TOKENS = 128
 MAX_SAMPLES = 320_000
@@ -50,11 +50,11 @@ HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 2
+BATCH_SIZE = 32
 EPOCHS = 30
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
-GRAD_ACCUMULATION_STEPS = 16
+GRAD_ACCUMULATION_STEPS = 1
 
 WEIGHT_DECAY = 0
 GRAD_CLIP = 1

@@ -12,7 +12,7 @@ from datastructs import Node, Sample
 RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 1}
 SPLITS = [0.7, 0.1, 0.2]
 
-CA_OVERSAMPLING_RATE = 3
+CA_OVERSAMPLING_RATE = 1
 
 AUDIO_EOS_LEN = 7.5
 
@@ -107,9 +107,11 @@ def get_metrics(data):
             [p.labels for p in data].count(x) / len(data),
             2,
         )
-        for x in [0, 1, 2, 3]
+        for x in set(RELATION_TYPES.values())
     }
-    counts = {x: [p.labels for p in data].count(x) for x in [0, 1, 2, 3]}
+    counts = {
+        x: [p.labels for p in data].count(x) for x in set(RELATION_TYPES.values())
+    }
     print(weights)
     print(counts)
 
@@ -169,7 +171,7 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
     @property
     def sequence_pairs(self):
         return self._sequence_pairs
-    
+
     @sequence_pairs.setter
     def sequence_pairs(self, pairs):
         self._sequence_pairs = pairs
@@ -232,11 +234,13 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
             )
 
             # return the sample
-            self.data.append({
-                "text": text,
-                "audio": audio,
-                "labels": torch.tensor([sample.labels], dtype=torch.long),
-            })
+            self.data.append(
+                {
+                    "text": text,
+                    "audio": audio,
+                    "labels": torch.tensor([sample.labels], dtype=torch.long),
+                }
+            )
 
     def __len__(self):
         """Method to get the length of the dataset"""
@@ -252,7 +256,6 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
             dict: sample
         """
         return self.data[idx]
-
 
     def save(self, path):
         with open(path, "w") as f:
@@ -585,7 +588,7 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
     @property
     def sequence_pairs(self):
         return self._sequence_pairs
-    
+
     @sequence_pairs.setter
     def sequence_pairs(self, pairs):
         self._sequence_pairs = pairs
@@ -655,14 +658,15 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
             )
 
             # return the sample
-            self.data.append({
-                "text1": text1,
-                "audio1": audio1,
-                "text2": text2,
-                "audio2": audio2,
-                "labels": torch.tensor([sample.labels], dtype=torch.long),
-            })
-
+            self.data.append(
+                {
+                    "text1": text1,
+                    "audio1": audio1,
+                    "text2": text2,
+                    "audio2": audio2,
+                    "labels": torch.tensor([sample.labels], dtype=torch.long),
+                }
+            )
 
     def __len__(self):
         """Method to get the length of the dataset"""
@@ -678,7 +682,6 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
             dict: sample
         """
         return self.data[idx]
-
 
     def save(self, path):
         with open(path, "w") as f:

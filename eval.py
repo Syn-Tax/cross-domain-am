@@ -36,15 +36,15 @@ def metrics_fn(predictions, step="eval"):
 
     # calculate metric scores
     macro_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2, 3], average="macro"
+        predictions=preds, references=targets, labels=[0, 1, 2], average="macro"
     )["f1"]
 
     micro_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2, 3], average="micro"
+        predictions=preds, references=targets, labels=[0, 1, 2], average="micro"
     )["f1"]
 
     class_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2, 3], average=None
+        predictions=preds, references=targets, labels=[0, 1, 2], average=None
     )["f1"]
 
     accuracy_score = accuracy.compute(predictions=preds, references=targets)["accuracy"]
@@ -58,7 +58,7 @@ def metrics_fn(predictions, step="eval"):
     )["recall"]
 
     # loss = loss_fn(logits, targets)
-    class_names = ["NO", "RA", "CA", "MA"]
+    class_names = ["None", "Support", "Attack"]
 
     cm = skm.confusion_matrix(targets, preds)
     df = pd.DataFrame(
@@ -78,7 +78,7 @@ def metrics_fn(predictions, step="eval"):
         f"NO_f1": float(class_f1_score[0]),
         f"RA_f1": float(class_f1_score[1]),
         f"CA_f1": float(class_f1_score[2]),
-        f"MA_f1": float(class_f1_score[3]),
+        # f"MA_f1": float(class_f1_score[3]),
         f"accuracy": accuracy_score,
         f"macro_precision": precision_score,
         f"macro_recall": recall_score,
