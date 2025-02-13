@@ -120,7 +120,7 @@ def main(
     # load/generate datasets
     print("#### train ####")
     train_dataset = dataset_type.load(
-        ID_DATA_DIR + "/train-3.json",
+        ID_DATA_DIR + "/train-LCS.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -131,7 +131,7 @@ def main(
 
     print("#### eval ####")
     eval_dataset = dataset_type.load(
-        ID_DATA_DIR + "/eval-3.json",
+        ID_DATA_DIR + "/eval-LCS.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -166,7 +166,7 @@ def main(
         activation=activation,
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
-        n_classes=3,
+        n_classes=4,
     )
     # model = nn.DataParallel(model)
     # model.to(device)
