@@ -59,7 +59,11 @@ def generate_pairs(data_dir, qt_complete, splits):
             if qt_complete and n1.episode != n2.episode and NO_SAMPLING_TYPE == "SCS":
                 continue  # we ignore nodes which are not in the same QT episode, if short context is the selected sampling strategy
             if counter % 10 == 0:  # only add every 10th sample to save memory
-                no_relation_sequence_pairs.append(Sample(n1, n2, label))
+                if NO_SAMPLING_TYPE == "LCS" and n1.episode != n2.episode:
+                    no_relation_sequence_pairs.append(Sample(n1, n2, label))
+                elif NO_SAMPLING_TYPE != "LCS" or not qt_complete:
+                    no_relation_sequence_pairs.append(Sample(n1, n2, label))
+
             counter += 1
         else:
             relation_sequence_pairs.append(Sample(n1, n2, label))
@@ -67,6 +71,10 @@ def generate_pairs(data_dir, qt_complete, splits):
             if label == RELATION_TYPES["CA"]:
                 for _ in range(CA_OVERSAMPLING_RATE - 1):
                     relation_sequence_pairs.append(Sample(n1, n2, label))
+
+    print(len(relation_sequence_pairs))
+    print(len(no_relation_sequence_pairs))
+    print(num_ra)
 
     # add node pairs with relations
     sequence_pairs.extend(relation_sequence_pairs)
