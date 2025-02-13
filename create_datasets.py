@@ -11,8 +11,9 @@ from datastructs import Node, Sample
 
 RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 1}
 SPLITS = [0.7, 0.1, 0.2]
+NO_SAMPLING_TYPE = "LCS"
 
-CA_OVERSAMPLING_RATE = 1
+CA_OVERSAMPLING_RATE = 3
 
 AUDIO_EOS_LEN = 7.5
 
@@ -49,14 +50,14 @@ def generate_pairs(data_dir, qt_complete, splits):
             idx = [r.to_node_id for r in n2.relations].index(n1.id)
             label = RELATION_TYPES[n2.relations[idx].type]
 
-        # add to counter if RA relationh
+        # add to counter if RA relation
         if label == RELATION_TYPES["RA"]:
             num_ra += 1
 
         # if there is no relation, add to separate list - this is used to sample the NO samples
         if label == 0:
-            if qt_complete and n1.episode != n2.episode:
-                continue  # we ignore nodes which are not in the same QT episode
+            if qt_complete and n1.episode != n2.episode and NO_SAMPLING_TYPE == "SCS":
+                continue  # we ignore nodes which are not in the same QT episode, if short context is the selected sampling strategy
             if counter % 10 == 0:  # only add every 10th sample to save memory
                 no_relation_sequence_pairs.append(Sample(n1, n2, label))
             counter += 1
@@ -783,15 +784,15 @@ if __name__ == "__main__":
         get_metrics(splits[1])
         get_metrics(splits[2])
 
-        save(data_dirs[i] + "/train-3.json", splits[0])
-        save(data_dirs[i] + "/eval-3.json", splits[1])
-        save(data_dirs[i] + "/test-3.json", splits[2])
+        save(data_dirs[i] + "/train-3-LCS.json", splits[0])
+        save(data_dirs[i] + "/eval-3-LCS.json", splits[1])
+        save(data_dirs[i] + "/test-3-LCS.json", splits[2])
 
         complete = splits[0]
         complete.extend(splits[1])
         complete.extend(splits[2])
 
-        save(data_dirs[i] + "/complete-3.json", complete)
+        save(data_dirs[i] + "/complete-3-LCS.json", complete)
 
         print("############## COMPLETE #############")
         get_metrics(complete)
