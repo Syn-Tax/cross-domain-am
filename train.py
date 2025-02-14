@@ -40,8 +40,8 @@ QT_COMPLETE = True
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
-dataset_type = TextOnlyDatasetConcat
-model_type = TextOnlyEarlyModel
+dataset_type = AudioOnlyDatasetConcat
+model_type = AudioOnlyEarlyModel
 
 MAX_TOKENS = 128
 MAX_SAMPLES = 320_000
@@ -50,11 +50,11 @@ HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 32
-EPOCHS = 30
+BATCH_SIZE = 4
+EPOCHS = 15
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
-GRAD_ACCUMULATION_STEPS = 1
+GRAD_ACCUMULATION_STEPS = 8
 
 WEIGHT_DECAY = 0
 GRAD_CLIP = 1
@@ -116,11 +116,12 @@ def main(
     grad_clip,
     log=False,
     init=True,
+    file_append="",
 ):
     # load/generate datasets
     print("#### train ####")
     train_dataset = dataset_type.load(
-        ID_DATA_DIR + "/train-LCS.json",
+        ID_DATA_DIR + f"/train{file_append}.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -131,7 +132,7 @@ def main(
 
     print("#### eval ####")
     eval_dataset = dataset_type.load(
-        ID_DATA_DIR + "/eval-LCS.json",
+        ID_DATA_DIR + f"/eval{file_append}.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -166,7 +167,7 @@ def main(
         activation=activation,
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
-        n_classes=4,
+        n_classes=3,
     )
     # model = nn.DataParallel(model)
     # model.to(device)
@@ -277,4 +278,5 @@ if __name__ == "__main__":
         GRAD_CLIP,
         ("--log" in sys.argv),
         True,
+        "-3-LCS",
     )
