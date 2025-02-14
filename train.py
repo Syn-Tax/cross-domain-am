@@ -278,5 +278,5 @@ if __name__ == "__main__":
         GRAD_CLIP,
         ("--log" in sys.argv),
         True,
-        "-3-LCS",
+        "-3-US",
     )
