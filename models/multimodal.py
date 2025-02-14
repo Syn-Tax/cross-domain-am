@@ -179,8 +179,13 @@ class MultimodalEarlyLateModel(nn.Module):
         activation="relu",
         freeze_encoders=False,
         initialisation="kaiming_normal",
+        audio_pooling_method="mean",
+        mm_fusion_method="concatenation",
     ):
         super().__init__()
+
+        self.mm_fusion_method = mm_fusion_method
+        self.audio_pooling_method = audio_pooling_method
 
         # load encoder configurations
         self.text_config = transformers.RobertaConfig.from_pretrained(
@@ -205,11 +210,20 @@ class MultimodalEarlyLateModel(nn.Module):
         self.text_dropout = nn.Dropout(p=text_dropout)
         self.audio_dropout = nn.Dropout(p=audio_dropout)
 
-        # initialise classification head
+        # get encoder hidden sizes
         self.text_hidden_size = self.text_config.hidden_size
         self.audio_hidden_size = self.audio_config.hidden_size
+
+        # calculate required output size
+        if mm_fusion_method == "concatenation":
+            self.hidden_size = self.text_hidden_size + self.audio_hidden_size
+        else:
+            assert self.text_hidden_size == self.audio_hidden_size
+            self.hidden_size = self.text_hidden_size
+
+        # initialise classification head
         self.head = MLPClassificationHead(
-            self.text_hidden_size + self.audio_hidden_size,
+            self.hidden_size,
             n_classes,
             head_hidden_size,
             head_hidden_layers,
@@ -241,14 +255,30 @@ class MultimodalEarlyLateModel(nn.Module):
         audio_encoding = self.audio_dropout(audio_encoding)
 
         # pool audio encodings using mean
-        audio_encoding_pooled = audio_encoding.mean(dim=1)
+        if self.audio_pooling_method == "mean":
+            audio_encoding_pooled = audio_encoding.mean(dim=1)
+        elif self.audio_pooling_method == "last":
+            audio_encoding_pooled = audio_encoding[:,-1,:]
+        elif self.audio_pooling_method == "first":
+            audio_encoding_pooled = audio_encoding[:, 0, :]
+        elif self.audio_pooling_method == "max":
+            audio_encoding_pooled = audio_encoding.max(dim=1)
+        elif self.audio_pooling_method == "min":
+            audio_encoding_pooled = audio_encoding.min(dim=1)
+        else:
+            raise ValueError("Invalid audio pooling method")
 
-        # concatenate text and audio encodings
-        concat_encoding = torch.cat(
-            (text_encoding_pooled, audio_encoding_pooled), dim=-1
-        )
+        # perform multimodal fusion
+        if self.mm_fusion_method == "concatenation":
+            hidden_vector = torch.cat(
+                (text_encoding_pooled, audio_encoding_pooled), dim=-1
+            )
+        elif self.mm_fusion_method == "product":
+            hidden_vector = torch.mul(text_encoding_pooled, audio_encoding_pooled)
+        else:
+            raise ValueError("Invalid multimodal fusion method")
 
-        return concat_encoding
+        return hidden_vector
 
     def forward(self, audio, text, **kwargs):
         """Model's forward method
