@@ -9,7 +9,7 @@ import random
 from datastructs import Node, Sample
 
 
-RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 1}
+RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
 SPLITS = [0.7, 0.1, 0.2]
 NO_SAMPLING_TYPE = "US"
 
@@ -792,15 +792,15 @@ if __name__ == "__main__":
         get_metrics(splits[1])
         get_metrics(splits[2])
 
-        save(data_dirs[i] + "/train-3-US.json", splits[0])
-        save(data_dirs[i] + "/eval-3-US.json", splits[1])
-        save(data_dirs[i] + "/test-3-US.json", splits[2])
+        save(data_dirs[i] + "/train-US.json", splits[0])
+        save(data_dirs[i] + "/eval-US.json", splits[1])
+        save(data_dirs[i] + "/test-US.json", splits[2])
 
         complete = splits[0]
         complete.extend(splits[1])
         complete.extend(splits[2])
 
-        save(data_dirs[i] + "/complete-3-US.json", complete)
+        save(data_dirs[i] + "/complete-US.json", complete)
 
         print("############## COMPLETE #############")
         get_metrics(complete)
