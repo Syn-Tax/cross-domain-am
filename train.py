@@ -50,11 +50,11 @@ HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 1
-EPOCHS = 30
+BATCH_SIZE = 4
+EPOCHS = 15
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
-GRAD_ACCUMULATION_STEPS = 1
+GRAD_ACCUMULATION_STEPS = 8
 
 WEIGHT_DECAY = 0
 GRAD_CLIP = 1
@@ -116,6 +116,7 @@ def main(
     grad_clip,
     log=False,
     init=True,
+    file_append="",
 ):
     # load/generate datasets
     print("#### train ####")
@@ -278,4 +279,5 @@ if __name__ == "__main__":
         GRAD_CLIP,
         ("--log" in sys.argv),
         True,
+        "-3-US",
     )

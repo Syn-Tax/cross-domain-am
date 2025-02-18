@@ -190,7 +190,7 @@ class AudioOnlyEarlyModel(nn.Module):
 
         return audio_encoding_pooled
 
-    def forward(self, audio, text, **kwargs):
+    def forward(self, audio, **kwargs):
         """Model's forward method
 
         Args:
