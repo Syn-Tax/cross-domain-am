@@ -40,8 +40,8 @@ QT_COMPLETE = True
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
-dataset_type = AudioOnlyDatasetConcat
-model_type = AudioOnlyEarlyModel
+dataset_type = MultimodalDatasetConcat
+model_type = MultimodalEarlyLateModel
 
 MAX_TOKENS = 128
 MAX_SAMPLES = 320_000
@@ -121,7 +121,7 @@ def main(
     # load/generate datasets
     print("#### train ####")
     train_dataset = dataset_type.load(
-        ID_DATA_DIR + f"/train{file_append}.json",
+        ID_DATA_DIR + "/train.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -132,7 +132,7 @@ def main(
 
     print("#### eval ####")
     eval_dataset = dataset_type.load(
-        ID_DATA_DIR + f"/eval{file_append}.json",
+        ID_DATA_DIR + "/eval.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -167,7 +167,8 @@ def main(
         activation=activation,
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
-        n_classes=3,
+        n_classes=4,
+        mm_fusion_method="ca_audio"
     )
     # model = nn.DataParallel(model)
     # model.to(device)
