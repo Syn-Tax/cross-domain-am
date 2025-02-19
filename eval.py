@@ -19,6 +19,8 @@ accuracy = evaluate.load("accuracy")
 precision = evaluate.load("precision")
 recall = evaluate.load("recall")
 
+N_CLASSES = 4
+
 
 def metrics_fn(predictions, step="eval"):
     """Method to calculate the metric scores for a specific set of logits and target labels
@@ -36,15 +38,24 @@ def metrics_fn(predictions, step="eval"):
 
     # calculate metric scores
     macro_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2], average="macro"
+        predictions=preds,
+        references=targets,
+        labels=list(range(N_CLASSES)),
+        average="macro",
     )["f1"]
 
     micro_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2], average="micro"
+        predictions=preds,
+        references=targets,
+        labels=list(range(N_CLASSES)),
+        average="micro",
     )["f1"]
 
     class_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2], average=None
+        predictions=preds,
+        references=targets,
+        labels=list(range(N_CLASSES)),
+        average=None,
     )["f1"]
 
     accuracy_score = accuracy.compute(predictions=preds, references=targets)["accuracy"]
@@ -58,8 +69,10 @@ def metrics_fn(predictions, step="eval"):
     )["recall"]
 
     # loss = loss_fn(logits, targets)
-    class_names = ["None", "Support", "Attack"]
-    # class_names = ["NO", "RA", "CA", "MA"]
+    if N_CLASSES == 3:
+        class_names = ["None", "Support", "Attack"]
+    elif N_CLASSES == 4:
+        class_names = ["NO", "RA", "CA", "MA"]
 
     cm = skm.confusion_matrix(targets, preds)
     df = pd.DataFrame(
@@ -76,15 +89,14 @@ def metrics_fn(predictions, step="eval"):
     res = {
         f"macro_f1": macro_f1_score,
         f"micro_f1": micro_f1_score,
-        f"NO_f1": float(class_f1_score[0]),
-        f"RA_f1": float(class_f1_score[1]),
-        f"CA_f1": float(class_f1_score[2]),
-        # f"MA_f1": float(class_f1_score[3]),
         f"accuracy": accuracy_score,
         f"macro_precision": precision_score,
         f"macro_recall": recall_score,
         # f"{step}/epoch_loss": float(loss),
     }
+
+    for name, f1 in zip(class_names, class_f1_score):
+        res[f"{name}_f1"] = f1
 
     print(res)
 

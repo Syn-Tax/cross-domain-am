@@ -13,7 +13,7 @@ import accelerate
 
 from create_datasets import *
 from models import *
-from eval import metrics_fn, id_eval, cd_eval, load_cd
+from eval import metrics_fn, id_eval, cd_eval, load_cd, N_CLASSES
 from utils import move_batch
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -117,7 +117,9 @@ def main(
     log=False,
     init=True,
     file_append="",
+    n_classes=4,
 ):
+    N_CLASSES = n_classes
     # load/generate datasets
     print("#### train ####")
     train_dataset = dataset_type.load(
@@ -168,7 +170,7 @@ def main(
         freeze_encoders=freeze_encoders,
         initialisation=initialisation,
         n_classes=4,
-        mm_fusion_method="ca_audio"
+        mm_fusion_method="ca_text",
     )
     # model = nn.DataParallel(model)
     # model.to(device)
