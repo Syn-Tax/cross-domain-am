@@ -274,6 +274,7 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         feature_extractor,
         max_tokens,
         max_samples,
+        relation_types,
         qt_complete=False,
     ):
         s = MultimodalDatasetConcat(
@@ -289,7 +290,7 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
 
-        s.weights, s.counts = get_metrics(s.sequence_pairs)
+        s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
 
         return s
 
@@ -386,6 +387,7 @@ class TextOnlyDatasetConcat(torch.utils.data.Dataset):
         feature_extractor,
         max_tokens,
         max_samples,
+        relation_types,
         qt_complete=False,
     ):
         s = TextOnlyDatasetConcat(
@@ -401,7 +403,7 @@ class TextOnlyDatasetConcat(torch.utils.data.Dataset):
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
 
-        s.weights, s.counts = get_metrics(s.sequence_pairs)
+        s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
 
         return s
 
@@ -524,6 +526,7 @@ class AudioOnlyDatasetConcat(torch.utils.data.Dataset):
         feature_extractor,
         max_tokens,
         max_samples,
+        relation_types,
         qt_complete=False,
     ):
         s = AudioOnlyDatasetConcat(
@@ -539,7 +542,7 @@ class AudioOnlyDatasetConcat(torch.utils.data.Dataset):
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
 
-        s.weights, s.counts = get_metrics(s.sequence_pairs)
+        s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
 
         return s
 
@@ -686,6 +689,7 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         feature_extractor,
         max_tokens,
         max_samples,
+        relation_types,
         qt_complete=False,
     ):
         s = MultimodalDatasetNoConcat(
@@ -701,7 +705,7 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
 
-        s.weights, s.counts = get_metrics(s.sequence_pairs)
+        s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
 
         return s
 
@@ -790,7 +794,11 @@ if __name__ == "__main__":
                 save(data_dir + f"/complete-{class_prob}-{no_sampling}.json", complete)
 
                 for resampling in resamplings.keys():
-                    out = resample(splits[0], classes[class_prob], resamplings[resampling][class_prob])
+                    out = resample(
+                        splits[0],
+                        classes[class_prob],
+                        resamplings[resampling][class_prob],
+                    )
                     save(
                         data_dir
                         + f"/train-{class_prob}-{no_sampling}-{resampling}.json",

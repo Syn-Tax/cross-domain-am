@@ -40,8 +40,8 @@ QT_COMPLETE = True
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
-dataset_type = MultimodalDatasetConcat
-model_type = MultimodalEarlyLateModel
+dataset_type = TextOnlyDatasetConcat
+model_type = TextOnlyEarlyModel
 
 MAX_TOKENS = 128
 MAX_SAMPLES = 320_000
@@ -50,7 +50,7 @@ HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 4
+BATCH_SIZE = 64
 EPOCHS = 15
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
@@ -58,6 +58,11 @@ GRAD_ACCUMULATION_STEPS = 8
 
 WEIGHT_DECAY = 0
 GRAD_CLIP = 1
+
+RELATION_TYPES = {
+    3: {"None": 0, "Support": 1, "Attack": 2},
+    4: {"NO": 0, "RA": 1, "CA": 2, "MA": 3},
+}
 
 # configuration dictionary passed to wandb
 config = {
@@ -123,23 +128,25 @@ def main(
     # load/generate datasets
     print("#### train ####")
     train_dataset = dataset_type.load(
-        ID_DATA_DIR + "/train.json",
+        ID_DATA_DIR + "/train-4-SCS-OS_CA.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
         MAX_TOKENS,
         MAX_SAMPLES,
+        RELATION_TYPES[n_classes],
         qt_complete=QT_COMPLETE,
     )
 
     print("#### eval ####")
     eval_dataset = dataset_type.load(
-        ID_DATA_DIR + "/eval.json",
+        ID_DATA_DIR + "/eval-4-SCS.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
         MAX_TOKENS,
         MAX_SAMPLES,
+        RELATION_TYPES[n_classes],
         qt_complete=QT_COMPLETE,
     )
 
@@ -281,5 +288,4 @@ if __name__ == "__main__":
         GRAD_CLIP,
         ("--log" in sys.argv),
         True,
-        "-3-US",
     )

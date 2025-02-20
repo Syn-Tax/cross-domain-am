@@ -29,6 +29,7 @@ class TextOnlyEarlyModel(nn.Module):
         activation="relu",
         freeze_encoders=False,
         initialisation="kaiming_normal",
+        **kwargs
     ):
         super().__init__()
 
@@ -139,6 +140,7 @@ class AudioOnlyEarlyModel(nn.Module):
         activation="relu",
         freeze_encoders=False,
         initialisation="kaiming_normal",
+        **kwargs
     ):
         super().__init__()
 

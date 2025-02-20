@@ -95,8 +95,8 @@ def metrics_fn(predictions, step="eval"):
         # f"{step}/epoch_loss": float(loss),
     }
 
-    for name, f1 in zip(class_names, class_f1_score):
-        res[f"{name}_f1"] = f1
+    for name, f1_score in zip(class_names, class_f1_score):
+        res[f"{name}_f1"] = float(f1_score)
 
     print(res)
 
