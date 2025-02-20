@@ -79,9 +79,6 @@ def generate_pairs(data_dir, qt_complete, splits, relation_types, no_sampling_ty
         start = sum(splits[:s])
         end = start + splits[s]
 
-        print(start)
-        print(end)
-
         if end == 0:
             end = 1
 
@@ -94,7 +91,7 @@ def generate_pairs(data_dir, qt_complete, splits, relation_types, no_sampling_ty
     return split_data
 
 
-def get_metrics(data):
+def get_metrics(data, relation_types):
     # calculate and display some dataset metrics
     print("------------ DATASET DATA -------------")
     print(f"length: {len(data)}")
@@ -104,10 +101,10 @@ def get_metrics(data):
             [p.labels for p in data].count(x) / len(data),
             2,
         )
-        for x in set(RELATION_TYPES.values())
+        for x in set(relation_types.values())
     }
     counts = {
-        x: [p.labels for p in data].count(x) for x in set(RELATION_TYPES.values())
+        x: [p.labels for p in data].count(x) for x in set(relation_types.values())
     }
     print(weights)
     print(counts)
@@ -121,12 +118,12 @@ def save(path, data):
         f.write(out)
 
 
-def resample(data, sampling):
-    labelled_samples = {k: [] for k in RELATION_TYPES.values()}
+def resample(data, relation_types, sampling):
+    labelled_samples = {k: [] for k in relation_types.values()}
     output = []
 
     for sample in data:
-        labelled_samples[sample.label].append(sample)
+        labelled_samples[sample.labels].append(sample)
 
     sampling_floored = [math.floor(x) for x in sampling]
     sampling_dec = [x - y for x, y in zip(sampling, sampling_floored)]
@@ -786,8 +783,14 @@ if __name__ == "__main__":
                 save(data_dir + f"/eval-{class_prob}-{no_sampling}.json", splits[1])
                 save(data_dir + f"/test-{class_prob}-{no_sampling}.json", splits[2])
 
+                complete = splits[0]
+                complete.extend(splits[1])
+                complete.extend(splits[2])
+
+                save(data_dir + f"/complete-{class_prob}-{no_sampling}.json", complete)
+
                 for resampling in resamplings.keys():
-                    out = resample(splits[0], resamplings[resampling][class_prob])
+                    out = resample(splits[0], classes[class_prob], resamplings[resampling][class_prob])
                     save(
                         data_dir
                         + f"/train-{class_prob}-{no_sampling}-{resampling}.json",
