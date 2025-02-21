@@ -66,16 +66,6 @@ RELATION_TYPES = {
 }
 
 
-# set seeds
-seed = 0
-random.seed(seed)
-os.environ["PYTHONHASHSEED"] = str(seed)
-np.random.seed(seed)
-torch.manual_seed(seed)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
-
-
 class LossTrainer(transformers.Trainer):
     def compute_loss(
         self, model, inputs, return_outputs=False, num_items_in_batch=None
@@ -101,6 +91,14 @@ def main(
     mm_fusion_method="concat",
     n_classes=4,
 ):
+    # set seeds
+    seed = 0
+    random.seed(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
     N_CLASSES = n_classes
     # load/generate datasets
     print("#### train ####")
@@ -136,7 +134,7 @@ def main(
         MAX_TOKENS,
         MAX_SAMPLES,
         RELATION_TYPES[n_classes],
-        qt_complete=QT_COMPLETE
+        qt_complete=QT_COMPLETE,
     )
 
     # calculate class weights for use in the weighted cross entropy loss
@@ -181,7 +179,7 @@ def main(
         "max_tokens": MAX_TOKENS,
         "max_samples": MAX_SAMPLES,
         "model": model_type.__name__,
-        "dataset": dataset_type.__name__
+        "dataset": dataset_type.__name__,
     }
 
     # initialise wandb
@@ -283,5 +281,5 @@ if __name__ == "__main__":
         cd_datasets="complete-4-SCS",
         dataset_type=DATASET_TYPE,
         model_type=MODEL_TYPE,
-        n_classes=4
+        n_classes=4,
     )
