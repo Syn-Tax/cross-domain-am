@@ -22,8 +22,8 @@ class TextOnlyEarlyModel(nn.Module):
         n_classes=4,
         head_hidden_layers=4,
         head_hidden_size=128,
-        text_encoder_dropout=0.2,
-        audio_encoder_dropout=0.2,
+        text_encoder_dropout=0.1,
+        audio_encoder_dropout=0.1,
         text_dropout=0.5,
         audio_dropout=0.5,
         activation="relu",
@@ -97,8 +97,6 @@ class TextOnlyEarlyModel(nn.Module):
         # return classification logits
         logits = self.head(hidden_vector)
 
-        # time.sleep(0.1)
-
         return {"logits": logits}
 
     def freeze_encoders(self):
@@ -133,8 +131,8 @@ class AudioOnlyEarlyModel(nn.Module):
         n_classes=4,
         head_hidden_layers=4,
         head_hidden_size=128,
-        text_encoder_dropout=0.2,
-        audio_encoder_dropout=0.2,
+        text_encoder_dropout=0.1,
+        audio_encoder_dropout=0.1,
         text_dropout=0.5,
         audio_dropout=0.5,
         activation="relu",

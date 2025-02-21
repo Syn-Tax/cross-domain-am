@@ -164,13 +164,14 @@ def load_cd(
     max_tokens,
     max_samples,
     dataset_type,
+    dataset_name,
     qt_complete=False,
 ):
     datasets = []
 
     for dir in data_dirs:
         dataset = dataset_type.load(
-            dir + "/complete.json",
+            dir + f"/{dataset_name}.json",
             dir,
             text_encoder,
             audio_encoder,
