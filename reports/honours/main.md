@@ -24,7 +24,36 @@ header-includes: |
 
 # Introduction
 
-# Previous Work
+# Background
+
+## Argumentation Theory
+
+Argument and debate has been studied since the time of the ancient Greek philosophers and rhetoricians where argument theorists have sought to formalise discourse and discover some standard of proof for determining the 'correctness' of an argument. Over time, theories of arguments and discussions have evolved, notably when Hamblin [@hamblinFallacies1970] refashioned an argumentative discourse as a game, where one party makes moves offering premises that may be acceptable to the another party in the discourse who doubts the conclusion of the argument.
+
+In order to describe various dialogue, argument and illocutionary structures different models (annotation schemes) can be used, some annotation schemes focus on types of the text itself (such as speech act theory [@searleSpeechActsEssay1969]) or on the types of relations between components (such as Rhetorical Structure Theory [@mannRhetoricalStructureTheory1988]). Inference Anchoring Theory (IAT) [@reedHowDialoguesCreate2011] is an annotation scheme constructed to benefit from insights across both types, whilst focusing specifically on argumentative discourse. This makes IAT a very useful tool to analyse arguments and their relations.
+
+In IAT, the discourse is first segmented into Argumentative Discourse Units (ADUs). An ADU is any span of the discourse which has both propositional content and discrete argumentative function [@reedQuickStartGuide2017]. An IAT argument graph is typically composed of two main parts: the left-hand side and the right-hand side. The right-hand side is concerned with locutions and transitions between them. A locution is simply the text of the ADU as uttered, without reconstructing ellipses or resolving pronouns. Locutions also include the speaker and may even include a timestamp. Transitions connect locutions capturing a functional relationship between predecessor and successor locutions (i.e. a response or reply).
+
+The left-hand side of an argument graph is more concerned with the content of the ADU, rather than directly reflecting what was uttered. This consists of the propositions made, and the relations between those propositions. To create a proposition from an ADU, the content is reconstructed to be a coherent, lone-standing sentence. This means that any missing or implicit material has to be reconstructed, including anaphoric references (e.g. pronouns).
+
+IAT defines three different types of propositional relation: inference, conflict and rephrase. An inference relation (also termed RA) holds between two propositions when one (the premise) is used to provide a reason to accept the other (the conclusion). This may include annotation of the kind of support e.g. Modus Ponens or Argument from Expert Opinion. These kinds of support are often called *argument schemes* [@waltonArgumentationSchemes2008]. There are also several different inference structures:
+
+- **Serial arguments** occur when one proposition supports another, which in turn supports a third.
+- **Convergent arguments** occur when multiple premises act independently to support the same conclusion.
+- **Linked arguments** occur when multiple premises work together to support a conclusion.
+- **Divergent arguments** occur when a single premise is used to support multiple conclusions.
+
+A conflict relation (also termed CA) holds between two propositions when one is used to provide an incompatible alternative to another and can also be of a given kind (e.g. Conflict from Bias, Conflict from Propositional Negation). The following conflict structures are identified by IAT:
+
+- **Rebutting conflict** occurs if one proposition is directly targeting another by indicating that the latter is not acceptable.
+- **Undermining conflict** occurs if a conflict is targeting the premise of an argument, then it is undermining its conclusion.
+- **Undercutting conflict** occurs if the conflict is targeting the inference relation between two propositions.
+
+A rephrase relation (also termed MA) holds when one proposition rephrases, restates or reformulates another but with dfferent propositional content (i.e. one proposition cannot simply repeat the other). There are many different kinds of rephrase, such as Specialisation, Generalisation, Instantiation etc. Generally, question answering will often involve a rephrase because the propositional content of the question is typically instantiated, resolved or refined by its answer. In contrast to inference, conflict and rephrase structures only have a single incoming an one outgoing edge.
+
+## Machine Learning
+
+## Argument Mining
 
 # Datasets
 
@@ -264,6 +293,12 @@ Figure \ref{fig:model-diag} povides a visualisation of the primary model used at
 Some preliminary experiments have also been conducted using text-only models in an attempt to replicate results produced in [@gemechuARIESGeneralBenchmark2024]. For this the RoBERTa-base model is used and each sentence is concatenated before tokenisation, delimited by RoBERTa's special purpose token `</s>`.
 
 # Results
+
+## In-Dataset
+
+## Cross-Dataset
+
+# Limitations
 
 # Conclusions
 
