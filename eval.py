@@ -165,6 +165,7 @@ def load_cd(
     max_samples,
     dataset_type,
     dataset_name,
+    relation_types,
     qt_complete=False,
 ):
     datasets = []
@@ -177,6 +178,7 @@ def load_cd(
             audio_encoder,
             max_tokens,
             max_samples,
+            relation_types,
             qt_complete=qt_complete,
         )
 

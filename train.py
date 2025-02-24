@@ -51,7 +51,7 @@ HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 64
+BATCH_SIZE = 2
 EPOCHS = 15
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
@@ -80,10 +80,10 @@ class LossTrainer(transformers.Trainer):
 def main(
     log=False,
     init=True,
-    train_dataset="",
-    eval_dataset="",
-    test_dataset="",
-    cd_datasets="",
+    train_set="",
+    eval_set="",
+    test_set="",
+    cd_sets="",
     text_encoder="FacebookAI/roberta-base",
     audio_encoder="facebook/wav2vec2-base-960h",
     dataset_type=None,
@@ -99,11 +99,13 @@ def main(
     torch.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
     N_CLASSES = n_classes
+
     # load/generate datasets
     print("#### train ####")
     train_dataset = dataset_type.load(
-        ID_DATA_DIR + f"/{train_dataset}.json",
+        ID_DATA_DIR + f"/{train_set}.json",
         ID_DATA_DIR,
         text_encoder,
         audio_encoder,
@@ -115,7 +117,7 @@ def main(
 
     print("#### eval ####")
     eval_dataset = dataset_type.load(
-        ID_DATA_DIR + f"/{eval_dataset}.json",
+        ID_DATA_DIR + f"/{eval_set}.json",
         ID_DATA_DIR,
         text_encoder,
         audio_encoder,
@@ -127,7 +129,7 @@ def main(
 
     print("#### test ####")
     test_dataset = dataset_type.load(
-        ID_DATA_DIR + f"/{test_dataset}.json",
+        ID_DATA_DIR + f"/{test_set}.json",
         ID_DATA_DIR,
         text_encoder,
         audio_encoder,
@@ -180,6 +182,10 @@ def main(
         "max_samples": MAX_SAMPLES,
         "model": model_type.__name__,
         "dataset": dataset_type.__name__,
+        "train_set": train_set,
+        "eval_set": eval_set,
+        "test_set": test_set,
+        "mm_fusion_method": mm_fusion_method,
     }
 
     # initialise wandb
@@ -259,6 +265,8 @@ def main(
         MAX_TOKENS,
         MAX_SAMPLES,
         dataset_type,
+        cd_sets,
+        RELATION_TYPES[n_classes],
     )
 
     cd_eval(cd_datasets, [x.split("/")[-1] for x in CD_DIRS], trainer)

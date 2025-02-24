@@ -35,6 +35,7 @@ class MultimodalLateLateModel(nn.Module):
         initialisation="kaiming_normal",
         sequence_fusion="concatenation",
         modality_fusion="concatenation",
+        **kwargs
     ):
         super().__init__()
 
@@ -215,7 +216,7 @@ class MultimodalEarlyLateModel(nn.Module):
         self.audio_hidden_size = self.audio_config.hidden_size
 
         # calculate required output size
-        if mm_fusion_method == "concatenation":
+        if mm_fusion_method == "concat":
             self.hidden_size = self.text_hidden_size + self.audio_hidden_size
         else:
             if not "ca" in mm_fusion_method:
@@ -234,9 +235,13 @@ class MultimodalEarlyLateModel(nn.Module):
 
         # initialise cross attention module if required
         if mm_fusion_method == "ca_text":
-            self.cross_attention_module = CrossModalAttention(self.text_hidden_size, self.audio_hidden_size, self.text_hidden_size)
+            self.cross_attention_module = CrossModalAttention(
+                self.text_hidden_size, self.audio_hidden_size, self.text_hidden_size
+            )
         elif mm_fusion_method == "ca_audio":
-            self.cross_attention_module = CrossModalAttention(self.audio_hidden_size, self.text_hidden_size, self.text_hidden_size)
+            self.cross_attention_module = CrossModalAttention(
+                self.audio_hidden_size, self.text_hidden_size, self.text_hidden_size
+            )
 
         # allow encoders to be trained
         if freeze_encoders:
@@ -265,7 +270,7 @@ class MultimodalEarlyLateModel(nn.Module):
         if self.pooling_method == "mean":
             audio_encoding_pooled = audio_encoding.mean(dim=1)
         elif self.pooling_method == "last":
-            audio_encoding_pooled = audio_encoding[:,-1,:]
+            audio_encoding_pooled = audio_encoding[:, -1, :]
         elif self.pooling_method == "first":
             audio_encoding_pooled = audio_encoding[:, 0, :]
         elif self.pooling_method == "max":
@@ -278,20 +283,22 @@ class MultimodalEarlyLateModel(nn.Module):
         audio_encoding_pooled = self.audio_dropout(audio_encoding_pooled)
 
         # perform multimodal fusion
-        if self.mm_fusion_method == "concatenation":
+        if self.mm_fusion_method == "concat":
             hidden_vector = torch.cat(
                 (text_encoding_pooled, audio_encoding_pooled), dim=-1
             )
-        elif self.mm_fusion_method == "product":
+        elif self.mm_fusion_method == "prod":
             hidden_vector = torch.mul(text_encoding_pooled, audio_encoding_pooled)
         elif self.mm_fusion_method == "ca_text":
-            ca_output = self.cross_attention_module(text_encoder_output[0], audio_encoding)
+            ca_output = self.cross_attention_module(
+                text_encoder_output[0], audio_encoding
+            )
 
             # pool cross attention output into a hidden vector
             if self.pooling_method == "mean":
                 hidden_vector = ca_output.mean(dim=1)
             elif self.pooling_method == "last":
-                hidden_vector = ca_output[:,-1,:]
+                hidden_vector = ca_output[:, -1, :]
             elif self.pooling_method == "first":
                 hidden_vector = ca_output[:, 0, :]
             elif self.pooling_method == "max":
@@ -302,13 +309,15 @@ class MultimodalEarlyLateModel(nn.Module):
                 raise ValueError("Invalid pooling method")
 
         elif self.mm_fusion_method == "ca_audio":
-            ca_output = self.cross_attention_module(audio_encoding, text_encoder_output[0])
+            ca_output = self.cross_attention_module(
+                audio_encoding, text_encoder_output[0]
+            )
 
             # pool cross attention output into a hidden vector
             if self.pooling_method == "mean":
                 hidden_vector = ca_output.mean(dim=1)
             elif self.pooling_method == "last":
-                hidden_vector = ca_output[:,-1,:]
+                hidden_vector = ca_output[:, -1, :]
             elif self.pooling_method == "first":
                 hidden_vector = ca_output[:, 0, :]
             elif self.pooling_method == "max":
