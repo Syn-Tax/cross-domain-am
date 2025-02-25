@@ -16,22 +16,20 @@
     - Rephrase *
   - Locutions *
   - Transitions *
-  - Illocutionary connections
+  - Illocutionary connections *
   - argument schemes *
 - Argument Interchange Format
-  - what? why?
-  - argument-markup language
-  - types of node
-    - I-nodes, L-nodes
-    - relation nodes
+  - what? why? *
+  - argument-markup language *
+  - types of node *
+    - I-nodes, L-nodes *
+    - S-nodes *
 
 ## Machine Learning
 
 - NLP
-  - pre-trained transformers
-  - feature extraction
-  - audio features
-  - audio PTs
+  - text pre-trained transformers *
+  - audio PTs *
 - multimodal techniques
   - usage in medicine
   - usage in LLMs

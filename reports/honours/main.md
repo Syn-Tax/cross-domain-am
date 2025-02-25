@@ -8,7 +8,6 @@ numbersections: true
 codeBlockCaptions: true
 classoption: twocolumn
 fontsize: 12pt
-cref: false
 header-includes: |
     \usepackage[margin=2cm]{geometry}
     \usepackage{graphicx}
@@ -36,7 +35,7 @@ In IAT, the discourse is first segmented into Argumentative Discourse Units (ADU
 
 The left-hand side of an argument graph is more concerned with the content of the ADU, rather than directly reflecting what was uttered. This consists of the propositions made, and the relations between those propositions. To create a proposition from an ADU, the content is reconstructed to be a coherent, lone-standing sentence. This means that any missing or implicit material has to be reconstructed, including anaphoric references (e.g. pronouns).
 
-IAT defines three different types of propositional relation: inference, conflict and rephrase. An inference relation (also termed RA) holds between two propositions when one (the premise) is used to provide a reason to accept the other (the conclusion). This may include annotation of the kind of support e.g. Modus Ponens or Argument from Expert Opinion. These kinds of support are often called *argument schemes* [@waltonArgumentationSchemes2008]. There are also several different inference structures:
+IAT defines three different types of propositional relation: *inference*, *conflict* and *rephrase*. An inference relation (also termed RA) holds between two propositions when one (the premise) is used to provide a reason to accept the other (the conclusion). This may include annotation of the kind of support e.g. Modus Ponens or Argument from Expert Opinion. These subtypes of relation are often called *argument schemes* [@waltonArgumentationSchemes2008;@waltonArgumentationTheoryVery2009]. There are also several different inference structures:
 
 - **Serial arguments** occur when one proposition supports another, which in turn supports a third.
 - **Convergent arguments** occur when multiple premises act independently to support the same conclusion.
@@ -51,7 +50,27 @@ A conflict relation (also termed CA) holds between two propositions when one is 
 
 A rephrase relation (also termed MA) holds when one proposition rephrases, restates or reformulates another but with dfferent propositional content (i.e. one proposition cannot simply repeat the other). There are many different kinds of rephrase, such as Specialisation, Generalisation, Instantiation etc. Generally, question answering will often involve a rephrase because the propositional content of the question is typically instantiated, resolved or refined by its answer. In contrast to inference, conflict and rephrase structures only have a single incoming an one outgoing edge.
 
+The left and right-hand sides are connected by *illocutionary connections*. These illocutionary connections are based on illocutionary force as introduced by speech act theory [@searleSpeechActsEssay1969]. The speech act $F(p)$ is the act which relates the locution and and the propositional content $p$ through the illocutionary force $F$ e.g. asserting $p$, requesting $p$, promising $p$ etc. There are many diferent types of illocutionary connection, including: assertions, questions, challenges, concessions and (dis-)affirmations [@budzynskaModelProcessingIllocutionary2014].
+
+There have been several ways to store argumentative data created, for example Argument Markup Language (AML) [@reedAraucariaSoftwareArgument2004], an XML-based language used to describe arguments in the Araucaria software. More recently, the Argument Interchange Format (AIF) [@chesnevarArgumentInterchangeFormat2006] has been created to standardise the storage of IAT graphs.
+
+AIF treats all relevant parts of the argument as nodes within a graph. These nodes can be put into two categories: *information nodes* (I-nodes) and *scheme nodes* (S-nodes). I-nodes represent the claims made in the discourse whereas S-nodes indicate the application of an argument scheme. Initially I-nodes only included the propositions made [@chesnevarArgumentInterchangeFormat2006], but when Reed *et al.* [@reedAIFDialogueArgument] extended AIF to cater to dialogues, they added L-nodes as a subclass of I-nodes to represent locutions. For the purposes of this research, I-nodes and L-nodes are considered separate classes where I-nodes contain propositions and L-nodes contain locutions.
+
+Since AIF data can be easily shared, it became the basis for a Worldwide Argument Web (WWAW) [@rahwanLayingFoundationsWorld2007]. Since then, many corpora have been annotated using IAT and published on the AIFdb^[https://www.aifdb.org/] [@lawrenceAIFdbInfrastructureArgument2012] providing a very useful resource for argumentation research of many kinds.
+
 ## Machine Learning
+
+In recent years there have been several major advances in the field of natural language processing (NLP), most notably the introduction of the transformer architecture [@vaswaniAttentionAllYou2017]. The transformer architecture, based on self-attention, allows the model to determine much longer range dependencies than previous approaches.
+
+Even before Vaswani *et al.* introduced the transformer architecture supervised and semi-supervised pre-training approaches were already being explored, and proven to be a very useful tool for improving the performance of language models [@petersDeepContextualizedWord2018;@daiSemisupervisedSequenceLearning2015]. When the transformer was introduced these pre-training techinques were adapted for use in transformers creating models which are able to be fine-tuned with relatively minimal effort and compute to allow high performance on a wide variety of tasks [@devlinBERTPretrainingDeep2019b;@liuRoBERTaRobustlyOptimized2019a]. The pre-training approaches introduced by BERT and RoBERTa use a combination of masked language modelling (where the model is trained to predict the token hidden under a `[mask]` token) and next sentence prediction. The models are then trained using this approach on a large amount of data (the data used to pre-train RoBERTa totals over 160GB of uncompressed text).
+
+A similar progression can be seen in the development of audio models. Pre-training was notably introduced into speech recognition with wav2vec [@schneiderWav2vecUnsupervisedPretraining2019], where the model is trained to predict future samples from a given signal. The wav2vec model has two main stages, first raw audio samples are fed into a convolutional network which performs a similar role to the tokenisation seen in text-based language models by using a sliding window approach to downsample the audio data. These encodings are then fed into a second convolutional network to create a final encoding for the sequence.
+
+Transformer models were introduced into the architecture of audio models with wav2vec2 [@baevskiWav2vec20Framework2020] and HuBERT [@hsuHuBERTSelfSupervisedSpeech2021], where the second convolutional model is replaced with a transformer in order to better learn dependencies across the entire sequence. These models are then pre-trained on significant amounts of audio data (960 hours in the case of wav2vec2) in order to then be fine-tuned on a downstream task.
+
+Combining modalities (such as text and audio) has also proven to be a useful tool across several tasks, including medical imaging [@delbrouckViLMedicFrameworkResearch2022] and natural language processing [@totoAudiBERTDeepTransfer2021;@tsaiMultimodalTransformerUnaligned2019], including argument mining [@mestreMArgMultimodalArgument2021;@manciniMAMKitComprehensiveMultimodal2024]. Generally fusion techniques can be split into two categories: early and late. Early fusion techniques combine representations of each modality before being used as input to an encoder, with the primary benefit that only a single encoder is used. Late fusion techniques use a separate encoder for each modality, and the encodings are then fused to provide a crossmodal representation of the input.
+
+In early fusion the input representations are transformed into a common information space, often using vectorisation techniques dependent on the modality.
 
 ## Argument Mining
 
