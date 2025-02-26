@@ -29,6 +29,7 @@
 
 - NLP
   - text pre-trained transformers *
+  - LLMs
   - audio PTs *
 - multimodal techniques
   - usage in medicine
