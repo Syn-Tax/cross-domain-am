@@ -20,15 +20,24 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-def generate_pairs(data_dir, qt_complete, splits, relation_types, no_sampling_type):
+def generate_pairs(data_dir, qt_complete, splits, relation_types):
     # load argument map
     with open(Path(data_dir) / "argument_map.json", "r") as f:
         argument_map = Node.schema().loads(f.read(), many=True)
 
     # loop through all combinations of nodes (there must be a more efficient way to do this but it's only a minute or so on QT30)
-    sequence_pairs = []
+    output = {
+        "SCS": [],
+        "LCS": [],
+        "US": []
+    }
     relation_sequence_pairs = []
-    no_relation_sequence_pairs = []
+    no_relation_sequence_pairs = {
+        "SCS": [],
+        "LCS": [],
+        "US": []
+    }
+
     counter = 0
     num_ra = 0
     for n1, n2 in tqdm(itertools.combinations(argument_map, 2)):
@@ -50,29 +59,48 @@ def generate_pairs(data_dir, qt_complete, splits, relation_types, no_sampling_ty
         if label == relation_types["RA"]:
             num_ra += 1
 
-        # if there is no relation, add to separate list - this is used to sample the NO samples
+        # if there is no relation, add to separate list depending on sampling type - this is used to sample the NO samples
         if label == 0:
-            if qt_complete and n1.episode != n2.episode and no_sampling_type == "SCS":
-                continue  # we ignore nodes which are not in the same QT episode, if short context is the selected sampling strategy
-            if counter % 10 == 0:  # only add every 10th sample to save memory
-                if no_sampling_type == "LCS" and n1.episode != n2.episode:
-                    no_relation_sequence_pairs.append(Sample(n1, n2, label))
-                elif no_sampling_type != "LCS" or not qt_complete:
-                    no_relation_sequence_pairs.append(Sample(n1, n2, label))
+            if counter % 20 == 0:  # only add every 10th sample to save memory
+                if qt_complete and n1.episode != n2.episode:
+                    no_relation_sequence_pairs["LCS"].append(Sample(n1, n2, label))
+                if qt_complete and n1.episode == n2.episode:
+                    no_relation_sequence_pairs["SCS"].append(Sample(n1, n2, label))
+
+                if not qt_complete:
+                    no_relation_sequence_pairs["LCS"].append(Sample(n1, n2, label))
+                    no_relation_sequence_pairs["SCS"].append(Sample(n1, n2, label))
+
+                no_relation_sequence_pairs["US"].append(Sample(n1, n2, label))
 
             counter += 1
         else:
             relation_sequence_pairs.append(Sample(n1, n2, label))
 
     # add node pairs with relations
-    sequence_pairs.extend(relation_sequence_pairs)
+    related_splits = split_data(relation_sequence_pairs, splits)
+    output["SCS"].extend(related_splits)
+    output["LCS"].extend(related_splits)
+    output["US"].extend(related_splits)
 
-    # sample node pairs without relations for NO label
-    sequence_pairs.extend(random.sample(no_relation_sequence_pairs, num_ra))
+    # add node pairs without relations
+    unrelated_splits = {
+        "SCS": split_data(no_relation_sequence_pairs["SCS"], splits),
+        "LCS": split_data(no_relation_sequence_pairs["LCS"], splits),
+        "US": split_data(no_relation_sequence_pairs["US"], splits)
+    }
 
-    # shuffle dataset
-    random.shuffle(sequence_pairs)
+    print(len(unrelated_splits["SCS"][0]), num_ra*splits[0])
 
+    for key in output.keys():
+        for i in range(len(splits)):
+            output[key][i].extend(random.sample(unrelated_splits[key][i], int(num_ra*splits[i])))
+            random.shuffle(output[key][i])
+
+    return output
+
+
+def split_data(data, splits):
     # get requested split
     split_data = []
     for s in range(len(splits)):
@@ -83,8 +111,8 @@ def generate_pairs(data_dir, qt_complete, splits, relation_types, no_sampling_ty
             end = 1
 
         split_data.append(
-            sequence_pairs[
-                int(start * len(sequence_pairs)) : int(end * len(sequence_pairs))
+            data[
+                int(start * len(data)) : int(end * len(data))
             ]
         )
 
@@ -762,8 +790,6 @@ if __name__ == "__main__":
     ]
 
     qt_completes = [True, False, False, False, False, False, False, False, False, False]
-
-    no_samplings = ["SCS", "LCS", "US"]
     resamplings = {
         "OS_CA": {3: [1, 1, 3], 4: [1, 1, 3, 1]},
     }
@@ -774,28 +800,28 @@ if __name__ == "__main__":
 
     for data_dir, qt_complete in zip(data_dirs, qt_completes):
         for class_prob in classes.keys():
-            for no_sampling in no_samplings:
-                print(
-                    f"############### {data_dir.split('/')[-1]}-{class_prob}-{no_sampling} ############"
-                )
+            print(
+                f"############### {data_dir.split('/')[-1]}-{class_prob} ############"
+            )
 
-                splits = generate_pairs(
-                    data_dir, qt_complete, SPLITS, classes[class_prob], no_sampling
-                )
+            splits = generate_pairs(
+                data_dir, qt_complete, SPLITS, classes[class_prob]
+            )
 
-                save(data_dir + f"/train-{class_prob}-{no_sampling}.json", splits[0])
-                save(data_dir + f"/eval-{class_prob}-{no_sampling}.json", splits[1])
-                save(data_dir + f"/test-{class_prob}-{no_sampling}.json", splits[2])
+            for no_sampling in splits.keys():
+                save(data_dir + f"/train-{class_prob}-{no_sampling}.json", splits[no_sampling][0])
+                save(data_dir + f"/eval-{class_prob}-{no_sampling}.json", splits[no_sampling][1])
+                save(data_dir + f"/test-{class_prob}-{no_sampling}.json", splits[no_sampling][2])
 
-                complete = splits[0]
-                complete.extend(splits[1])
-                complete.extend(splits[2])
+                complete = splits[no_sampling][0]
+                complete.extend(splits[no_sampling][1])
+                complete.extend(splits[no_sampling][2])
 
                 save(data_dir + f"/complete-{class_prob}-{no_sampling}.json", complete)
 
                 for resampling in resamplings.keys():
                     out = resample(
-                        splits[0],
+                        splits[no_sampling][0],
                         classes[class_prob],
                         resamplings[resampling][class_prob],
                     )
