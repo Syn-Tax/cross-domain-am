@@ -15,10 +15,10 @@ dataset_configs = [
 ]
 
 model_dataset_types = [
-    (TextOnlyDatasetConcat, TextOnlyEarlyModel),
-    (AudioOnlyDatasetConcat, AudioOnlyEarlyModel),
+    # (TextOnlyDatasetConcat, TextOnlyEarlyModel),
+    # (AudioOnlyDatasetConcat, AudioOnlyEarlyModel),
     (MultimodalDatasetConcat, MultimodalEarlyLateModel),
-    (MultimodalDatasetNoConcat, MultimodalLateLateModel),
+    # (MultimodalDatasetNoConcat, MultimodalLateLateModel),
 ]
 
 fusion_params = {"MultimodalEarlyLateModel": ["concat", "prod", "ca_text", "ca_audio"]}
@@ -31,8 +31,8 @@ for train_set, eval_set, test_set, cd_set in dataset_configs:
                     log="--log" in sys.argv,
                     init=True,
                     train_set=train_set,
-                    eval_dataset=eval_set,
-                    test_dataset=test_set,
+                    eval_set=eval_set,
+                    test_set=test_set,
                     cd_sets=cd_set,
                     dataset_type=dataset_type,
                     model_type=model_type,
@@ -45,8 +45,8 @@ for train_set, eval_set, test_set, cd_set in dataset_configs:
                 log="--log" in sys.argv,
                 init=True,
                 train_set=train_set,
-                eval_dataset=eval_set,
-                test_dataset=test_set,
+                eval_set=eval_set,
+                test_set=test_set,
                 cd_sets=cd_set,
                 dataset_type=dataset_type,
                 model_type=model_type,
