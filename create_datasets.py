@@ -6,6 +6,7 @@ from pathlib import Path
 from tqdm import tqdm
 import random
 import math
+import sys
 
 from datastructs import Node, Sample
 
@@ -79,9 +80,9 @@ def generate_pairs(data_dir, qt_complete, splits, relation_types):
 
     # add node pairs with relations
     related_splits = split_data(relation_sequence_pairs, splits)
-    output["SCS"].extend(related_splits)
-    output["LCS"].extend(related_splits)
-    output["US"].extend(related_splits)
+    output["SCS"].extend([s.copy() for s in related_splits])
+    output["LCS"].extend([s.copy() for s in related_splits])
+    output["US"].extend([s.copy() for s in related_splits])
 
     # add node pairs without relations
     unrelated_splits = {
@@ -90,11 +91,12 @@ def generate_pairs(data_dir, qt_complete, splits, relation_types):
         "US": split_data(no_relation_sequence_pairs["US"], splits)
     }
 
-    print(len(unrelated_splits["SCS"][0]), num_ra*splits[0])
+    # print(len(unrelated_splits["SCS"][0]), num_ra*splits[0])
 
     for key in output.keys():
         for i in range(len(splits)):
-            output[key][i].extend(random.sample(unrelated_splits[key][i], int(num_ra*splits[i])))
+            x = random.sample(unrelated_splits[key][i], int(num_ra*splits[i]))
+            output[key][i].extend(x)
             random.shuffle(output[key][i])
 
     return output
@@ -790,6 +792,7 @@ if __name__ == "__main__":
     ]
 
     qt_completes = [True, False, False, False, False, False, False, False, False, False]
+    # qt_completes = [False, False, False, False, False, False, False, False, False]
     resamplings = {
         "OS_CA": {3: [1, 1, 3], 4: [1, 1, 3, 1]},
     }
@@ -809,6 +812,10 @@ if __name__ == "__main__":
             )
 
             for no_sampling in splits.keys():
+                get_metrics(splits["SCS"][0], classes[class_prob])
+                get_metrics(splits["SCS"][1], classes[class_prob])
+                get_metrics(splits["SCS"][2], classes[class_prob])
+
                 save(data_dir + f"/train-{class_prob}-{no_sampling}.json", splits[no_sampling][0])
                 save(data_dir + f"/eval-{class_prob}-{no_sampling}.json", splits[no_sampling][1])
                 save(data_dir + f"/test-{class_prob}-{no_sampling}.json", splits[no_sampling][2])
