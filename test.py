@@ -15,9 +15,9 @@ dataset_configs = [
 ]
 
 model_dataset_types = [
-    # (TextOnlyDatasetConcat, TextOnlyEarlyModel),
+    (TextOnlyDatasetConcat, TextOnlyEarlyModel),
     # (AudioOnlyDatasetConcat, AudioOnlyEarlyModel),
-    (MultimodalDatasetConcat, MultimodalEarlyLateModel),
+    # (MultimodalDatasetConcat, MultimodalEarlyLateModel),
     # (MultimodalDatasetNoConcat, MultimodalLateLateModel),
 ]
 
