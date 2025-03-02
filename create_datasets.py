@@ -173,6 +173,12 @@ def resample(data, relation_types, sampling):
     random.shuffle(output)
     return output
 
+def load(
+    path,
+):
+
+    with open(path, "r") as f:
+        return Sample.schema().loads(f.read(), many=True)
 
 class MultimodalDatasetConcat(torch.utils.data.Dataset):
     """Dataset containing multimodal sequence pairs"""
@@ -803,35 +809,42 @@ if __name__ == "__main__":
 
     for data_dir, qt_complete in zip(data_dirs, qt_completes):
         for class_prob in classes.keys():
-            print(
-                f"############### {data_dir.split('/')[-1]}-{class_prob} ############"
-            )
 
-            splits = generate_pairs(
-                data_dir, qt_complete, SPLITS, classes[class_prob]
-            )
+            # splits = generate_pairs(
+            #     data_dir, qt_complete, SPLITS, classes[class_prob]
+            # )
 
-            for no_sampling in splits.keys():
-                get_metrics(splits["SCS"][0], classes[class_prob])
-                get_metrics(splits["SCS"][1], classes[class_prob])
-                get_metrics(splits["SCS"][2], classes[class_prob])
 
-                save(data_dir + f"/train-{class_prob}-{no_sampling}.json", splits[no_sampling][0])
-                save(data_dir + f"/eval-{class_prob}-{no_sampling}.json", splits[no_sampling][1])
-                save(data_dir + f"/test-{class_prob}-{no_sampling}.json", splits[no_sampling][2])
 
-                complete = splits[no_sampling][0]
-                complete.extend(splits[no_sampling][1])
-                complete.extend(splits[no_sampling][2])
+            for no_sampling in ["SCS", "LCS", "US"]:
+                print(
+                    f"############### {data_dir.split('/')[-1]}-{class_prob}-{no_sampling} ############"
+                )
 
-                save(data_dir + f"/complete-{class_prob}-{no_sampling}.json", complete)
+                # get_metrics(splits["SCS"][0], classes[class_prob])
+                # get_metrics(splits["SCS"][1], classes[class_prob])
+                # get_metrics(splits["SCS"][2], classes[class_prob])
+
+                # save(data_dir + f"/train-{class_prob}-{no_sampling}.json", splits[no_sampling][0])
+                # save(data_dir + f"/eval-{class_prob}-{no_sampling}.json", splits[no_sampling][1])
+                # save(data_dir + f"/test-{class_prob}-{no_sampling}.json", splits[no_sampling][2])
+
+                # complete = splits[no_sampling][0]
+                # complete.extend(splits[no_sampling][1])
+                # complete.extend(splits[no_sampling][2])
+
+                # save(data_dir + f"/complete-{class_prob}-{no_sampling}.json", complete)
+
+                train = load(data_dir + f"/train-{class_prob}-{no_sampling}.json")
+                get_metrics(train, classes[class_prob])
 
                 for resampling in resamplings.keys():
                     out = resample(
-                        splits[no_sampling][0],
+                        train,
                         classes[class_prob],
                         resamplings[resampling][class_prob],
                     )
+                    get_metrics(out, classes[class_prob])
                     save(
                         data_dir
                         + f"/train-{class_prob}-{no_sampling}-{resampling}.json",
