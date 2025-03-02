@@ -29,31 +29,32 @@
 
 - NLP
   - text pre-trained transformers *
-  - LLMs
+  - LLMs *
   - audio PTs *
-- multimodal techniques
-  - usage in medicine
-  - usage in LLMs
-  - usage in argumentation
+- multimodal techniques *
+  - usage in medicine *
+  - usage in LLMs *
+  - usage in argumentation *
 
 ## Argument Mining
 
 - Argument Mining (& MAM)
-  - what?
-  - manual stages
-    - segmentation
-    - argument/non-arument classification
-    - simple structure
-    - refined structure
-  - automatic stages
-    - segmentation
-    - argument/non-argument classification
-    - causal properties
-    - relational properties
-  - 3 and 4 class problem
-  - sampling unrelated nodes
-  - extending AM cross-domain
-  - recent results in MAM (inc. MAMKit)
+  - what? *
+  - manual stages *
+    - segmentation *
+    - argument/non-arument classification *
+    - simple structure *
+    - refined structure *
+  - automatic stages *
+    - segmentation *
+    - argument/non-argument classification *
+    - causal properties *
+    - relational properties *
+  - computational tasks *
+  - 3 and 4 class problem *
+  - sampling unrelated nodes *
+  - extending AM cross-domain *
+  - recent results in MAM (inc. MAMKit) *
 
 # Datasets
 

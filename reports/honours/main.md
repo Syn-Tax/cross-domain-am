@@ -68,11 +68,48 @@ A similar progression can be seen in the development of audio models. Pre-traini
 
 Transformer models were introduced into the architecture of audio models with wav2vec2 [@baevskiWav2vec20Framework2020] and HuBERT [@hsuHuBERTSelfSupervisedSpeech2021], where the second convolutional model is replaced with a transformer in order to better learn dependencies across the entire sequence. These models are then pre-trained on significant amounts of audio data (960 hours in the case of wav2vec2) in order to then be fine-tuned on a downstream task.
 
-Combining modalities (such as text and audio) has also proven to be a useful tool across several tasks, including medical imaging [@delbrouckViLMedicFrameworkResearch2022] and natural language processing [@totoAudiBERTDeepTransfer2021;@tsaiMultimodalTransformerUnaligned2019], including argument mining [@mestreMArgMultimodalArgument2021;@manciniMAMKitComprehensiveMultimodal2024]. Generally fusion techniques can be split into two categories: early and late. Early fusion techniques combine representations of each modality before being used as input to an encoder, with the primary benefit that only a single encoder is used. Late fusion techniques use a separate encoder for each modality, and the encodings are then fused to provide a crossmodal representation of the input.
+Transformer models have recently become much more well-known due to the introduction of Large Language Models (LLMs) such as GPT-4 [@openaiGPT4TechnicalReport2024] and LLaMA [@touvronLLaMAOpenEfficient2023]. LLMs have proven very useful across NLP due to their ability to achieve high performance on many tasks without the need for fine-tuning, this can, however, include few-shot techniques to allow them to 'learn' at inference time [@brownLanguageModelsAre2020;@sharmaArgumentativeStancePrediction2023].
 
-In early fusion the input representations are transformed into a common information space, often using vectorisation techniques dependent on the modality.
+Combining modalities (such as text and audio) has also proven to be a useful tool across several tasks, including medical imaging [@delbrouckViLMedicFrameworkResearch2022;@sunCMAFNetCrossmodalAttention2024] and natural language processing [@totoAudiBERTDeepTransfer2021;@tsaiMultimodalTransformerUnaligned2019], including argument mining [@mestreMArgMultimodalArgument2021;@manciniMAMKitComprehensiveMultimodal2024]. Generally fusion techniques can be split into two categories: early and late. Early fusion techniques combine representations of each modality before being used as input to an encoder, with the primary benefit that only a single encoder is used. Late fusion techniques use a separate encoder for each modality, and the encodings are then fused to provide a crossmodal representation of the input.
+
+In early fusion the input representations are transformed into a common information space, often using vectorisation techniques dependent on the modality. Late fusion techiques allow for the encodings of each modality to be combined in several different ways, often either simple operations (such as concatenation or an element-wise product) but a cross-modal attention module can also be used to combine the modalities [@rajanCrossAttentionPreferableSelfAttention2022;@yeCrossModalSelfAttentionNetwork2019]. The fusion techniques used in this project are explained in detail in Section @sec:models.
 
 ## Argument Mining
+
+Argument Mining (AM) is the automatic identification and extraction of inference and reasoning in natural language [@lawrenceArgumentMiningSurvey2020]. Various NLP techniques have been beneficial to AM, including Support Vector Machines, and more recently neural networks, in particular the transformer architecture [@ruiz-dolzTransformerBasedModelsAutomatic2021]. Before discussing the automation of AM, it is useful to understand how argument analysis is conducted manually. Manual argument analysis considers the following steps:
+
+- **Text Segmentation** involves the splitting of the original text/discourse into the pieces that will form the resulting argument structure. These pieces are often termed Elementary Discourse Units (EDUs).
+- **Argument / Non-Argument Classification** is the task of determining which of the segments found in the text segmentation step are relevant to the argument. For most manual analysis, this step is performed in conjunction with text segmentation i.e. the analyst doesn't segment parts of the text which are not relevant to the argument.
+- **Simple Structure** is the identification of relations between the arguments (e.g. inference, conflict and rephrase) and their structures (e.g. convergent, serial etc.).
+- **Refined Structure** refers to the identification of argumentation schemes (e.g. Argument from Expert Opinion, Conflict From Bias etc.).
+
+When the arument analysis process is automated, the stages are very similar to those in the manual process. Lawrence and Reed [@lawrenceArgumentMiningSurvey2020] define the steps as follows, increasing in computational complexity:
+
+- **Identifying Argument Components** combines the stages of text segmentation and argument / non-argument classification in the manual process.
+- **Identifying Clausal Properties** involves the identification of both intrinsic clausal properties (e.g. is X evidence?, is X reported speech?) of the ADU and the contextual properties (e.g. is X a premise?, is X a conclusion?).
+- **Identifying Relational Properties** relates to the identification of *general relations* between ADUs (e.g. is X a premise for Y?, is X in conflict with Y?) and the identification of argument schemes.
+
+Generally these stages of AM are not directly used in the literature, but instead a set of AM sub-tasks which map onto each of these stages, the tasks defined as follows were defined by :
+
+- **Argumentative Sentence Detection (ASD)** is the task of classifying a sequence as cntaining an argument, or not. ASD can be extended to include the task of claim detection, where a sequence is classified as containing a claim or not containing a claim.
+- **Argumentative Relation Identification (ARI)** is the task of identifying the relation between a pair of sentences where given a pair $(x_i, x_j)$ the task is to identify the argumentative relation $x_i \rightarrow x_j$ across some relation model.
+
+There are varying relation models for ARI, the most commonly used is simply classifying the pair as one of support (a combination of inference and rephrase), attack (conflict) or unrelated. For the purposes of this project this is termed 3-class ARI. ARI can also be conducted using all relations described in IAT (inference, rephrase and conflict), as well as unrelated nodes. For the purpose of this project this is termed 4-class ARI. Some literature makes a distinction between Argument Relation Identification and Argument Relation Classification, where the latter does not involve unrelated pairs (i.e. given that the pair $(x_i, x_j)$ is related, what is the type of relation?), however this distinction is my no means universal among AM literature [@gemechuARIESGeneralBenchmark2024].
+
+Much of the AM literature only evaluates their systems in the same domain (dataset) as it was trained on [@lawrenceArgumentMiningSurvey2020;@gorurCanLargeLanguage2024;@wuKnowCompDialAM2024Finetuning2024;@zhengKNOWCOMPPOKEMONTeam2024;@egerNeuralEndtoEndLearning2017;@haddadanYesWeCan2019]. Recently, however, more research has been conducted into how these models perform across different domains [@ruiz-dolzTransformerBasedModelsAutomatic2021;@stabCrosstopicArgumentMining2018;@al-khatibCrossDomainMiningArgumentative2016], this generally involves training the model on one domain and then evaluating its performance across several others. A good example of this is the ARIES benchmark [@gemechuARIESGeneralBenchmark2024], which provides results for various different approaches to the ARI task across popular ARI datasets. Another notable contribution is Ruiz-Dolz *et al.* (2021) [@ruiz-dolzTransformerBasedModelsAutomatic2021] which compares the cross-domain performance of the most popular pre-trained transformer models (e.g. BERT [@devlinBERTPretrainingDeep2019b] and RoBERTa [@liuRoBERTaRobustlyOptimized2019a]) showing that the RoBERTa models tend to perform better both in-domain and cross-domain. Research has also been conducted into how these models perform cross-lingually creating a baseline for multilingual argument mining [@egerCrosslingualArgumentationMining2018].
+
+Ruiz-Dolz *et al.* (2025) [@ruiz-dolzLookingUnseenEffective2025] proposes techniques to answer the question: How do we sample unrelated arguments? If all possible examples of unrelated samples are used it constitutes an overwhelming proportion of the dataset (98-100%) which would be detrimental to model performance in the real world. To achieve this, they propose the following methods:
+
+- **Undersampling** creates a more balanced class distribution by randomly choosing unrelated propositions from the set of all possible combinations.
+- **Long Context Sampling** where unrelated propositions are chosen such that they are 'far apart' in the discourse. Ruiz-Dolz *et al.* define this as being from different argument maps.
+- **Short Context Sampling** where unrelated propositons are chosen such that they are 'close together' in the discourse. Ruiz-Dolz *et al.* define this as being from the same argumet map.
+- **Semantic Similarity Sampling** where unrelated propositions are chosen such that they are semantically similar.
+
+They show that Short Context Sampling is the most challenging method when looking in-domain, however, the model is better able to generalise across different domains than the other methods and is a more realistic task.
+
+Argument Mining techniques have also been extended to multiple modalities, both using Vision-Language systems [@liuImageArgMultimodalTweet2022;@zongTILFAUnifiedFramework2023;@liuOverviewImageArg2023First2023] and perhaps the more obvious Audio-Language systems [@manciniMultimodalArgumentMining2022;@manciniMAMKitComprehensiveMultimodal2024;@ruiz-dolzVivesDebateSpeechCorpusSpoken2023]. Making use of acoustic features has been proven to improve performance across both ASD and ARI tasks [@ruiz-dolzVivesDebateSpeechCorpusSpoken2023;@mestreMArgMultimodalArgument2021] but there has not been any research into the applicability of Audio-Language systems in cross-domain contexts.
+
+Mancini *et al.* [@manciniMAMKitComprehensiveMultimodal2024] created a comprehensive toolkit for argument mining research. They include both datasets and models that can be used for the creation and evaluation of audio-language argument mining systems, across different tasks, including ASD, ACC and ARI. Therefore, MAMKit provides a very useful benchmark for the development of audio-language AM techniques.
 
 # Datasets
 
@@ -297,25 +334,23 @@ Figure \ref{fig:moral-confidence} shows the distribution of audio alignment conf
 
 # Models {#sec:models}
 
-There are many different approaches when considering multimodal models. Generally they can be split into two categories: early fusion and late fusion. Early fusion models initially combine the features from each modality together, before being used as input to a single transformer model. Late fusion models use multiple transformers, one specialised in each modality. After being fed through each transformer, the hidden vectors are combined before being fed into the model's head. Initially, only late fusion models have been considered in this research.
+This section descries the model architectures that are evaluated in this project. Since the models will be aimed at a sequence pair classification task, there is a distinction between when data from each sequence is combined (which can be termed sequence fusion) and when data from each modality is combined (which can be termed multimodal fusion). The following subsections define the different approaches evaluated for each of these stages.
 
-This late fusion model uses RoBERTa-base [@liuRoBERTaRobustlyOptimized2019a] as its text transformer. To process the audio data, the model uses the Wav2Vec2-base audio transformer [@baevskiWav2vec20Framework2020], having been pre-trained on 960 hours of dialogue^[https://huggingface.co/facebook/wav2vec2-base-960h]. The base models are used currently in order to increase the speed at which experiments can be conducted, however, they are used with a view to transitioning to their large variants towards the end of the project.
+## Sequence Fusion {#sec:seq-fusion}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=8cm]{model-diag}
-\caption{Concatenation model with late fusion. \label{fig:model-diag}}
-\end{figure}
+In most text-processing approaches data from each sequence is combined at the text level using special tokens defined in the encoder's tokeniser [@gemechuARIESGeneralBenchmark2024;@wuKnowCompDialAM2024Finetuning2024;@zhengKNOWCOMPPOKEMONTeam2024]. For this project, this approach is termed early sequence fusion. To achieve this, the input sequences can be delimiter by a separator token, and the entire sequence wrapped in the start of sequence (SOS) and end of sequence (EOS) tokens. An example using the RoBERTa tokeniser takes the following form: `<s> [sequence 1] </s> [sequence 2] </s>`. Here the `<s>` token corresponds to the SOS, and `</s>` does the job of both the separator token and the EOS token.
 
-Figure \ref{fig:model-diag} povides a visualisation of the primary model used at this point in the project. Similar models have been shown to achieve good multimodal performance while also being relatively simple to implement [@manciniMultimodalArgumentMining2022;@manciniMAMKitComprehensiveMultimodal2024]. It is for these reasons that this model has been implemented using the Huggingface^[https://huggingface.co/] and PyTorch^[https://pytorch.org/] python modules.
+As far as was found, there is no existing literature on how early sequence fusion could function for audio models. Therefore, it was decided to deliniate each audio sequence by a certain amount of silence. The exact amount of silence could be adjusted as a training hyperparameter and was eventually set at 7.5 seconds.
 
-Some preliminary experiments have also been conducted using text-only models in an attempt to replicate results produced in [@gemechuARIESGeneralBenchmark2024]. For this the RoBERTa-base model is used and each sentence is concatenated before tokenisation, delimited by RoBERTa's special purpose token `</s>`.
+Mestre *et al.* [@mestreMArgMultimodalArgument2021] and Mancini *et al.* [@manciniMAMKitComprehensiveMultimodal2024] approach the problem differently. They first put each sequence through the text encoder independently, before fusing the outputs and feeding the combined encodings into the classification head. This approach extends much more easily to the audio modality, since the audio encodings can be combined in the same way as the text encodings.
+
+## Multimodal Fusion {#sec:mm-fusion}
 
 # Results
 
-## In-Dataset
+## In-Domain
 
-## Cross-Dataset
+## Cross-Domain
 
 # Limitations
 
