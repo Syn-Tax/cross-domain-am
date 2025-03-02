@@ -201,7 +201,7 @@ def main(
 
         wandb.init(
             project="cross-domain-am",
-            name=f"QT-{m}-{t}-{EPOCHS}",
+            name=f"QT-{m}-{t}-{EPOCHS}-{train_set.split("-")[-2]}-4class-OS_CA",
             config=config,
         )
 

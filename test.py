@@ -9,14 +9,14 @@ from create_datasets import *
 relation_types = {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
 
 dataset_configs = [
-    ("train-4-SCS", "eval-4-SCS", "test-4-SCS", "complete-4-SCS"),
-    ("train-4-LCS", "eval-4-SCS", "test-4-SCS", "complete-4-SCS"),
-    ("train-4-US", "eval-4-SCS", "test-4-SCS", "complete-4-SCS"),
+    ("train-4-SCS-OS_CA", "eval-4-SCS", "test-4-SCS", "complete-4-SCS"),
+    ("train-4-LCS-OS_CA", "eval-4-SCS", "test-4-SCS", "complete-4-SCS"),
+    ("train-4-US-OS_CA", "eval-4-SCS", "test-4-SCS", "complete-4-SCS"),
 ]
 
 model_dataset_types = [
     (TextOnlyDatasetConcat, TextOnlyEarlyModel),
-    # (AudioOnlyDatasetConcat, AudioOnlyEarlyModel),
+    (AudioOnlyDatasetConcat, AudioOnlyEarlyModel),
     # (MultimodalDatasetConcat, MultimodalEarlyLateModel),
     # (MultimodalDatasetNoConcat, MultimodalLateLateModel),
 ]
