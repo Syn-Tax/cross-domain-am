@@ -148,7 +148,7 @@ def save(path, data):
         f.write(out)
 
 
-def resample(data, relation_types, sampling):
+def resample(data, relation_types, sampling, undersample_to_equal=False):
     labelled_samples = {k: [] for k in relation_types.values()}
     output = []
 
@@ -161,16 +161,22 @@ def resample(data, relation_types, sampling):
     # complete integer part of resampling
     for relation, s in zip(labelled_samples.keys(), sampling_floored):
         for x in range(s):
-            output.extend(labelled_samples[relation])
+            labelled_samples[relation].extend(labelled_samples[relation])
 
     # complete fractional part of resampling
     for relation, s in zip(labelled_samples.keys(), sampling_dec):
-        output.extend(
+        labelled_samples[relation].extend(
             labelled_samples[relation][: int(s * len(labelled_samples[relation]))]
         )
 
+    # put everything back together
+    minority = min([len(v) for v in labelled_samples.values()])
+
+    for relation in labelled_samples.keys():
+        output.extend(labelled_samples[relation][:minority])
+
     # reshuffle output
-    # random.shuffle(output)
+    random.shuffle(output)
     return output
 
 def load(
