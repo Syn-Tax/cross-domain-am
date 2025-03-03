@@ -810,40 +810,45 @@ if __name__ == "__main__":
     for data_dir, qt_complete in zip(data_dirs, qt_completes):
         for class_prob in classes.keys():
 
-            # splits = generate_pairs(
-            #     data_dir, qt_complete, SPLITS, classes[class_prob]
-            # )
-
-
+            splits = generate_pairs(
+                data_dir, qt_complete, SPLITS, classes[class_prob]
+            )
 
             for no_sampling in ["SCS", "LCS", "US"]:
                 print(
                     f"############### {data_dir.split('/')[-1]}-{class_prob}-{no_sampling} ############"
                 )
 
-                # get_metrics(splits["SCS"][0], classes[class_prob])
-                # get_metrics(splits["SCS"][1], classes[class_prob])
-                # get_metrics(splits["SCS"][2], classes[class_prob])
+                print("train")
+                get_metrics(splits[no_sampling][0], classes[class_prob])
+                print("eval")
+                get_metrics(splits[no_sampling][1], classes[class_prob])
+                print("test")
+                get_metrics(splits[no_sampling][2], classes[class_prob])
 
-                # save(data_dir + f"/train-{class_prob}-{no_sampling}.json", splits[no_sampling][0])
-                # save(data_dir + f"/eval-{class_prob}-{no_sampling}.json", splits[no_sampling][1])
-                # save(data_dir + f"/test-{class_prob}-{no_sampling}.json", splits[no_sampling][2])
+                save(data_dir + f"/train-{class_prob}-{no_sampling}.json", splits[no_sampling][0])
+                save(data_dir + f"/eval-{class_prob}-{no_sampling}.json", splits[no_sampling][1])
+                save(data_dir + f"/test-{class_prob}-{no_sampling}.json", splits[no_sampling][2])
 
-                # complete = splits[no_sampling][0]
-                # complete.extend(splits[no_sampling][1])
-                # complete.extend(splits[no_sampling][2])
+                complete = splits[no_sampling][0].copy()
+                complete.extend(splits[no_sampling][1])
+                complete.extend(splits[no_sampling][2])
 
-                # save(data_dir + f"/complete-{class_prob}-{no_sampling}.json", complete)
+                print("complete")
+                get_metrics(complete, classes[class_prob])
 
-                train = load(data_dir + f"/train-{class_prob}-{no_sampling}.json")
-                get_metrics(train, classes[class_prob])
+                save(data_dir + f"/complete-{class_prob}-{no_sampling}.json", complete)
+
+                # train = load(data_dir + f"/train-{class_prob}-{no_sampling}.json")
+                # get_metrics(train, classes[class_prob])
 
                 for resampling in resamplings.keys():
                     out = resample(
-                        train,
+                        splits[no_sampling][0],
                         classes[class_prob],
                         resamplings[resampling][class_prob],
                     )
+                    print(f"train_{resampling}")
                     get_metrics(out, classes[class_prob])
                     save(
                         data_dir
