@@ -155,27 +155,16 @@ def resample(data, relation_types, sampling, undersample_to_equal=False):
     for sample in data:
         labelled_samples[sample.labels].append(sample)
 
-    sampling_floored = [math.floor(x) for x in sampling]
-    sampling_dec = [x - y for x, y in zip(sampling, sampling_floored)]
+    # randomly over/undersample data
+    for s, relation in zip(sampling, labelled_samples.keys()):
+        if s > 1:
+            labelled_samples[relation].extend(random.choices(labelled_samples[relation], k=int((s-1)*len(labelled_samples[relation]))))
+        elif s < 1:
+            labelled_samples[relation] = random.sample(labelled_samples[relation], int(s * len(labelled_samples[relation])))
 
-    # complete integer part of resampling
-    for relation, s in zip(labelled_samples.keys(), sampling_floored):
-        for x in range(s):
-            labelled_samples[relation].extend(labelled_samples[relation])
+        output.extend(labelled_samples[relation])
 
-    # complete fractional part of resampling
-    for relation, s in zip(labelled_samples.keys(), sampling_dec):
-        labelled_samples[relation].extend(
-            labelled_samples[relation][: int(s * len(labelled_samples[relation]))]
-        )
-
-    # put everything back together
-    minority = min([len(v) for v in labelled_samples.values()])
-
-    for relation in labelled_samples.keys():
-        output.extend(labelled_samples[relation][:minority])
-
-    # reshuffle output
+    # combine and reshuffle output
     random.shuffle(output)
     return output
 
