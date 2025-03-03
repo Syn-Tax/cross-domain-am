@@ -170,7 +170,7 @@ def resample(data, relation_types, sampling):
         )
 
     # reshuffle output
-    random.shuffle(output)
+    # random.shuffle(output)
     return output
 
 def load(
@@ -800,7 +800,7 @@ if __name__ == "__main__":
     qt_completes = [True, False, False, False, False, False, False, False, False, False]
     # qt_completes = [False, False, False, False, False, False, False, False, False]
     resamplings = {
-        "OS_CA": {3: [1, 1, 3], 4: [1, 1, 3, 1]},
+        "OS_CA": {3: [1, 1, 5], 4: [1, 1, 5, 1]},
     }
     classes = {
         3: {"NO": 0, "RA": 1, "CA": 2, "MA": 1},
@@ -844,7 +844,7 @@ if __name__ == "__main__":
 
                 for resampling in resamplings.keys():
                     out = resample(
-                        splits[no_sampling][0],
+                        splits[no_sampling][0].copy(),
                         classes[class_prob],
                         resamplings[resampling][class_prob],
                     )
