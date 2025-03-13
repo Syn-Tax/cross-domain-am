@@ -87,7 +87,9 @@
   - only late fusion techniques
   - concat, product, cross-attention
 
-# Experimental Setup
+# Results
+
+## Experimental Setup
 
 - training parameters:
   - loss (cross-entropy)
@@ -96,8 +98,6 @@
   - metrics (macro-F1, precision, recall)
   - data splits
   - evaluating different NO sampling strategies
-
-# Results
 
 ## In-Dataset
 

@@ -1,13 +1,14 @@
 ---
 title: A Cross-Domain Evaluation of Multimodal Argument Relation Identification
 author: Oscar Morris
+date: April 2025
 
 bibliography: [../Cross-Domain AM.bib]
-documentclass: article
 numbersections: true
 codeBlockCaptions: true
 classoption: twocolumn
 fontsize: 12pt
+cref: false
 header-includes: |
     \usepackage[margin=2cm]{geometry}
     \usepackage{graphicx}
@@ -58,7 +59,7 @@ AIF treats all relevant parts of the argument as nodes within a graph. These nod
 
 Since AIF data can be easily shared, it became the basis for a Worldwide Argument Web (WWAW) [@rahwanLayingFoundationsWorld2007]. Since then, many corpora have been annotated using IAT and published on the AIFdb^[https://www.aifdb.org/] [@lawrenceAIFdbInfrastructureArgument2012] providing a very useful resource for argumentation research of many kinds.
 
-## Machine Learning
+## Machine Learning {#sec:background-ml}
 
 In recent years there have been several major advances in the field of natural language processing (NLP), most notably the introduction of the transformer architecture [@vaswaniAttentionAllYou2017]. The transformer architecture, based on self-attention, allows the model to determine much longer range dependencies than previous approaches.
 
@@ -175,7 +176,7 @@ Figure \ref{fig:complete-confidence} shows the distribution of confidence scores
 
 In order to further analyse the performance of this system, locutions were selected at random and qualitatively analysed. Throughout this process, all locutions appeared correct, however, it was very challenging to accurately determine the accuracy of the system on locutions with confidence scores $<0.2$. This shows that this method of aligning locutions with their corresponding audio is accurate.
 
-### Pair Creation
+### Pair Creation {#sec:pair-creation}
 
 Finally, a set of node pairs and their relations can be generated in order to train a neural network. For related nodes this can be done trivially in that for each relation, the corresponding pair of nodes can be added to the set. When sampling unrelated nodes, however, things are more complex.
 
@@ -336,19 +337,94 @@ Figure \ref{fig:moral-confidence} shows the distribution of audio alignment conf
 
 This section descries the model architectures that are evaluated in this project. Since the models will be aimed at a sequence pair classification task, there is a distinction between when data from each sequence is combined (which can be termed sequence fusion) and when data from each modality is combined (which can be termed multimodal fusion). The following subsections define the different approaches evaluated for each of these stages.
 
+In previous work it has been shown that the RoBERTa models perform better than other pretrained transformers on the task of ARI [@ruiz-dolzTransformerBasedModelsAutomatic2021]. To encode the text data, the RoBERTa-base model is used, with 12 encoder layers, each with 12 attention heads and a hidden size of 768, resulting in 110M total parameters^[https://huggingface.co/FacebookAI/roberta-base]. Wav2Vec 2.0 is also used in many audio processing tasks [@manciniMAMKitComprehensiveMultimodal2024;@manciniMultimodalFallacyClassification2024] and therefore is used to encode the audio data. To ensure both models output the same hidden size, the wav2vec2-base model is used with 95M total parameters^[https://huggingface.co/facebook/wav2vec2-base-960h]. The wav2vec2 model used is fine-tuned on 960 hours of librispeech for automatic speech recognition.
+
+The classification head used for most models is a simple linear projection from the hidden vector down to the required number of classes. The best performing model on ARI as proposed in MAMKit [@manciniMAMKitComprehensiveMultimodal2024] (MM-RoBERTa) is also evaluated. Their model uses the fusion architecture described in Figure \ref{fig:model-diag-late} but with a 3 layer Multilayer Perceptron (MLP) model as the classification head. They also only train the classification head, without training the text or audio encoders.
+
 ## Sequence Fusion {#sec:seq-fusion}
 
 In most text-processing approaches data from each sequence is combined at the text level using special tokens defined in the encoder's tokeniser [@gemechuARIESGeneralBenchmark2024;@wuKnowCompDialAM2024Finetuning2024;@zhengKNOWCOMPPOKEMONTeam2024]. For this project, this approach is termed early sequence fusion. To achieve this, the input sequences can be delimiter by a separator token, and the entire sequence wrapped in the start of sequence (SOS) and end of sequence (EOS) tokens. An example using the RoBERTa tokeniser takes the following form: `<s> [sequence 1] </s> [sequence 2] </s>`. Here the `<s>` token corresponds to the SOS, and `</s>` does the job of both the separator token and the EOS token.
 
-As far as was found, there is no existing literature on how early sequence fusion could function for audio models. Therefore, it was decided to deliniate each audio sequence by a certain amount of silence. The exact amount of silence could be adjusted as a training hyperparameter and was eventually set at 7.5 seconds.
+As far as was found, there is no existing literature on how early sequence fusion could function for audio models. Therefore, it was decided to deliniate each audio sequence by a certain amount of silence. The exact amount of silence could be adjusted as a training hyperparameter and was eventually set to 5 seconds.
 
-Mestre *et al.* [@mestreMArgMultimodalArgument2021] and Mancini *et al.* [@manciniMAMKitComprehensiveMultimodal2024] approach the problem differently. They first put each sequence through the text encoder independently, before fusing the outputs and feeding the combined encodings into the classification head. This approach extends much more easily to the audio modality, since the audio encodings can be combined in the same way as the text encodings.
+Figure \ref{fig:model-diag-early} shows an example of a model architecture using this late fusion technique, text related steps are shown in purple and audio related steps are shown in green. RoBERTa and Wav2Vec2 are simply used as examples and could be substituted for other models.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=8cm]{model-diag-early}
+\caption{Model diagram with early sequence and late multimodal fusion.\label{fig:model-diag-early}}
+\end{figure}
+
+Mestre *et al.* [@mestreMArgMultimodalArgument2021] and Mancini *et al.* [@manciniMAMKitComprehensiveMultimodal2024] approach the problem differently. They first put each sequence through the text encoder independently, before fusing the outputs and feeding the combined encodings into the classification head. While concatenation is the only fusion method examined for this sequence fusion technique, others (such as an element-wise product or cross-attention) could be used. This approach extends much more easily to the audio modality, since the audio encodings can be combined in the same way as the text encodings. This approach to fusing the data in each sequence can be termed late sequence fusion. Figure \ref{fig:model-diag-late} shows an example of a model architecture using late sequence fusion, text processing steps and data are shown in purple and audio-related steps are shown in green.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=8cm]{model-diag-late}
+\caption{Model diagram with late concatenation sequence and multimodal fusion.\label{fig:model-diag-late}}
+\end{figure}
 
 ## Multimodal Fusion {#sec:mm-fusion}
 
+
+Multimodal fusion decribes the method by which the text and audio data is combined. As detailed in Section @sec:background-ml, fusion techniques can be split into two major categories: early and late fusion. This project only evaluates late fusion techniques due to their ease of development and the applicability of pre-trained models. The following techniques are evaluated:
+
+- **Concatenation** where the pooled encodings for each modality are simply concatenated before being fed into the classification head.
+- **Elementwise-product** (otherwise known as a Hadamard product) takes the product of each element in the pooled encodings for each modality.
+- **Crossmodal Attention** (CA) is similar to the self-attention mechanism found in transformers, however, the queries are taken from a different modality when compared to the keys and values. To compute crossmodal attention features, the query and key matrices are multiplied and then put through a softmax. This is then multiplied with the value matrix and the result can then be pooled using an arithmetic mean. For the purposes of this project, the CA module is labelled based on the modality from which the query matrix is derived (e.g. a `CA_Text` module derives the query matrix from the text encodings and the key and value matrices from the audio encodings). This is shown in Figure \ref{fig:crossmodal-attention}.
+
+\begin{figure*}[t!]
+\centering
+\includegraphics[width=16cm]{crossmodal-attention}
+\caption{Crossmodal attention system with both text and audio queries. $\otimes$ is used to denote matrix multiplication.\label{fig:crossmodal-attention}}
+\end{figure*}
+
+```py {#lst:crossattention .numberLines caption="PyTorch forward method for a crossmodal attention mechanism."}
+# project query features
+queries = self.query_proj(query_modality)
+
+# project kv features
+keys = self.key_proj(kv_modality)
+values = self.value_proj(kv_modality)
+
+# compute attention scores
+attn_scores = torch.bmm(queries, keys.transpose(1, 2))
+attn_probs = F.softmax(attn_scores, dim=-1)
+
+# compute and return cross modal features
+return torch.bmm(attn_probs, values)
+```
+
+$$ \text{Softmax}(x_i) = \frac{\exp(x_i)}{\sum_j \exp(x_j)} $$ {#eq:softmax}
+
+Listing \ref{lst:crossattention} shows how a crossmodal attention mechanism can be implemented into a PyTorch module. The code is contained within the forward method of a PyTorch module, where `self.query_proj`, `self.key_proj` and `self.value_proj` are the linear projections for the queries, keys and values respectively. `torch.bmm` refers to a matrix multiplication and `F.softmax` is a mathematical function to ensure all values (across the requested dimension) lie in the range $[0,1]$ and sum to 1, the softmax function for a vector $\mathbf{x}$ is given in Equation @eq:softmax.
+
 # Results
 
+## Experimental Setup
+
+To provide a comparable set of results, all experiments were run using the same hyperparameters. Each model was trained on a single Nvidia RTX 4070 Super for 15 epochs with a batch size of 32 using a weighted cross-entropy loss and the AdamW optimiser [@loshchilovDecoupledWeightDecay2019a] initialised with a learning rate of $10^{-5}$, a linear learning rate scheduler and 10% of training used as warm-up steps. The cross-entropy weights were calculated as in Equation @eq:weight, where $\mathbf{c}$ is a vector containing the number of samples in each class, and $\mathbf{w}$ is a vector containing the relevant cross-entropy weight.
+
+$$ w_i = \frac{\max{\mathbf{c}}}{c_i} $$ {#eq:weight}
+
+In order to evaluate the models, the following metrics are reported: macro-averaged F1 score, precision and recall. These are all described for each class in Equations @eq:f1, @eq:precision and @eq:recall where $TP$ is the number of true positives, $FP$ is the number of false positives and $FN$ is the number of false negatives. The arithmetic mean can then be taken for each class to provide a holistic overview of the model's performance.
+
+$$ F1 = \frac{2TP}{2TP + FP + FN} $$ {#eq:f1}
+
+$$ \text{Precision} = \frac{TP}{TP + FP} $$ {#eq:precision}
+
+$$ \text{Recall} = \frac{TP}{TP + FN} $$ {#eq:recall}
+
+Generally the macro-averaged F1 score is the standard to evaluate a multi-class classification problem, including ARI systems [@ruiz-dolzTransformerBasedModelsAutomatic2021;@ruiz-dolzLookingUnseenEffective2025;@manciniMAMKitComprehensiveMultimodal2024], where only a single metric is reported, it will be a macro-averaged F1 score for this reason.
+
+The QT30-MM dataset is split into three splits: train, validation and test. 70% of the data is allocated for training, 10% for validation and the remaining 20% for testing. The model is evaluated on the validation split after every training epoch, the best performing model, based on macro-F1, is then chosen to be tested on the testing split, the metrics are then calculated and reported in the following sections.
+
+Each model is then evaluated on the complete dataset for each Moral Maze episode (Banking, Empire, Money, Problem, Syria, Green Belt and D-Day) and each metric calculated to provide an overview of the cross-domain performance of the model.
+
+In order to evaluate the different methods to sample unrelated arguments as described in Section @sec:pair-creation. Models are trained on SCS, US and LCS, the validation dataset is sampled identically to the training set, and tested, both in-domain and cross-domain on SCS. This is used because of its description as a more realistic problem [@ruiz-dolzLookingUnseenEffective2025]. All code used for the experiments can be found on GitHub^[https://github.com/Syn-Tax/cross-domain-am].
+
 ## In-Domain
+
+Results are reported for both the 3-class problem (considering support, attack and no relation) and the 4-class problem (considering RA, CA, MA and NO). First results are considered when evaluating in-domain, i.e. on the test set of the QT30-MM dataset.
 
 ## Cross-Domain
 
