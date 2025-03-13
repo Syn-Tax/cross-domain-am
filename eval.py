@@ -22,7 +22,7 @@ recall = evaluate.load("recall")
 N_CLASSES = 4
 
 
-def metrics_fn(predictions, step="eval"):
+def metrics_fn(predictions, targets=None, step="eval"):
     """Method to calculate the metric scores for a specific set of logits and target labels
 
     Args:
@@ -30,11 +30,17 @@ def metrics_fn(predictions, step="eval"):
         targets (torch.Tensor): the target labels - 1st dimensions of logits and targets must match
         step (str, optional): the training or eval step (used to log to wandb). Defaults to "eval".
     """
-    logits = predictions.predictions
-    targets = predictions.label_ids
 
-    # calculate the predicted labels from logits
-    preds = np.argmax(logits, axis=-1)
+    if targets is None:
+
+        logits = predictions.predictions
+        targets = predictions.label_ids
+
+        # calculate the predicted labels from logits
+        preds = np.argmax(logits, axis=-1)
+    else:
+        preds = np.array(predictions)
+        targets = np.array(targets)
 
     # calculate metric scores
     macro_f1_score = f1.compute(
@@ -61,7 +67,7 @@ def metrics_fn(predictions, step="eval"):
     accuracy_score = accuracy.compute(predictions=preds, references=targets)["accuracy"]
 
     precision_score = precision.compute(
-        predictions=preds, references=targets, average="macro"
+        predictions=preds, references=targets, average="macro", zero_division=0.0
     )["precision"]
 
     recall_score = recall.compute(
@@ -185,3 +191,58 @@ def load_cd(
         datasets.append(dataset)
 
     return datasets
+
+
+def baselines(data_files, relation_types):
+    for dir, qt_complete in data_files:
+        print(f"##### {dir} #####")
+        dataset = TextOnlyDatasetConcat.load(
+            dir,
+            "/".join(dir.split('/')[:-1]),
+            "FacebookAI/roberta-base",
+            "facebook/wav2vec2-base-960h",
+            64,
+            10,
+            relation_types,
+            qt_complete
+        )
+
+        # random baseline
+        print("### Random ###")
+        preds = []
+        targets = []
+        for sample in dataset:
+            targets.append(sample["labels"])
+            preds.append(random.choice(list(relation_types.values())))
+
+        metrics_fn(preds, targets)
+
+        # majority baseline
+        print("### Majority ###")
+        preds = []
+        targets = []
+        for sample in dataset:
+            targets.append(sample["labels"])
+            preds.append(1)
+
+        metrics_fn(preds, targets)
+
+if __name__ == "__main__":
+    N_CLASSES = 4
+    baselines(
+        [
+            ("data/Question Time/test-4-SCS.json", True),
+            ("data/Question Time/test-4-LCS.json", True),
+            ("data/Question Time/test-4-US.json", True),
+            # ("data/Moral Maze/Banking", False),
+            # ("data/Moral Maze/DDay", False),
+            # ("data/Moral Maze/Empire", False),
+            # ("data/Moral Maze/Families", False),
+            # ("data/Moral Maze/GreenBelt", False),
+            # ("data/Moral Maze/Hypocrisy", False),
+            # ("data/Moral Maze/Money", False),
+            # ("data/Moral Maze/Syria", False),
+            # ("data/Moral Maze/Welfare", False),
+        ],
+        {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
+    )
