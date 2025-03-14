@@ -19,5 +19,4 @@ header-includes: |
 
     \usepackage{longtable}
     \usepackage{multirow}
-abstract: test abstract
 ---

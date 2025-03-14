@@ -4,7 +4,7 @@
 
 To provide a comparable set of results, all experiments were run using the same hyperparameters. Each model was trained on a single Nvidia RTX 4070 Super for 15 epochs with a batch size of 32 using a weighted cross-entropy loss and the AdamW optimiser [@loshchilovDecoupledWeightDecay2019a] initialised with a learning rate of $10^{-5}$, a linear learning rate scheduler and 10% of training used as warm-up steps. The cross-entropy weights were calculated as in Equation @eq:weight, where $\mathbf{c}$ is a vector containing the number of samples in each class, and $\mathbf{w}$ is a vector containing the relevant cross-entropy weight.
 
-$$ w_i = \frac{\max{\mathbf{c}}}{c_i} $$ {#eq:weight}
+$$ w_i = \frac{\max(\mathbf{c})}{c_i} $$ {#eq:weight}
 
 In order to evaluate the models, the following metrics are reported: macro-averaged F1 score, precision and recall. These are all described for each class in Equations @eq:f1, @eq:precision and @eq:recall where $TP$ is the number of true positives, $FP$ is the number of false positives and $FN$ is the number of false negatives. The arithmetic mean can then be taken for each class to provide a holistic overview of the model's performance.
 
@@ -47,7 +47,7 @@ Results are reported for both the 3-class problem (considering support, attack a
 \end{tabular}
 \end{table}
 
-Table \ref{tbl:results-late} shows the macro-f1 scores of each model using RoBERTa-base as the text encoder and Wav2Vec2 as the audio encoder. All that is shown are the results for models performing late sequence fusion across different NO-sampling strategies. In the 4-class problem it does not seem that the addition of acoustic features makes much if any difference to the performance of the model on the ARI task. However, a more in-depth discussion of the results may still yield some understanding in their limitations and how they could be improved. In order to do this the Text-Only model trained on SCS is analysed.
+Table \ref{tbl:results-late} shows the macro-f1 scores of each model using RoBERTa-base as the text encoder and Wav2Vec2 as the audio encoder. All that is shown are the results for models performing late sequence fusion across different NO-sampling strategies. In the 4-class problem it does not seem that the addition of acoustic features makes much if any difference to the performance of the model on the ARI task. This result has also been found to  However, a more in-depth discussion of the results may still yield some understanding in their limitations and how they could be improved. In order to do this the Text-Only model trained on SCS is analysed.
 
 \begin{table}[h]
 \centering
