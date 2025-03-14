@@ -50,11 +50,11 @@ def metrics_fn(predictions, targets=None, step="eval"):
         average="macro",
     )["f1"]
 
-    micro_f1_score = f1.compute(
+    weighted_f1_score = f1.compute(
         predictions=preds,
         references=targets,
         labels=list(range(N_CLASSES)),
-        average="micro",
+        average="weighted",
     )["f1"]
 
     class_f1_score = f1.compute(
@@ -94,7 +94,7 @@ def metrics_fn(predictions, targets=None, step="eval"):
     # add metric scores to dictionary
     res = {
         f"macro_f1": macro_f1_score,
-        f"micro_f1": micro_f1_score,
+        f"weighted_f1": weighted_f1_score,
         f"accuracy": accuracy_score,
         f"macro_precision": precision_score,
         f"macro_recall": recall_score,
