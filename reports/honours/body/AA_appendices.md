@@ -1,3 +1,7 @@
+---
+bibliography: [../../Cross-Domain AM.bib]
+---
+
 \appendix
 # Results {#app:results}
 

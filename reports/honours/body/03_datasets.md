@@ -1,3 +1,7 @@
+---
+bibliography: [../../Cross-Domain AM.bib]
+---
+
 # Datasets {#sec:datasets}
 
 All datasets used in this project are available as corpora on AIFdb^[https://corpora.aifdb.org/]. Using consistently annotated Argument Interchange Format (AIF) data allows many different datasets to be used and tested. The AIF Format [@chesnevarArgumentInterchangeFormat2006] allows the annotation of argument data across all AM tasks, providing a platform for many different kinds of research.

@@ -1,3 +1,6 @@
+---
+bibliography: [../../Cross-Domain AM.bib]
+---
 
 # Background
 
