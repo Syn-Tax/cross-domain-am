@@ -1,3 +1,7 @@
+---
+bibliography: [../../Cross-Domain AM.bib]
+---
+
 # Models {#sec:models}
 
 This section descries the model architectures that are evaluated in this project. Since the models will be aimed at a sequence pair classification task, there is a distinction between when data from each sequence is combined (which can be termed sequence fusion) and when data from each modality is combined (which can be termed multimodal fusion). The following subsections define the different approaches evaluated for each of these stages.
