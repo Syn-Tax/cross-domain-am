@@ -4,7 +4,7 @@ bibliography: [../../Cross-Domain AM.bib]
 
 # Results
 
-## Experimental Setup
+## Experimental Setup {#sec:exp-setup}
 
 To provide a comparable set of results, all experiments were run using the same hyperparameters. Each model was trained on a single Nvidia RTX 4070 Super for 15 epochs with a batch size of 32 using a weighted cross-entropy loss and the AdamW optimiser [@loshchilovDecoupledWeightDecay2019a] initialised with a learning rate of $10^{-5}$, a linear learning rate scheduler and 10% of training used as warm-up steps. The cross-entropy weights were calculated as in Equation @eq:weight, where $\mathbf{c}$ is a vector containing the number of samples in each class, and $\mathbf{w}$ is a vector containing the relevant cross-entropy weight.
 
@@ -51,11 +51,11 @@ Results are reported for both the 3-class problem (considering support, attack a
 \end{tabular}
 \end{table}
 
-Table \ref{tbl:results-late} shows the macro-f1 scores of each model using RoBERTa-base as the text encoder and Wav2Vec2 as the audio encoder. All that is shown are the results for models performing late sequence fusion across different NO-sampling strategies. In the 4-class problem it does not seem that the addition of acoustic features makes much if any difference to the performance of the model on the ARI task. This result has also been found by others [@mestreMArgMultimodalArgument2021]. However, a more in-depth discussion of the results may still yield some understanding in their limitations and how they could be improved. In order to do this the Text-Only model trained on SCS is analysed.
+Table \ref{tbl:results-late} shows the macro-f1 scores of each model using RoBERTa-base as the text encoder and Wav2Vec2 as the audio encoder. All that is shown are the results for models performing late sequence fusion across different NO-sampling strategies. In the 4-class problem it does not seem that the addition of acoustic features makes much if any difference to the performance of the model on the ARI task. This result has also been found by others [@mestreMArgMultimodalArgument2021]. However, a more in-depth discussion of the results may still yield some understanding in their limitations and how they could be improved. In order to do this the Text-Only model trained on SCS is explained in detail, however, the conclusions were found to hold on other models.
 
 \begin{table}[h]
 \centering
-\caption{Class F1 distribution for text-only SCS model.\label{tbl:class-f1-4class}}
+\caption{Class F1 distribution for text-only SCS model on test split.\label{tbl:class-f1-4class}}
 \begin{tabular}{|llll|}
 \hline
 \textbf{NO} & \textbf{RA} & \textbf{CA} & \textbf{MA}              \\ \hline
@@ -71,6 +71,27 @@ A good place to begin here is by analysing the class F1 distribution, here F1 sc
 \caption{Confusion matrix showing true and predicted labels for the text-only SCS model.\label{fig:text-only-conf-mat-4class}}
 \end{figure}
 
-A further analysis can be conducted by looking at the confusion matrix generated as shown in Figure \ref{fig:text-only-conf-mat-4class}. The ideal confusion matrix shows a diagonal line, in this case from the top left down to the bottom right of the matrix, and can be used to determine which classes the model struggles to distinguish. For ARI, it is generally expected that the model is able to distinguish CA from other classes, while RA and MA are often confused with each other and sometimes with NO. This follows from the difficulties that human annotators have when determining the different relations [@lawrenceArgumentMiningSurvey2020].
+A further analysis can be conducted by looking at the confusion matrix generated as shown in Figure \ref{fig:text-only-conf-mat-4class}. The ideal confusion matrix shows a diagonal line, in this case from the top left down to the bottom right of the matrix, and can be used to determine which classes the model struggles to distinguish. For ARI, it is generally expected that the model is able to distinguish CA from other classes, while RA and MA are often confused with each other and sometimes with NO. This follows from the difficulties that human annotators have when determining the different relations [@lawrenceArgumentMiningSurvey2020]. However, this is not what Figure \ref{fig:text-only-conf-mat-4class} shows, instead the model is generally confusing most classes, most notable is the overprediction of the RA class. This implies the model is simply predicting the majority class which is a well known and well studied problem in all classification problems involving unbalanced data [@junsomboonCombiningOverSamplingUnderSampling2017]. Typically such problems are relatively simple to solve, often using either weighted loss functions (as is explained in Section @sec:exp-setup) or some form of data augmentation or manipulation technique. During this project, primarily random resampling was experimented with. Random resampling generally involves a combination (or only one) of oversampling minority classes (e.g. randomly duplicating samples labelled as CA) or undersampling majority classes (e.g. randomly discarding samples labelled as RA or NO). Often this has been shown to be the best technique for solving class-imbalance problems, despite the rise of other resampling techniques (such as SMOTE) [@mohammedMachineLearningOversampling2020]. Unfortunately in this case no resampling method or distribution could be found to meaningfully improve the model performance.
+
+\begin{table}[h]
+\centering
+\caption{Macro-F1 scores for late sequence fusion models on the 3-class problem. Highest results are shown in bold.\label{tbl:results-late}}
+\begin{tabular}{|llll|}
+\hline
+\multicolumn{4}{|c|}{\textbf{Macro-F1 3-class}}                                                                                                         \\ \hline
+\multicolumn{1}{|l|}{Model}         & \multicolumn{1}{c|}{\textbf{SCS}} & \multicolumn{1}{c|}{\textbf{LCS}} & \multicolumn{1}{c|}{\textbf{US}} \\ \hline
+\multicolumn{4}{|c|}{\textbf{Unimodal}}                                                                                                        \\ \hline
+\multicolumn{1}{|l|}{Text-Only}     & .62                               & .59                               & .61                     \\
+\multicolumn{1}{|l|}{Audio-Only}    & .21                               & .54                               & .22                              \\ \hline
+\multicolumn{4}{|c|}{\textbf{Multimodal}}                                                                                                      \\ \hline
+\multicolumn{1}{|l|}{Concatenation} & .61                               & .61                               & .60                              \\
+\multicolumn{1}{|l|}{Product}       & .58                               & .61                               & .62                              \\
+\multicolumn{1}{|l|}{CA Text}       & .53                               & .53                               & .52                              \\
+\multicolumn{1}{|l|}{CA Audio}      & .61                               & .62                               & .63                              \\ \hline
+\multicolumn{4}{|c|}{\textbf{Baselines}}                                                                                                       \\ \hline
+\multicolumn{1}{|l|}{Random}        & .22                               & .23                               & .24                              \\
+\multicolumn{1}{|l|}{Majority}      & .14                               & .14                               & .14                              \\ \hline
+\end{tabular}
+\end{table}
 
 ## Cross-Domain
