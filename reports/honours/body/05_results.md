@@ -1,3 +1,7 @@
+---
+bibliography: [../../Cross-Domain AM.bib]
+---
+
 # Results
 
 ## Experimental Setup
@@ -31,7 +35,7 @@ Results are reported for both the 3-class problem (considering support, attack a
 \caption{Macro-F1 scores for late sequence fusion models on the 4-class problem. Highest results are shown in bold.\label{tbl:results-late}}
 \begin{tabular}{|llll|}
 \hline
-\multicolumn{4}{|c|}{\textbf{4-class}}                                                                                                         \\ \hline
+\multicolumn{4}{|c|}{\textbf{Macro-F1 4-class}}                                                                                                         \\ \hline
 \multicolumn{1}{|l|}{Model}         & \multicolumn{1}{c|}{\textbf{SCS}} & \multicolumn{1}{c|}{\textbf{LCS}} & \multicolumn{1}{c|}{\textbf{US}} \\ \hline
 \multicolumn{4}{|c|}{\textbf{Unimodal}}                                                                                                        \\ \hline
 \multicolumn{1}{|l|}{Text-Only}     & .58                               & \textbf{.59}                      & \textbf{.59}                     \\
@@ -47,7 +51,7 @@ Results are reported for both the 3-class problem (considering support, attack a
 \end{tabular}
 \end{table}
 
-Table \ref{tbl:results-late} shows the macro-f1 scores of each model using RoBERTa-base as the text encoder and Wav2Vec2 as the audio encoder. All that is shown are the results for models performing late sequence fusion across different NO-sampling strategies. In the 4-class problem it does not seem that the addition of acoustic features makes much if any difference to the performance of the model on the ARI task. This result has also been found to  However, a more in-depth discussion of the results may still yield some understanding in their limitations and how they could be improved. In order to do this the Text-Only model trained on SCS is analysed.
+Table \ref{tbl:results-late} shows the macro-f1 scores of each model using RoBERTa-base as the text encoder and Wav2Vec2 as the audio encoder. All that is shown are the results for models performing late sequence fusion across different NO-sampling strategies. In the 4-class problem it does not seem that the addition of acoustic features makes much if any difference to the performance of the model on the ARI task. This result has also been found by others [@mestreMArgMultimodalArgument2021]. However, a more in-depth discussion of the results may still yield some understanding in their limitations and how they could be improved. In order to do this the Text-Only model trained on SCS is analysed.
 
 \begin{table}[h]
 \centering
@@ -67,6 +71,6 @@ A good place to begin here is by analysing the class F1 distribution, here F1 sc
 \caption{Confusion matrix showing true and predicted labels for the text-only SCS model.\label{fig:text-only-conf-mat-4class}}
 \end{figure}
 
-A further analysis can be conducted by looking at the confusion matrix generated as shown in Figure \ref{fig:text-only-conf-mat-4class}. The ideal confusion matrix shows a diagonal line, in this case from the top left down to the bottom right of the matrix.
+A further analysis can be conducted by looking at the confusion matrix generated as shown in Figure \ref{fig:text-only-conf-mat-4class}. The ideal confusion matrix shows a diagonal line, in this case from the top left down to the bottom right of the matrix, and can be used to determine which classes the model struggles to distinguish. For ARI, it is generally expected that the model is able to distinguish CA from other classes, while RA and MA are often confused with each other and sometimes with NO. This follows from the difficulties that human annotators have when determining the different relations [@lawrenceArgumentMiningSurvey2020].
 
 ## Cross-Domain
