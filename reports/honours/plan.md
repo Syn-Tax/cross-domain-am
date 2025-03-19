@@ -64,6 +64,7 @@
   - processing AIF data
   - forced alignment (both attempts)
     - issues surrounding forced alignment on incorrect transcripts
+    - how CTC works
 - How relations are sampled
 
 ## QT30

@@ -23,7 +23,7 @@ device = accelerator.device
 
 
 # data parameters
-ID_DATA_DIR = "data/Question Time"
+ID_DATA_DIR = "data/Moral Maze/Welfare"
 CD_DIRS = [
     "data/Moral Maze/Banking",
     "data/Moral Maze/Empire",
@@ -121,7 +121,7 @@ def main(
     # load/generate datasets
     print("#### train ####")
     train_dataset = dataset_type.load(
-        ID_DATA_DIR + "/train.json",
+        ID_DATA_DIR + "/complete.json",
         ID_DATA_DIR,
         TEXT_ENCODER,
         AUDIO_ENCODER,
@@ -279,5 +279,5 @@ if __name__ == "__main__":
         GRAD_CLIP,
         ("--log" in sys.argv),
         True,
-        "-3-US",
+        "-4-SCS",
     )

@@ -39,17 +39,13 @@ Table \ref{tbl:results-early-4class} shows the macro-f1 scores of each model usi
 \caption{Macro-F1 scores for early sequence fusion models on the 4-class problem. Highest results are shown in bold.\label{tbl:results-early-4class}}
 \begin{tabular}{|llll|}
 \hline
-\multicolumn{4}{|c|}{\textbf{Macro-F1 4-class}}                                                                                                         \\ \hline
 \multicolumn{1}{|l|}{Model}         & \multicolumn{1}{c|}{\textbf{SCS}} & \multicolumn{1}{c|}{\textbf{LCS}} & \multicolumn{1}{c|}{\textbf{US}} \\ \hline
-\multicolumn{4}{|c|}{\textbf{Unimodal}}                                                                                                        \\ \hline
 \multicolumn{1}{|l|}{Text-Only}     & .58                               & \textbf{.59}                      & \textbf{.59}                     \\
 \multicolumn{1}{|l|}{Audio-Only}    & .43                               & .41                               & .20                              \\ \hline
-\multicolumn{4}{|c|}{\textbf{Multimodal}}                                                                                                      \\ \hline
 \multicolumn{1}{|l|}{Concatenation} & .58                               & .57                               & .58                              \\
 \multicolumn{1}{|l|}{Product}       & .56                               & .57                               & .58                              \\
 \multicolumn{1}{|l|}{CA Text}       & .57                               & .46                               & .57                              \\
 \multicolumn{1}{|l|}{CA Audio}      & .58                               & .57                               & .57                              \\ \hline
-\multicolumn{4}{|c|}{\textbf{Baselines}}                                                                                                       \\ \hline
 \multicolumn{1}{|l|}{Random}        & .22                               & .23                               & .24                              \\
 \multicolumn{1}{|l|}{Majority}      & .14                               & .14                               & .14                              \\ \hline
 \end{tabular}
@@ -84,17 +80,13 @@ Table \ref{tbl:results-early-3class} shows the macro-f1 scores across each NO-sa
 \caption{Macro-F1 scores for early sequence fusion models on the 3-class problem. Highest results are shown in bold.\label{tbl:results-early-3class}}
 \begin{tabular}{|llll|}
 \hline
-\multicolumn{4}{|c|}{\textbf{Macro-F1 3-class}}                                                                                                         \\ \hline
 \multicolumn{1}{|l|}{Model}         & \multicolumn{1}{c|}{\textbf{SCS}} & \multicolumn{1}{c|}{\textbf{LCS}} & \multicolumn{1}{c|}{\textbf{US}} \\ \hline
-\multicolumn{4}{|c|}{\textbf{Unimodal}}                                                                                                        \\ \hline
 \multicolumn{1}{|l|}{Text-Only}     & .62                               & .59                               & .61                              \\
 \multicolumn{1}{|l|}{Audio-Only}    & .21                               & .54                               & .22                              \\ \hline
-\multicolumn{4}{|c|}{\textbf{Multimodal}}                                                                                                      \\ \hline
 \multicolumn{1}{|l|}{Concatenation} & .61                               & .61                               & .60                              \\
 \multicolumn{1}{|l|}{Product}       & .58                               & .61                               & .62                              \\
 \multicolumn{1}{|l|}{CA Text}       & .53                               & .53                               & .52                              \\
 \multicolumn{1}{|l|}{CA Audio}      & .61                               & .62                               & \textbf{.63}                              \\ \hline
-\multicolumn{4}{|c|}{\textbf{Baselines}}                                                                                                       \\ \hline
 \multicolumn{1}{|l|}{Random}        & .28                               & .30                               & .29                              \\
 \multicolumn{1}{|l|}{Majority}      & .22                               & .22                               & .22                              \\ \hline
 \end{tabular}
