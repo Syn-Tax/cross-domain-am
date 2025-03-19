@@ -10,10 +10,11 @@ import wandb
 import sys
 import time
 import accelerate
+import gc
 
 from create_datasets import *
 from models import *
-from eval import metrics_fn, id_eval, cd_eval, load_cd
+from eval import metrics_fn, id_eval, cd_eval, load_cd, N_CLASSES
 from utils import move_batch
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -40,8 +41,8 @@ QT_COMPLETE = True
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
-dataset_type = MultimodalDatasetConcat
-model_type = MultimodalEarlyLateModel
+DATASET_TYPE = TextOnlyDatasetConcat
+MODEL_TYPE = TextOnlyEarlyModel
 
 MAX_TOKENS = 128
 MAX_SAMPLES = 320_000
@@ -50,7 +51,7 @@ HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 4
+BATCH_SIZE = 2
 EPOCHS = 15
 LEARNING_RATE = 1e-5
 DROPOUT = 0.2
@@ -59,31 +60,10 @@ GRAD_ACCUMULATION_STEPS = 8
 WEIGHT_DECAY = 0
 GRAD_CLIP = 1
 
-# configuration dictionary passed to wandb
-config = {
-    "batch_size": BATCH_SIZE,
-    "epochs": EPOCHS,
-    "lr": LEARNING_RATE,
-    "data_dir": ID_DATA_DIR,
-    "text": TEXT_ENCODER,
-    "audio": AUDIO_ENCODER,
-    "dropout": DROPOUT,
-    "weight_decay": WEIGHT_DECAY,
-    "head_size": HEAD_HIDDEN_SIZE,
-    "head_layers": HEAD_HIDDEN_LAYERS,
-    "max_tokens": MAX_TOKENS,
-    "max_samples": MAX_SAMPLES,
-    "model": model_type.__name__,
+RELATION_TYPES = {
+    3: {"None": 0, "Support": 1, "Attack": 2},
+    4: {"NO": 0, "RA": 1, "CA": 2, "MA": 3},
 }
-
-# set seeds
-seed = 0
-random.seed(seed)
-os.environ["PYTHONHASHSEED"] = str(seed)
-np.random.seed(seed)
-torch.manual_seed(seed)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
 
 
 class LossTrainer(transformers.Trainer):
@@ -98,46 +78,64 @@ class LossTrainer(transformers.Trainer):
 
 
 def main(
-    epochs,
-    batch_size,
-    lr,
-    l2,
-    text_dropout,
-    audio_dropout,
-    head_size,
-    head_layers,
-    optim,
-    activation,
-    weighted_loss,
-    freeze_encoders,
-    initialisation,
-    text_encoder_dropout,
-    audio_encoder_dropout,
-    grad_clip,
     log=False,
     init=True,
-    file_append="",
+    train_set="",
+    eval_set="",
+    test_set="",
+    cd_sets="",
+    text_encoder="FacebookAI/roberta-base",
+    audio_encoder="facebook/wav2vec2-base-960h",
+    dataset_type=None,
+    model_type=None,
+    mm_fusion_method="concat",
+    n_classes=4,
 ):
+    # set seeds
+    seed = 0
+    random.seed(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+    N_CLASSES = n_classes
+
     # load/generate datasets
     print("#### train ####")
     train_dataset = dataset_type.load(
-        ID_DATA_DIR + "/complete.json",
+        ID_DATA_DIR + f"/{train_set}.json",
         ID_DATA_DIR,
-        TEXT_ENCODER,
-        AUDIO_ENCODER,
+        text_encoder,
+        audio_encoder,
         MAX_TOKENS,
         MAX_SAMPLES,
+        RELATION_TYPES[n_classes],
         qt_complete=QT_COMPLETE,
     )
 
     print("#### eval ####")
     eval_dataset = dataset_type.load(
-        ID_DATA_DIR + "/eval.json",
+        ID_DATA_DIR + f"/{eval_set}.json",
         ID_DATA_DIR,
-        TEXT_ENCODER,
-        AUDIO_ENCODER,
+        text_encoder,
+        audio_encoder,
         MAX_TOKENS,
         MAX_SAMPLES,
+        RELATION_TYPES[n_classes],
+        qt_complete=QT_COMPLETE,
+    )
+
+    print("#### test ####")
+    test_dataset = dataset_type.load(
+        ID_DATA_DIR + f"/{test_set}.json",
+        ID_DATA_DIR,
+        text_encoder,
+        audio_encoder,
+        MAX_TOKENS,
+        MAX_SAMPLES,
+        RELATION_TYPES[n_classes],
         qt_complete=QT_COMPLETE,
     )
 
@@ -158,27 +156,52 @@ def main(
     model = model_type(
         TEXT_ENCODER,
         AUDIO_ENCODER,
-        head_hidden_layers=head_layers,
-        head_hidden_size=head_size,
-        text_dropout=text_dropout,
-        audio_dropout=audio_dropout,
-        text_encoder_dropout=text_encoder_dropout,
-        audio_encoder_dropout=audio_encoder_dropout,
-        activation=activation,
-        freeze_encoders=freeze_encoders,
-        initialisation=initialisation,
+        head_hidden_layers=HEAD_HIDDEN_LAYERS,
+        head_hidden_size=HEAD_HIDDEN_SIZE,
+        text_dropout=DROPOUT,
+        audio_dropout=DROPOUT,
         n_classes=4,
-        mm_fusion_method="ca_audio"
+        mm_fusion_method=mm_fusion_method,
     )
-    # model = nn.DataParallel(model)
-    # model.to(device)
+
     model = accelerator.prepare(model)
+
+    # configuration dictionary passed to wandb
+    config = {
+        "batch_size": BATCH_SIZE,
+        "epochs": EPOCHS,
+        "lr": LEARNING_RATE,
+        "data_dir": ID_DATA_DIR,
+        "text": text_encoder,
+        "audio": audio_encoder,
+        "dropout": DROPOUT,
+        "weight_decay": WEIGHT_DECAY,
+        "head_size": HEAD_HIDDEN_SIZE,
+        "head_layers": HEAD_HIDDEN_LAYERS,
+        "max_tokens": MAX_TOKENS,
+        "max_samples": MAX_SAMPLES,
+        "model": model_type.__name__,
+        "dataset": dataset_type.__name__,
+        "train_set": train_set,
+        "eval_set": eval_set,
+        "test_set": test_set,
+        "mm_fusion_method": mm_fusion_method,
+    }
 
     # initialise wandb
     if log and init:
+        t = mm_fusion_method.upper()
+        m = f"{text_encoder.split("/")[-1]}-{audio_encoder.split("/")[-1]}"
+        if "AudioOnly" in model_type.__name__:
+            t = "AUDIO"
+            m = audio_encoder.split("/")[-1]
+        elif "TextOnly" in model_type.__name__:
+            t = "TEXT"
+            m = text_encoder.split("/")[-1]
+
         wandb.init(
             project="cross-domain-am",
-            name=f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{str(model_type.__name__)}-{EPOCHS}",
+            name=f"QT-{m}-{t}-{EPOCHS}-{train_set.split("-")[-2]}-4class-OS_CA",
             config=config,
         )
 
@@ -189,27 +212,16 @@ def main(
     def calc_loss(outputs, targets, num_items_in_batch=None):
         return loss_fn(outputs["logits"], targets)
 
-    get_params = filter(lambda p: p.requires_grad, model.parameters())
-
-    if optim == "adamw":
-        optimizer = torch.optim.AdamW(get_params, lr=lr, weight_decay=l2)
-    elif optim == "adam":
-        optimizer = torch.optim.Adam(get_params, lr=lr, weight_decay=l2)
-    elif optim == "sgd":
-        optimizer = torch.optim.SGD(get_params, lr=lr, weight_decay=l2)
-    elif optim == "rmsprop":
-        optimizer = torch.optim.RMSprop(get_params, lr=lr, weight_decay=l2)
-
     training_args = transformers.TrainingArguments(
         output_dir="saves/",
         eval_strategy="epoch",
         logging_steps=1,
-        per_device_train_batch_size=batch_size,
-        per_device_eval_batch_size=batch_size,
+        per_device_train_batch_size=BATCH_SIZE,
+        per_device_eval_batch_size=BATCH_SIZE,
         gradient_accumulation_steps=GRAD_ACCUMULATION_STEPS,
-        learning_rate=lr,
-        weight_decay=l2,
-        num_train_epochs=epochs,
+        learning_rate=LEARNING_RATE,
+        weight_decay=WEIGHT_DECAY,
+        num_train_epochs=EPOCHS,
         lr_scheduler_type="linear",
         warmup_ratio=0.1,
         report_to="wandb" if "--log" in sys.argv else "none",
@@ -240,44 +252,42 @@ def main(
     name = f"{ID_DATA_DIR.split("/")[-1]}-{TEXT_ENCODER.split("/")[-1]}-{AUDIO_ENCODER.split("/")[-1]}-{model_type.__name__}-{EPOCHS}"
     torch.save(model.state_dict(), f"saves/{name}.pt")
 
-    # cross-domain evaluation
-    # print("#### cross domain ####")
-    # cd_datasets = load_cd(
-    #     CD_DIRS,
-    #     TEXT_ENCODER,
-    #     AUDIO_ENCODER,
-    #     MAX_TOKENS,
-    #     MAX_SAMPLES,
-    #     dataset_type,
-    # )
+    # in-domain evaluation
+    print("#### in domain ####")
+    trainer.predict(test_dataset)
 
-    # cd_eval(cd_datasets, [x.split("/")[-1] for x in CD_DIRS], trainer)
+    # cross-domain evaluation
+    print("#### cross domain ####")
+    cd_datasets = load_cd(
+        CD_DIRS,
+        TEXT_ENCODER,
+        AUDIO_ENCODER,
+        MAX_TOKENS,
+        MAX_SAMPLES,
+        dataset_type,
+        cd_sets,
+        RELATION_TYPES[n_classes],
+    )
+
+    cd_eval(cd_datasets, [x.split("/")[-1] for x in CD_DIRS], trainer)
 
     # # finish wandb run
     if "--log" in sys.argv:
         wandb.save(f"saves/{name}.pt")
         wandb.finish()
 
+    torch.cuda.empty_cache()
+    gc.collect()
+
 
 if __name__ == "__main__":
     main(
-        EPOCHS,
-        BATCH_SIZE,
-        LEARNING_RATE,
-        WEIGHT_DECAY,
-        DROPOUT,
-        DROPOUT,
-        HEAD_HIDDEN_SIZE,
-        HEAD_HIDDEN_LAYERS,
-        "adamw",
-        "gelu",
-        True,
-        False,
-        "kaiming_normal",
-        0.15,
-        0,
-        GRAD_CLIP,
-        ("--log" in sys.argv),
-        True,
-        "-4-SCS",
+        log=("--log" in sys.argv),
+        train_dataset="train-4-SCS",
+        eval_dataset="eval-4-SCS",
+        test_dataset="test-4-SCS",
+        cd_datasets="complete-4-SCS",
+        dataset_type=DATASET_TYPE,
+        model_type=MODEL_TYPE,
+        n_classes=4,
     )

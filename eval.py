@@ -19,8 +19,10 @@ accuracy = evaluate.load("accuracy")
 precision = evaluate.load("precision")
 recall = evaluate.load("recall")
 
+N_CLASSES = 4
 
-def metrics_fn(predictions, step="eval"):
+
+def metrics_fn(predictions, targets=None, step="eval"):
     """Method to calculate the metric scores for a specific set of logits and target labels
 
     Args:
@@ -28,29 +30,44 @@ def metrics_fn(predictions, step="eval"):
         targets (torch.Tensor): the target labels - 1st dimensions of logits and targets must match
         step (str, optional): the training or eval step (used to log to wandb). Defaults to "eval".
     """
-    logits = predictions.predictions
-    targets = predictions.label_ids
 
-    # calculate the predicted labels from logits
-    preds = np.argmax(logits, axis=-1)
+    if targets is None:
+
+        logits = predictions.predictions
+        targets = predictions.label_ids
+
+        # calculate the predicted labels from logits
+        preds = np.argmax(logits, axis=-1)
+    else:
+        preds = np.array(predictions)
+        targets = np.array(targets)
 
     # calculate metric scores
     macro_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2], average="macro"
+        predictions=preds,
+        references=targets,
+        labels=list(range(N_CLASSES)),
+        average="macro",
     )["f1"]
 
-    micro_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2], average="micro"
+    weighted_f1_score = f1.compute(
+        predictions=preds,
+        references=targets,
+        labels=list(range(N_CLASSES)),
+        average="weighted",
     )["f1"]
 
     class_f1_score = f1.compute(
-        predictions=preds, references=targets, labels=[0, 1, 2], average=None
+        predictions=preds,
+        references=targets,
+        labels=list(range(N_CLASSES)),
+        average=None,
     )["f1"]
 
     accuracy_score = accuracy.compute(predictions=preds, references=targets)["accuracy"]
 
     precision_score = precision.compute(
-        predictions=preds, references=targets, average="macro"
+        predictions=preds, references=targets, average="macro", zero_division=0.0
     )["precision"]
 
     recall_score = recall.compute(
@@ -58,8 +75,10 @@ def metrics_fn(predictions, step="eval"):
     )["recall"]
 
     # loss = loss_fn(logits, targets)
-    class_names = ["None", "Support", "Attack"]
-    # class_names = ["NO", "RA", "CA", "MA"]
+    if N_CLASSES == 3:
+        class_names = ["None", "Support", "Attack"]
+    elif N_CLASSES == 4:
+        class_names = ["NO", "RA", "CA", "MA"]
 
     cm = skm.confusion_matrix(targets, preds)
     df = pd.DataFrame(
@@ -75,16 +94,15 @@ def metrics_fn(predictions, step="eval"):
     # add metric scores to dictionary
     res = {
         f"macro_f1": macro_f1_score,
-        f"micro_f1": micro_f1_score,
-        f"NO_f1": float(class_f1_score[0]),
-        f"RA_f1": float(class_f1_score[1]),
-        f"CA_f1": float(class_f1_score[2]),
-        # f"MA_f1": float(class_f1_score[3]),
+        f"weighted_f1": weighted_f1_score,
         f"accuracy": accuracy_score,
         f"macro_precision": precision_score,
         f"macro_recall": recall_score,
         # f"{step}/epoch_loss": float(loss),
     }
+
+    for name, f1_score in zip(class_names, class_f1_score):
+        res[f"{name}_f1"] = float(f1_score)
 
     print(res)
 
@@ -152,21 +170,79 @@ def load_cd(
     max_tokens,
     max_samples,
     dataset_type,
+    dataset_name,
+    relation_types,
     qt_complete=False,
 ):
     datasets = []
 
     for dir in data_dirs:
         dataset = dataset_type.load(
-            dir + "/complete.json",
+            dir + f"/{dataset_name}.json",
             dir,
             text_encoder,
             audio_encoder,
             max_tokens,
             max_samples,
+            relation_types,
             qt_complete=qt_complete,
         )
 
         datasets.append(dataset)
 
     return datasets
+
+
+def baselines(data_files, relation_types):
+    for dir, qt_complete in data_files:
+        print(f"##### {dir} #####")
+        dataset = TextOnlyDatasetConcat.load(
+            dir,
+            "/".join(dir.split('/')[:-1]),
+            "FacebookAI/roberta-base",
+            "facebook/wav2vec2-base-960h",
+            64,
+            10,
+            relation_types,
+            qt_complete
+        )
+
+        # random baseline
+        print("### Random ###")
+        preds = []
+        targets = []
+        for sample in dataset:
+            targets.append(sample["labels"])
+            preds.append(random.choice(list(relation_types.values())))
+
+        metrics_fn(preds, targets)
+
+        # majority baseline
+        print("### Majority ###")
+        preds = []
+        targets = []
+        for sample in dataset:
+            targets.append(sample["labels"])
+            preds.append(1)
+
+        metrics_fn(preds, targets)
+
+if __name__ == "__main__":
+    N_CLASSES = 4
+    baselines(
+        [
+            ("data/Question Time/test-4-SCS.json", True),
+            ("data/Question Time/test-4-LCS.json", True),
+            ("data/Question Time/test-4-US.json", True),
+            # ("data/Moral Maze/Banking", False),
+            # ("data/Moral Maze/DDay", False),
+            # ("data/Moral Maze/Empire", False),
+            # ("data/Moral Maze/Families", False),
+            # ("data/Moral Maze/GreenBelt", False),
+            # ("data/Moral Maze/Hypocrisy", False),
+            # ("data/Moral Maze/Money", False),
+            # ("data/Moral Maze/Syria", False),
+            # ("data/Moral Maze/Welfare", False),
+        ],
+        {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
+    )

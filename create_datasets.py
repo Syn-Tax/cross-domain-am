@@ -5,17 +5,14 @@ import transformers
 from pathlib import Path
 from tqdm import tqdm
 import random
+import math
+import sys
 
 from datastructs import Node, Sample
 
-
-RELATION_TYPES = {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
 SPLITS = [0.7, 0.1, 0.2]
-NO_SAMPLING_TYPE = "SCS"
-
-CA_OVERSAMPLING_RATE = 5
-
-AUDIO_EOS_LEN = 7.5
+AUDIO_EOS_LEN = 5
+audio_cat = torch.tensor([0 for _ in range(int(16_000 * AUDIO_EOS_LEN))])
 
 seed = 0
 random.seed(seed)
@@ -24,15 +21,24 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-def generate_pairs(data_dir, qt_complete, splits):
+def generate_pairs(data_dir, qt_complete, splits, relation_types):
     # load argument map
     with open(Path(data_dir) / "argument_map.json", "r") as f:
         argument_map = Node.schema().loads(f.read(), many=True)
 
     # loop through all combinations of nodes (there must be a more efficient way to do this but it's only a minute or so on QT30)
-    sequence_pairs = []
+    output = {
+        "SCS": [],
+        "LCS": [],
+        "US": []
+    }
     relation_sequence_pairs = []
-    no_relation_sequence_pairs = []
+    no_relation_sequence_pairs = {
+        "SCS": [],
+        "LCS": [],
+        "US": []
+    }
+
     counter = 0
     num_ra = 0
     for n1, n2 in tqdm(itertools.combinations(argument_map, 2)):
@@ -44,69 +50,78 @@ def generate_pairs(data_dir, qt_complete, splits):
         label = 0
         if n2.id in [r.to_node_id for r in n1.relations]:
             idx = [r.to_node_id for r in n1.relations].index(n2.id)
-            label = RELATION_TYPES[n1.relations[idx].type]
+            label = relation_types[n1.relations[idx].type]
 
         if n1.id in [r.to_node_id for r in n2.relations]:
             idx = [r.to_node_id for r in n2.relations].index(n1.id)
-            label = RELATION_TYPES[n2.relations[idx].type]
+            label = relation_types[n2.relations[idx].type]
 
         # add to counter if RA relation
-        if label == RELATION_TYPES["RA"]:
+        if label == relation_types["RA"]:
             num_ra += 1
 
-        # if there is no relation, add to separate list - this is used to sample the NO samples
+        # if there is no relation, add to separate list depending on sampling type - this is used to sample the NO samples
         if label == 0:
-            if qt_complete and n1.episode != n2.episode and NO_SAMPLING_TYPE == "SCS":
-                continue  # we ignore nodes which are not in the same QT episode, if short context is the selected sampling strategy
-            if counter % 10 == 0:  # only add every 10th sample to save memory
-                if NO_SAMPLING_TYPE == "LCS" and n1.episode != n2.episode:
-                    no_relation_sequence_pairs.append(Sample(n1, n2, label))
-                elif NO_SAMPLING_TYPE != "LCS" or not qt_complete:
-                    no_relation_sequence_pairs.append(Sample(n1, n2, label))
+            if counter % 20 == 0:  # only add every 10th sample to save memory
+                if qt_complete and n1.episode != n2.episode:
+                    no_relation_sequence_pairs["LCS"].append(Sample(n1, n2, label))
+                if qt_complete and n1.episode == n2.episode:
+                    no_relation_sequence_pairs["SCS"].append(Sample(n1, n2, label))
+
+                if not qt_complete:
+                    no_relation_sequence_pairs["LCS"].append(Sample(n1, n2, label))
+                    no_relation_sequence_pairs["SCS"].append(Sample(n1, n2, label))
+
+                no_relation_sequence_pairs["US"].append(Sample(n1, n2, label))
 
             counter += 1
         else:
             relation_sequence_pairs.append(Sample(n1, n2, label))
 
-            if label == RELATION_TYPES["CA"]:
-                for _ in range(CA_OVERSAMPLING_RATE - 1):
-                    relation_sequence_pairs.append(Sample(n1, n2, label))
-
-    print(len(relation_sequence_pairs))
-    print(len(no_relation_sequence_pairs))
-    print(num_ra)
-
     # add node pairs with relations
-    sequence_pairs.extend(relation_sequence_pairs)
+    related_splits = split_data(relation_sequence_pairs, splits)
+    output["SCS"].extend([s.copy() for s in related_splits])
+    output["LCS"].extend([s.copy() for s in related_splits])
+    output["US"].extend([s.copy() for s in related_splits])
 
-    # sample node pairs without relations for NO label
-    sequence_pairs.extend(random.sample(no_relation_sequence_pairs, num_ra))
+    # add node pairs without relations
+    unrelated_splits = {
+        "SCS": split_data(no_relation_sequence_pairs["SCS"], splits),
+        "LCS": split_data(no_relation_sequence_pairs["LCS"], splits),
+        "US": split_data(no_relation_sequence_pairs["US"], splits)
+    }
 
-    # shuffle dataset
-    random.shuffle(sequence_pairs)
+    # print(len(unrelated_splits["SCS"][0]), num_ra*splits[0])
 
+    for key in output.keys():
+        for i in range(len(splits)):
+            x = random.sample(unrelated_splits[key][i], int(num_ra*splits[i]))
+            output[key][i].extend(x)
+            random.shuffle(output[key][i])
+
+    return output
+
+
+def split_data(data, splits):
     # get requested split
     split_data = []
     for s in range(len(splits)):
         start = sum(splits[:s])
         end = start + splits[s]
 
-        print(start)
-        print(end)
-
         if end == 0:
             end = 1
 
         split_data.append(
-            sequence_pairs[
-                int(start * len(sequence_pairs)) : int(end * len(sequence_pairs))
+            data[
+                int(start * len(data)) : int(end * len(data))
             ]
         )
 
     return split_data
 
 
-def get_metrics(data):
+def get_metrics(data, relation_types):
     # calculate and display some dataset metrics
     print("------------ DATASET DATA -------------")
     print(f"length: {len(data)}")
@@ -116,10 +131,10 @@ def get_metrics(data):
             [p.labels for p in data].count(x) / len(data),
             2,
         )
-        for x in set(RELATION_TYPES.values())
+        for x in set(relation_types.values())
     }
     counts = {
-        x: [p.labels for p in data].count(x) for x in set(RELATION_TYPES.values())
+        x: [p.labels for p in data].count(x) for x in set(relation_types.values())
     }
     print(weights)
     print(counts)
@@ -132,6 +147,33 @@ def save(path, data):
         out = Sample.schema().dumps(data, many=True)
         f.write(out)
 
+
+def resample(data, relation_types, sampling, undersample_to_equal=False):
+    labelled_samples = {k: [] for k in relation_types.values()}
+    output = []
+
+    for sample in data:
+        labelled_samples[sample.labels].append(sample)
+
+    # randomly over/undersample data
+    for s, relation in zip(sampling, labelled_samples.keys()):
+        if s > 1:
+            labelled_samples[relation].extend(random.choices(labelled_samples[relation], k=int((s-1)*len(labelled_samples[relation]))))
+        elif s < 1:
+            labelled_samples[relation] = random.sample(labelled_samples[relation], int(s * len(labelled_samples[relation])))
+
+        output.extend(labelled_samples[relation])
+
+    # combine and reshuffle output
+    random.shuffle(output)
+    return output
+
+def load(
+    path,
+):
+
+    with open(path, "r") as f:
+        return Sample.schema().loads(f.read(), many=True)
 
 class MultimodalDatasetConcat(torch.utils.data.Dataset):
     """Dataset containing multimodal sequence pairs"""
@@ -222,8 +264,6 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
             f"{sample.node_1.proposition} </s> {sample.node_2.proposition}"
         )
 
-        audio_cat = torch.tensor([0 for _ in range(int(rate * AUDIO_EOS_LEN))])
-
         audio_proposition = torch.cat((n1_audio[0], audio_cat, n2_audio[0]))
 
         # tokenize the text sequences
@@ -265,6 +305,7 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         feature_extractor,
         max_tokens,
         max_samples,
+        relation_types,
         qt_complete=False,
     ):
         s = MultimodalDatasetConcat(
@@ -280,7 +321,7 @@ class MultimodalDatasetConcat(torch.utils.data.Dataset):
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
 
-        s.weights, s.counts = get_metrics(s.sequence_pairs)
+        s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
 
         return s
 
@@ -377,6 +418,7 @@ class TextOnlyDatasetConcat(torch.utils.data.Dataset):
         feature_extractor,
         max_tokens,
         max_samples,
+        relation_types,
         qt_complete=False,
     ):
         s = TextOnlyDatasetConcat(
@@ -392,7 +434,7 @@ class TextOnlyDatasetConcat(torch.utils.data.Dataset):
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
 
-        s.weights, s.counts = get_metrics(s.sequence_pairs)
+        s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
 
         return s
 
@@ -484,8 +526,6 @@ class AudioOnlyDatasetConcat(torch.utils.data.Dataset):
         self.sample_rate = rate
         n2_audio, _ = torchaudio.load(n2_audio_path)
 
-        audio_cat = torch.tensor([0 for _ in range(int(rate * AUDIO_EOS_LEN))])
-
         audio_proposition = torch.cat((n1_audio[0], audio_cat, n2_audio[0]))
 
         # process the audio sequences
@@ -517,6 +557,7 @@ class AudioOnlyDatasetConcat(torch.utils.data.Dataset):
         feature_extractor,
         max_tokens,
         max_samples,
+        relation_types,
         qt_complete=False,
     ):
         s = AudioOnlyDatasetConcat(
@@ -532,7 +573,7 @@ class AudioOnlyDatasetConcat(torch.utils.data.Dataset):
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
 
-        s.weights, s.counts = get_metrics(s.sequence_pairs)
+        s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
 
         return s
 
@@ -581,89 +622,6 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         if process:
             self.sequence_pairs = process(data_dir, train_test_split)[split]
 
-    @property
-    def sequence_pairs(self):
-        return self._sequence_pairs
-
-    @sequence_pairs.setter
-    def sequence_pairs(self, pairs):
-        self._sequence_pairs = pairs
-        self.data = []
-
-        for sample in pairs:
-            # load the audio data
-            if self.qt_complete:
-                n1_audio_path = str(
-                    Path(self.data_dir)
-                    / sample.node_1.episode
-                    / "audio"
-                    / (str(sample.node_1.id) + ".wav")
-                )
-                n2_audio_path = str(
-                    Path(self.data_dir)
-                    / sample.node_2.episode
-                    / "audio"
-                    / (str(sample.node_2.id) + ".wav")
-                )
-            else:
-                n1_audio_path = str(
-                    Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
-                )
-                n2_audio_path = str(
-                    Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
-                )
-
-            n1_audio, rate = torchaudio.load(n1_audio_path)
-            self.sample_rate = rate
-            n2_audio, _ = torchaudio.load(n2_audio_path)
-
-            # tokenize the text sequences
-            text1 = self.tokenizer(
-                sample.node_1.proposition,
-                max_length=self.max_tokens,
-                truncation=True,
-                padding="max_length",
-                return_tensors="pt",
-            )
-            text2 = self.tokenizer(
-                sample.node_2.proposition,
-                max_length=self.max_tokens,
-                truncation=True,
-                padding="max_length",
-                return_tensors="pt",
-            )
-
-            # process the audio sequences
-            audio1 = self.feature_extractor(
-                n1_audio[0],
-                max_length=self.max_samples,
-                sampling_rate=rate,
-                truncation=True,
-                padding="max_length",
-                return_tensors="pt",
-                return_attention_mask=True,
-            )
-            audio2 = self.feature_extractor(
-                n2_audio[0],
-                max_length=self.max_samples,
-                sampling_rate=rate,
-                truncation=True,
-                padding="max_length",
-                return_tensors="pt",
-                return_attention_mask=True,
-            )
-
-            # return the sample
-            self.data.append(
-                {
-                    "text1": text1,
-                    "audio1": audio1,
-                    "text2": text2,
-                    "audio2": audio2,
-                    "labels": torch.tensor([sample.labels], dtype=torch.long),
-                }
-            )
-
     def __len__(self):
         """Method to get the length of the dataset"""
         return len(self.sequence_pairs)
@@ -677,7 +635,78 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         Returns:
             dict: sample
         """
-        return self.data[idx]
+        sample = self.sequence_pairs[idx]
+
+        # load the audio data
+        if self.qt_complete:
+            n1_audio_path = str(
+                Path(self.data_dir)
+                / sample.node_1.episode
+                / "audio"
+                / (str(sample.node_1.id) + ".wav")
+            )
+            n2_audio_path = str(
+                Path(self.data_dir)
+                / sample.node_2.episode
+                / "audio"
+                / (str(sample.node_2.id) + ".wav")
+            )
+        else:
+            n1_audio_path = str(
+                Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
+            )
+            n2_audio_path = str(
+                Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
+            )
+
+        n1_audio, rate = torchaudio.load(n1_audio_path)
+        self.sample_rate = rate
+        n2_audio, _ = torchaudio.load(n2_audio_path)
+
+        # tokenize the text sequences
+        text1 = self.tokenizer(
+            sample.node_1.proposition,
+            max_length=self.max_tokens,
+            truncation=True,
+            padding="max_length",
+            return_tensors="pt",
+        )
+        text2 = self.tokenizer(
+            sample.node_2.proposition,
+            max_length=self.max_tokens,
+            truncation=True,
+            padding="max_length",
+            return_tensors="pt",
+        )
+
+        # process the audio sequences
+        audio1 = self.feature_extractor(
+            n1_audio[0],
+            max_length=self.max_samples,
+            sampling_rate=rate,
+            truncation=True,
+            padding="max_length",
+            return_tensors="pt",
+            return_attention_mask=True,
+        )
+        audio2 = self.feature_extractor(
+            n2_audio[0],
+            max_length=self.max_samples,
+            sampling_rate=rate,
+            truncation=True,
+            padding="max_length",
+            return_tensors="pt",
+            return_attention_mask=True,
+        )
+
+        # return the sample
+        return {
+            "text1": text1,
+            "audio1": audio1,
+            "text2": text2,
+            "audio2": audio2,
+            "labels": torch.tensor([sample.labels], dtype=torch.long),
+        }
 
     def save(self, path):
         with open(path, "w") as f:
@@ -691,6 +720,7 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         feature_extractor,
         max_tokens,
         max_samples,
+        relation_types,
         qt_complete=False,
     ):
         s = MultimodalDatasetNoConcat(
@@ -706,7 +736,7 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
 
-        s.weights, s.counts = get_metrics(s.sequence_pairs)
+        s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
 
         return s
 
@@ -749,14 +779,6 @@ def collate_fn_raw(data):
 
 
 if __name__ == "__main__":
-    # testing code
-
-    TEXT_ENCODER = "google-bert/bert-base-uncased"
-    AUDIO_ENCODER = "facebook/wav2vec2-base"
-
-    MAX_TOKENS = 32
-    MAX_SAMPLES = 16_000
-
     data_dirs = [
         "data/Question Time",
         "data/Moral Maze/Banking",
@@ -770,24 +792,61 @@ if __name__ == "__main__":
         "data/Moral Maze/Welfare",
     ]
 
-    qt_complete = [True, False, False, False, False, False, False, False, False, False]
+    qt_completes = [True, False, False, False, False, False, False, False, False, False]
+    # qt_completes = [False, False, False, False, False, False, False, False, False]
+    resamplings = {
+        "OS_CA": {3: [1, 1, 3], 4: [1, 1, 3, 1]},
+    }
+    classes = {
+        3: {"NO": 0, "RA": 1, "CA": 2, "MA": 1},
+        4: {"NO": 0, "RA": 1, "CA": 2, "MA": 3},
+    }
 
-    for i in range(len(data_dirs)):
-        print(f"############### {data_dirs[i].split('/')[-1]} ############")
-        splits = generate_pairs(data_dirs[i], qt_complete[i], SPLITS)
-        get_metrics(splits[0])
-        get_metrics(splits[1])
-        get_metrics(splits[2])
+    for data_dir, qt_complete in zip(data_dirs, qt_completes):
+        for class_prob in classes.keys():
 
-        save(data_dirs[i] + "/train-3-SCS.json", splits[0])
-        save(data_dirs[i] + "/eval-3-SCS.json", splits[1])
-        save(data_dirs[i] + "/test-3-SCS.json", splits[2])
+            splits = generate_pairs(
+                data_dir, qt_complete, SPLITS, classes[class_prob]
+            )
 
-        complete = splits[0]
-        complete.extend(splits[1])
-        complete.extend(splits[2])
+            for no_sampling in ["SCS", "LCS", "US"]:
+                print(
+                    f"############### {data_dir.split('/')[-1]}-{class_prob}-{no_sampling} ############"
+                )
 
-        save(data_dirs[i] + "/complete-3-SCS.json", complete)
+                print("train")
+                get_metrics(splits[no_sampling][0], classes[class_prob])
+                print("eval")
+                get_metrics(splits[no_sampling][1], classes[class_prob])
+                print("test")
+                get_metrics(splits[no_sampling][2], classes[class_prob])
 
-        print("############## COMPLETE #############")
-        get_metrics(complete)
+                save(data_dir + f"/train-{class_prob}-{no_sampling}.json", splits[no_sampling][0])
+                save(data_dir + f"/eval-{class_prob}-{no_sampling}.json", splits[no_sampling][1])
+                save(data_dir + f"/test-{class_prob}-{no_sampling}.json", splits[no_sampling][2])
+
+                complete = splits[no_sampling][0].copy()
+                complete.extend(splits[no_sampling][1])
+                complete.extend(splits[no_sampling][2])
+
+                print("complete")
+                get_metrics(complete, classes[class_prob])
+
+                save(data_dir + f"/complete-{class_prob}-{no_sampling}.json", complete)
+
+                # train = load(data_dir + f"/train-{class_prob}-{no_sampling}.json")
+                # get_metrics(train, classes[class_prob])
+
+                for resampling in resamplings.keys():
+                    out = resample(
+                        splits[no_sampling][0].copy(),
+                        classes[class_prob],
+                        resamplings[resampling][class_prob],
+                    )
+                    print(f"train_{resampling}")
+                    get_metrics(out, classes[class_prob])
+                    save(
+                        data_dir
+                        + f"/train-{class_prob}-{no_sampling}-{resampling}.json",
+                        out,
+                    )
