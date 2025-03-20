@@ -24,12 +24,12 @@ class MultimodalLateLateModel(nn.Module):
         text_encoder_checkpoint,
         audio_encoder_checkpoint,
         n_classes=4,
-        head_hidden_layers=4,
+        head_hidden_layers=0,
         head_hidden_size=128,
         text_encoder_dropout=0.1,
         audio_encoder_dropout=0.1,
-        text_dropout=0.5,
-        audio_dropout=0.5,
+        text_dropout=0.2,
+        audio_dropout=0.2,
         activation="relu",
         freeze_encoders=False,
         initialisation="kaiming_normal",
@@ -50,6 +50,9 @@ class MultimodalLateLateModel(nn.Module):
         )
         self.audio_config.hidden_dropout = audio_encoder_dropout
 
+        self.text_hidden_size = self.text_config.hidden_size
+        self.audio_hidden_size = self.audio_config.hidden_size
+
         # load encoder models
         self.text_encoder = transformers.RobertaModel.from_pretrained(
             text_encoder_checkpoint, config=self.text_config
@@ -57,6 +60,8 @@ class MultimodalLateLateModel(nn.Module):
         self.audio_encoder = transformers.Wav2Vec2Model.from_pretrained(
             audio_encoder_checkpoint, config=self.audio_config
         )
+
+        self.audio_lstm = LSTMStack(self.audio_hidden_size, [64, 32])
 
         # initialise dropout layers
         self.text_dropout = nn.Dropout(p=text_dropout)
@@ -66,11 +71,8 @@ class MultimodalLateLateModel(nn.Module):
         self.sequence_fusion = sequence_fusion
         self.modality_fusion = modality_fusion
 
-        self.text_hidden_size = self.text_config.hidden_size
-        self.audio_hidden_size = self.audio_config.hidden_size
-
-        self.head = MLPClassificationHead(
-            self.text_hidden_size * 2 + self.audio_hidden_size * 2,
+        self.head = MLPMultilayerClassificationHead(
+            self.text_hidden_size * 2 + 64 * 2,
             n_classes,
             head_hidden_size,
             head_hidden_layers,
@@ -78,9 +80,7 @@ class MultimodalLateLateModel(nn.Module):
             initialisation,
         )
 
-        # allow encoders to be trained
-        if freeze_encoders:
-            self.freeze_encoders()
+        self.freeze_encoders()
 
     def get_encoding(self, audio, text):
         """Method to get the encoding for a single sequence
@@ -101,8 +101,10 @@ class MultimodalLateLateModel(nn.Module):
         audio_encoding = self.audio_encoder(**audio)[0]
         audio_encoding = self.audio_dropout(audio_encoding)
 
-        # pool audio encodings using mean
-        audio_encoding_pooled = audio_encoding.mean(dim=1)
+        # put audio encodings through lstm
+        audio_encoding_pooled = self.audio_lstm(audio_encoding)
+
+        print(audio_encoding_pooled.shape)
 
         # concatenate text and audio encodings
         concat_encoding = torch.cat(
@@ -395,3 +397,41 @@ class CrossModalAttention(nn.Module):
         cross_modal_features = torch.bmm(attn_probs, values)
 
         return cross_modal_features
+    
+
+class LSTMStack(nn.Module):
+
+    def __init__(
+            self,
+            input_size,
+            lstm_weigths,
+            return_hidden=True
+    ):
+        super().__init__()
+
+        self.return_hidden = return_hidden
+
+        self.lstm = nn.ModuleList()
+        for weight in lstm_weigths:
+            self.lstm.append(nn.LSTM(input_size=input_size,
+                                        hidden_size=weight,
+                                        batch_first=True,
+                                        bidirectional=True))
+            input_size = weight * 2
+
+    def forward(
+            self,
+            x
+    ):
+        hidden = None
+        inputs = x
+        for lstm_module in self.lstm:
+            inputs, hidden = lstm_module(inputs)
+
+        if self.return_hidden:
+            # [bs, d * 2]
+            last_hidden = hidden[0]
+            return last_hidden.permute(1, 0, 2).reshape(x.shape[0], -1)
+
+        # [bs, T, d]
+        return inputs

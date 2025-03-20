@@ -41,21 +41,21 @@ QT_COMPLETE = True
 TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
-DATASET_TYPE = TextOnlyDatasetConcat
-MODEL_TYPE = TextOnlyEarlyModel
+DATASET_TYPE = MultimodalDatasetNoConcat
+MODEL_TYPE = MultimodalLateLateModel
 
-MAX_TOKENS = 128
-MAX_SAMPLES = 320_000
+MAX_TOKENS = 64
+MAX_SAMPLES = 16_000
 
 HEAD_HIDDEN_LAYERS = 2
 HEAD_HIDDEN_SIZE = 256
 
 # Training hyperparameters
-BATCH_SIZE = 2
+BATCH_SIZE = 1
 EPOCHS = 15
-LEARNING_RATE = 1e-5
+LEARNING_RATE = 1e-3
 DROPOUT = 0.2
-GRAD_ACCUMULATION_STEPS = 8
+GRAD_ACCUMULATION_STEPS = 1
 
 WEIGHT_DECAY = 0
 GRAD_CLIP = 1
@@ -283,10 +283,10 @@ def main(
 if __name__ == "__main__":
     main(
         log=("--log" in sys.argv),
-        train_dataset="train-4-SCS",
-        eval_dataset="eval-4-SCS",
-        test_dataset="test-4-SCS",
-        cd_datasets="complete-4-SCS",
+        train_set="train-4-SCS",
+        eval_set="eval-4-SCS",
+        test_set="test-4-SCS",
+        cd_sets="complete-4-SCS",
         dataset_type=DATASET_TYPE,
         model_type=MODEL_TYPE,
         n_classes=4,
