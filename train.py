@@ -42,7 +42,7 @@ TEXT_ENCODER = "FacebookAI/roberta-base"
 AUDIO_ENCODER = "facebook/wav2vec2-base-960h"
 
 DATASET_TYPE = MultimodalDatasetNoConcat
-MODEL_TYPE = MultimodalLateLateModel
+MODEL_TYPE = AudioOnlyLateModel
 
 MAX_TOKENS = 64
 MAX_SAMPLES = 16_000
@@ -201,7 +201,7 @@ def main(
 
         wandb.init(
             project="cross-domain-am",
-            name=f"QT-{m}-{t}-{EPOCHS}-{train_set.split("-")[-2]}-4class-OS_CA",
+            name=f"QT-{m}-{t}-LATE-{EPOCHS}-{train_set.split("-")[-2]}-4class-OS_CA",
             config=config,
         )
 

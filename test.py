@@ -15,10 +15,12 @@ dataset_configs = [
 ]
 
 model_dataset_types = [
-    (TextOnlyDatasetConcat, TextOnlyEarlyModel),
-    (AudioOnlyDatasetConcat, AudioOnlyEarlyModel),
+    # (TextOnlyDatasetConcat, TextOnlyEarlyModel),
+    # (AudioOnlyDatasetConcat, AudioOnlyEarlyModel),
     # (MultimodalDatasetConcat, MultimodalEarlyLateModel),
-    # (MultimodalDatasetNoConcat, MultimodalLateLateModel),
+    (MultimodalDatasetNoConcat, TextOnlyLateModel),
+    (MultimodalDatasetNoConcat, AudioOnlyLateModel),
+    (MultimodalDatasetNoConcat, MultimodalLateLateModel),
 ]
 
 fusion_params = {"MultimodalEarlyLateModel": ["concat", "prod", "ca_text", "ca_audio"]}

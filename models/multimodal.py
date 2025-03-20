@@ -94,8 +94,9 @@ class MultimodalLateLateModel(nn.Module):
         """
 
         # get pooled text encodings
-        text_encoding_pooled = self.text_encoder(**text)[1]
-        text_encoding_pooled = self.text_dropout(text_encoding_pooled)
+        text_encoding = self.text_encoder(**text).last_hidden_state
+        text_encoding = self.text_dropout(text_encoding)
+        text_encoding_pooled = (text_encoding * text["attention_mask"][:, :, None]).sum(dim=1)
 
         # get raw audio encodings
         audio_encoding = self.audio_encoder(**audio)[0]
@@ -103,8 +104,6 @@ class MultimodalLateLateModel(nn.Module):
 
         # put audio encodings through lstm
         audio_encoding_pooled = self.audio_lstm(audio_encoding)
-
-        print(audio_encoding_pooled.shape)
 
         # concatenate text and audio encodings
         concat_encoding = torch.cat(
