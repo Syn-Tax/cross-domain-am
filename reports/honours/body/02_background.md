@@ -37,7 +37,7 @@ AIF treats all relevant parts of the argument as nodes within a graph. These nod
 
 Since AIF data can be easily shared, it became the basis for a Worldwide Argument Web (WWAW) [@rahwanLayingFoundationsWorld2007]. Since then, many corpora have been annotated using IAT and published on the AIFdb^[https://www.aifdb.org/] [@lawrenceAIFdbInfrastructureArgument2012] providing a very useful resource for argumentation research of many kinds.
 
-## Machine Learning {#sec:background-ml}
+## Natural Language Processing {#sec:background-ml}
 
 In recent years there have been several major advances in the field of natural language processing (NLP), most notably the introduction of the transformer architecture [@vaswaniAttentionAllYou2017]. The transformer architecture, based on self-attention, allows the model to determine much longer range dependencies than previous approaches.
 

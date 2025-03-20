@@ -63,7 +63,7 @@ A good place to begin here is by analysing the class F1 distribution, here F1 sc
 \end{tabular}
 \end{table}
 
-A further analysis can be conducted by looking at the confusion matrix generated as shown in Figure \ref{fig:text-only-conf-mat-4class}. The ideal confusion matrix shows a diagonal line, in this case from the top left down to the bottom right of the matrix, and can be used to determine which classes the model struggles to distinguish. For ARI, it is generally expected that the model is able to distinguish CA from other classes, while RA and MA are often confused with each other and sometimes with NO. This follows from the difficulties that human annotators have when determining the different relations [@lawrenceArgumentMiningSurvey2020]. However, this is not what Figure \ref{fig:text-only-conf-mat-4class} shows, instead the model is generally confusing most classes, most notable is the overprediction of the RA class. This implies the model is simply predicting the majority class which is a well known and well studied problem in all classification problems involving unbalanced data [@junsomboonCombiningOverSamplingUnderSampling2017]. Typically such problems are relatively simple to solve, often using either weighted loss functions (as is explained in Section @sec:exp-setup) or some form of data augmentation or manipulation technique. During this project, primarily random resampling was experimented with. Random resampling generally involves a combination (or only one) of oversampling minority classes (e.g. randomly duplicating samples labelled as CA) or undersampling majority classes (e.g. randomly discarding samples labelled as RA or NO). Often this has been shown to be the best technique for solving class-imbalance problems, despite the rise of other resampling techniques (such as SMOTE) [@mohammedMachineLearningOversampling2020]. Unfortunately in this case no resampling method or distribution could be found to meaningfully improve the model performance.
+A further analysis can be conducted by looking at the confusion matrix generated as shown in Figure \ref{fig:text-only-conf-mat-4class}. The ideal confusion matrix shows a diagonal line, in this case from the top left down to the bottom right of the matrix, and can be used to determine which classes the model struggles to distinguish. For ARI, it is generally expected that the model is able to distinguish CA from other classes, while RA and MA are often confused with each other and sometimes with NO. This follows from the difficulties that human annotators have when determining the different relations [@lawrenceArgumentMiningSurvey2020]. However, this is not what Figure \ref{fig:text-only-conf-mat-4class} shows, instead the model is generally confusing most classes, most notable is the underprediction of the CA class. This implies the model is simply predicting the majority classes which is a well known and well studied problem in all classification problems involving unbalanced data [@junsomboonCombiningOverSamplingUnderSampling2017]. Typically such problems are relatively simple to solve, often using either weighted loss functions (as is explained in Section @sec:exp-setup) or some form of data augmentation or manipulation technique. During this project, primarily random resampling was experimented with. Random resampling generally involves a combination (or only one) of oversampling minority classes (e.g. randomly duplicating samples labelled as CA) or undersampling majority classes (e.g. randomly discarding samples labelled as RA or NO). Often this has been shown to be the best technique for solving class-imbalance problems, despite the rise of other resampling techniques (such as SMOTE) [@mohammedMachineLearningOversampling2020]. Unfortunately in this case no resampling distribution could be found to meaningfully improve the model performance.
 
 \begin{figure}[h]
 \centering
@@ -104,7 +104,7 @@ The class F1 distribution for the 3-class problem is shown in Table \ref{tbl:cla
 \end{tabular}
 \end{table}
 
-The confusion matrix for the 3-class problem, as shown in Figure \ref{fig:text-only-conf-mat-3class} can also be discussed. Here the overprediction of the Support class is a bit more obvious
+The confusion matrix for the 3-class problem, as shown in Figure \ref{fig:text-only-conf-mat-3class} can also be discussed. Here the underprediction of the attack class and the overprediction of the majority class. When compared to the 4-class confusion matrix (Figure \ref{fig:text-only-conf-mat-4class}) it appears that the model is effectively combining incorrect predictions between samples labelled inference and rephrase. This result could imply that the model's learning is approximately equivalent between the 3- and 4-class approaches, although it should be noted that more investigation is required to prove this.
 
 \begin{figure}[h]
 \centering
@@ -113,3 +113,41 @@ The confusion matrix for the 3-class problem, as shown in Figure \ref{fig:text-o
 \end{figure}
 
 ## Cross-Domain
+
+### The 4-Class Problem
+
+\begin{table*}[t]
+\centering
+\caption{Cross-Domain macro-averaged F1 scores on 4-class SCS trained models. Best scores in each column are shown in bold. \label{tbl:cross-4-SCS}}
+\begin{tabular}{|l|llllllll|l|}
+\hline
+Model         & B   & E   & M   & P   & S   & G   & H   & W   & Mean \\ \hline
+Text-Only     & .44 & .46 & \textbf{.48} & .42 & .43 & .50 & \textbf{.51} & .41 & .46  \\
+Audio-Only    & .34 & .37 & .39 & .38 & .33 & .38 & .40 & .37 & .37  \\ \hline
+Concatenation & .43 & .43 & .45 & \textbf{.45} & .45 & .49 & .45 & .43 & .45  \\
+Product       & .41 & .44 & .42 & .42 & \textbf{.46} & \textbf{.52} & .46 & .43 & .45  \\
+CA Text       & .40 & .44 & .44 & .40 & .42 & .49 & .43 & .44 & .43  \\
+CA Audio      & \textbf{.45} & \textbf{.49} & .44 & .42 & .45 & .53 & .48 & \textbf{.46} & \textbf{.47}  \\ \hline
+Random        & .19 & .23 & .20 & .19 & .22 & .25 & .21 & .24 & .22  \\
+Majority      & .16 & .15 & .15 & .15 & .15 & .14 & .15 & .14 & .15  \\ \hline
+\end{tabular}
+\end{table*}
+
+### The 3-Class Problem
+
+\begin{table*}[h]
+\centering
+\caption{Cross-Domain macro-averaged F1 scores on 3-class SCS trained models. Best scores in each column are shown in bold. \label{tbl:cross-4-SCS}}
+\begin{tabular}{|l|llllllll|l|}
+\hline
+Model         & B            & E            & M            & P            & S            & G            & H            & W            & Mean         \\ \hline
+Text-Only     & .54          & .47          & .50          & \textbf{.50} & .58          & .55          & .63          & .51          & \textbf{.54} \\
+Audio-Only    & .21          & .20          & .22          & .21          & .20          & .21          & .22          & .21          & .21          \\ \hline
+Concatenation & .58          & \textbf{.49} & .47          & \textbf{.50} & .57          & \textbf{.57} & .59          & .49          & \textbf{.54} \\
+Product       & .51          & .45          & .44          & .47          & .53          & .54          & \textbf{.64} & .47          & .51          \\
+CA Text       & .43          & .40          & .43          & .41          & .44          & .46          & .47          & .44          & .44          \\
+CA Audio      & \textbf{.59} & .44          & \textbf{.52} & .48          & \textbf{.59} & .54          & .60          & \textbf{.52} & \textbf{.54} \\ \hline
+Random        & .27          & .32          & .30          & .27          & .30          & .29          & .29          & .33          & .30          \\
+Majority      & .21          & .21          & .22          & .21          & .20          & .21          & .22          & .20          & .21          \\ \hline
+\end{tabular}
+\end{table*}

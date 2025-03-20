@@ -113,7 +113,11 @@ Maximum         & 31         & 490,000        \\ \hline
 
 Finally, a set of node pairs and their relations can be generated in order to train a neural network. For related nodes this can be done trivially in that for each relation, the corresponding pair of nodes can be added to the set. When sampling unrelated nodes, however, things are more complex.
 
-For this project, Short Context Sampling (SCS) is used as presented in [@ruiz-dolzLookingUnseenEffective2025]. Given the episodic structure of both QT30 and the Moral Maze corpora, a short context can be defined as the episode. This also allows the model to learn in a more realistic environment. Since the vast majority of node pairs have no relation, a number equal to that of Inference relations are generated.
+It has also been shown that how unrelated node pairs are sampled is very relevant to the model's performance [@ruiz-dolzLookingUnseenEffective2025]. For this reason, it is also useful to provide a comparison between the different methods in a multimodal context. Since a short context is defined as being within an episode, the sampling strategies are only relevant for QT30, all Moral Maze episodes are simply undersampled. The following methods are compared:
+
+- **Undersampling (US)** is the simplest method. The set of all possible pairs is created and then randomly undersampled to the number of inference/support relations.
+- **Long Context Sampling (LCS)** samples unrelated nodes such that each node comes from a different episode with the result that they are 'far apart' in the discourse, this often takes the form of a different topic and such the task is slightly easier than the other methods. This list can then be randomly undersampled to the number of inference/support relations.
+- **Short Context Sampling (SCS)** samples unrelated such that each node comes from the same episode so they are 'close together' in the discourse meaning that they often involve the same topic with the result that the task is slightly harder than other methods. This set is then randomly undersampled to the number of inference/support relations.
 
 ## QT30
 
