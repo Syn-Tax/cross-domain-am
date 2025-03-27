@@ -115,6 +115,12 @@
 
 # Limitations
 
+- lack of comparison between encoder models
+- potential for decrease in accuracy surrounding forced alignment
+- using base models instead of large ones
+- lack of distinction between premise and conclusion (in terms of ordering)
+- no evaluation of combined crossmodal attention mechanisms
+
 # Conclusions
 
 # Future Work
