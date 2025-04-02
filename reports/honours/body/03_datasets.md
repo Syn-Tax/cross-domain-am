@@ -4,23 +4,23 @@ bibliography: [../../Cross-Domain AM.bib]
 
 # Datasets {#sec:datasets}
 
-All datasets used in this project are available as corpora on AIFdb^[https://corpora.aifdb.org/]. Using consistently annotated Argument Interchange Format (AIF) data allows many different datasets to be used and tested. The AIF Format [@chesnevarArgumentInterchangeFormat2006] allows the annotation of argument data across all AM tasks, providing a platform for many different kinds of research.
+All argument data used in this project are available as corpora on AIFdb^[https://corpora.aifdb.org/]. Using consistently annotated Argument Interchange Format (AIF) data allows many different datasets to be used and tested. The AIF Format [@chesnevarArgumentInterchangeFormat2006] allows the annotation of argument data across all AM tasks, providing a platform for many different kinds of research.
 
-Throughout the project two primary corpora have been considered: QT30 [@hautli-janiszQT30CorpusArgument2022], a corpus consisting of 30 AIF annotated Question Time episodes, and a corpus of 9 AIF annotated Moral Maze episodes available on AIFdb.
+Throughout the project two primary corpora have been considered: QT30 [@hautli-janiszQT30CorpusArgument2022], a corpus consisting of 30 AIF annotated Question Time episodes, and a corpus of 9 AIF annotated Moral Maze episodes available on AIFdb [@lawrenceAIFdbCorpora2014].
 
 ## Preprocessing
 
-### Argument Data
+### Argument Data {#sec:arg-data}
 
 In order to use AIF data efficiently for ARI, it is useful to perform some preprocessing. This process produces a graph, where each node contains a locution, its related proposition, and the proposition's AIF identifier. This identifier corresponds to the audio data, allowing it to be easily loaded when required. Each edge in this graph corresponds to a relation between the propositions, one of RA (inference), MA (rephrase) or CA (conflict).
 
-\begin{figure}[h!]
+Figure \ref{fig:arg-map} shows an example sub-graph from the larger argument graph. Each node is truncated for brevity and only shows the node's ID, and the proposition. The major downside of processing the data in this way is simply that much of the nuance encoded within AIF is lost. This is primarily the inference and conflict structures (e.g. linked arguments, undercutting conflict etc.) but also the transitions and illocutionary connections. In the context of this project this is not an issue but is worth remembering when examining the data.
+
+\begin{figure}[h]
 \centering
 \includegraphics[width=8cm]{argument-map}
 \caption{Example sub-graph. \label{fig:arg-map}}
 \end{figure}
-
-Figure \ref{fig:arg-map} shows an example sub-graph from the larger argument graph. Each node is truncated for brevity and only shows the node's ID, and the proposition. This sub-graph is taken from the Moral Maze episode on the 75th Anniversary of D-Day. The major downside of processing the data in this way is simply that much of the nuance encoded within AIF is lost. This is primarily the inference and conflict structures (e.g. linked arguments, undercutting conflict etc.) but also the transitions and illocutionary connections. In the context of this project this is not an issue but is worth remembering when examining the data.
 
 An example of the JSON structure used to store the argument data is shown in Listing \ref{lst:arg-map}. It is also worth understanding the link between the locution and the proposition, of which those in Listing \ref{lst:arg-map} are good examples. The locution is exactly what is said, and the speaker is given (in this case Matthew Taylor), whereas the proposition can be thought of as adding a bit more context from the surrounding dialogue. This primarily includes pronoun resolution as seen in the first word "she" in the locution vs. "Nancy Sherman" in the proposition.
 
@@ -52,7 +52,7 @@ Next, start and end times for each locution in the argument graph need to be fou
 
 In order to understand the abilities of a CTC-based forced alignment system it is of course useful to understand how the algorithms work. Simply, CTC provides the probability distribution across a set of tokens, for each timestep (known as a frame). For a forced alignment task, these tokens are typically each letter of the alphabet and a blank token. The blank token is used for frames which cannot be classified as any other token (e.g. silence).
 
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
 \includegraphics[width=8cm]{framewise-probs}
 \caption{Example framewise probabilities. \label{fig:framewise-probs}}
@@ -60,17 +60,21 @@ In order to understand the abilities of a CTC-based forced alignment system it i
 
 Figure \ref{fig:framewise-probs} (taken from the PyTorch tutorial on the subject^[https://pytorch.org/audio/main/tutorials/ctc_forced_alignment_api_tutorial.html]) shows an example of the framewise probability distribution across each token, token 0 here is the blank token. This distribution provides the probability (or confidence) of any particular token appearing in any given frame. Taking simply the most probable tokens provides something that looks like the following: `- i - - h h a - - - d -` where `-` is the blank token. That sequence describes the words 'I had', so it can be seen that the duplicates need to be removed, along with the blank tokens. This is the process that would be undertaken for Automated Speech Recognition.
 
-When looking at forced alignment however, the process is a bit different since we already have a transcript. For forced alignment the goal is to find the most probably route through the framewise probability matrix matching the transcript. To do this a so-called trellis matrix can be generated. This represents the probabilities of remaining at the same token in the transcript, or moving on to the next one in each frame.
+When looking at forced alignment however, the process is a bit different since we already have a transcript. For forced alignment the goal is to find the most probable route through the framewise probability matrix matching the transcript. To do this a so-called trellis matrix can be generated. This represents the probabilities of remaining at the same token in the transcript, or moving on to the next one in each frame.
 
-We are then looking for the path across the most likely transitions, $k_{(t+1, j+1)}$, where $j$ is the current location in the transcript, and $t$ is the current timeframe. The trellis can then be defined as in Equation @eq:trellis.
+We are then looking for the path across the most likely transitions, $k_{(t+1, j+1)}$, where $j$ is the current location in the transcript, and $t$ is the current timeframe. The trellis can then be defined as in Equation \ref{eq:trellis}.
 
-$$ k_{t+1, j+1} = \max\left(k_{(t,j)p(t+1, c_{j+1})}, k_{(t,j+1)}p(t+1, repeat)\right) $$ {#eq:trellis}
+\begin{align}
+\label{eq:trellis}
+k_{t+1, j+1} = \max \Bigl( & k_{(t,j)p(t+1, c_{j+1})}, \\
+& k_{(t,j+1)}p(t+1, repeat) \Bigr) \nonumber
+\end{align}
 
 Where $k$ is the trellis matrix and $p(t, c_j)$ is the probability of any token $c_j$ appearing in frame $t$, effectively referencing the framewise probability matrix, and $repeat$ represents the blank token.
 
 Once the trellis matrix is generated, an example of which is shown in Figure \ref{fig:trellis-matrix}^[https://pytorch.org/audio/main/tutorials/forced_alignment_tutorial.html] where the yellow high-probability path is visually obvious, it can be traversed using a backtracking algorithm, starting from the last token in the transcript and following either $(c_j \rightarrow c_j)$ or $(c_j \rightarrow c_j+1)$ transitions, based on their probability, until reaching the beginning of the transcript.
 
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
 \includegraphics[width=8cm]{trellis-matrix}
 \caption{Example trellis matrix where yellow shows a high probability. \label{fig:trellis-matrix}}
@@ -84,26 +88,26 @@ To solve this problem, the PyTorch forced alignment API is able to take wildcard
 
 Using this system allows the forced aligner to work well through crosstalk (since each locution's alignments are searched for independently of all others), and qualitatively seems to be more resilient to errors. Error resilience is helped since errors are less common in the locution texts as opposed to the transcripts. Using this system also allowed for confidence scores to be collected for analysis. In this section general analysis across all corpora is performed, with corpus specific analysis in the relevant section.
 
+Figure \ref{fig:complete-confidence} shows the distribution of confidence scores across both the QT30 corpus and all Moral Maze corpora. This distribution shows that the system can relatively confidently align the majority of locutions, with only approx. 8% of locutions with a confidence score less than $0.50$.
+
 \begin{figure}[h!]
 \centering
 \includegraphics[width=8cm]{complete-confidence}
 \caption{Confidence distribution across all corpora. \label{fig:complete-confidence}}
 \end{figure}
 
-Figure \ref{fig:complete-confidence} shows the distribution of confidence scores across both the QT30 corpus and all Moral Maze corpora. This distribution shows that the system can relatively confidently align the majority of locutions, with only approx. 8% of locutions with a confidence score less than $0.50$.
-
-In order to further analyse the performance of this system, locutions were selected at random and qualitatively analysed. Throughout this process, all locutions appeared correct, however, it was very challenging to accurately determine the accuracy of the system on locutions with confidence scores $<0.2$. This shows that this method of aligning locutions with their corresponding audio is accurate for the purposes of this project, as long as the confidence scores are taken into account.
+In order to further analyse the performance of this system, locutions were selected at random and qualitatively analysed. Throughout this process, all locutions appeared correct, however, it was very challenging to accurately determine the accuracy of the system on locutions with confidence scores $<0.2$. This shows that this method of aligning locutions with their corresponding audio is accurate for the purposes of this project, as long as the confidence scores are taken into account. However, these confidence scores should not be mistaken for a 'probability of being correct'.
 
 The distribution of lengths for each audio clip was also analysed in order to ensure the models are being provided with enough data. The primary statistics are shown in Table \ref{tbl:audio-complete}. This data shows that the majority of locutions are shorter than 8 seconds (approximately 120,000 samples at the sampling rate of 16kHz). In total, across both corpora, there is over 24 hours of argumentative audio, out of over 36 hours of total audio processed. The relevant data for the specific corpora are detailed in the relevant section.
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Audio data for locutions across all corpora.\label{tbl:audio-complete}}
 \begin{tabular}{|l|ll|}
 \hline
 Quantity        & Length (s) & No. of Samples \\ \hline
 Mean            & 3.9        & 62,000         \\
-75th Percentile  & 5.1        & 81,000         \\
+75th Percentile  & 5.1       & 81,000         \\
 90th Percentile & 7.7        & 120,000        \\
 Maximum         & 31         & 490,000        \\ \hline
 \end{tabular}
@@ -121,9 +125,11 @@ It has also been shown that how unrelated node pairs are sampled is very relevan
 
 ## QT30
 
-The QT30 argument corpus [@hautli-janiszQT30CorpusArgument2022] contains transcripts and argument annotations for 30 episodes of the BBC's Question Time, a series of televised topical debates across the United Kingdom. All episodes aired in 2020 and 2021. The corpus is split into 30 subcorpora, each spanning a single episode. This allows analysis of each episode individually, or combined as a single corpus.
+The QT30 argument corpus [@hautli-janiszQT30CorpusArgument2022] contains transcripts and argument annotations for 30 episodes of the BBC's Question Time, a series of televised topical debates across the United Kingdom. All episodes aired in 2020 and 2021. The corpus is split into 30 subcorpora, each spanning a single episode. This creates a large corpus with almost 20k locutions. What follows is an analysis of the corpus and how audio data was added.
 
-\begin{table}[h!]
+Table \ref{tbl:qt-rel} shows the distribution of each type of relation across QT30. Inference and Rephrase relations make up a total of $91.5\%$ of the dataset, with Conflict relations being significantly less common, only making up $8.5\%$ of the dataset. It is obvious that this is an unbalanced dataset, which will have to be considered during training.
+
+\begin{table}[H]
 \centering
 \caption{Disribution of propositional relations in QT30. \label{tbl:qt-rel}}
 \begin{tabular}{|l|ll|}
@@ -136,9 +142,9 @@ Total         & 11,204      & 100\%      \\ \hline
 \end{tabular}
 \end{table}
 
-Table \ref{tbl:qt-rel} shows the distribution of each type of relation across QT30. Inference and Rephrase relations make up a total of $91.5\%$ of the dataset, with Conflict relations being significantly less common, only making up $8.5\%$ of the dataset. It is obvious that this is an unbalanced dataset, which will have to be considered during training.
+Table \ref{tbl:qt-confidence} shows the mean and standard deviation of the confidence scores across each of the QT30 subcorpora. The lowest two mean scores are shown in bold. Manually analysing samples in these episodes indicates a high error rate in the alignment of locutions. Because of this high error rate, it was decided to exclude these episodes from the corpus used for training. The excluded episodes are: 22July2021 and 30September2021. The rest of the episodes from QT30 will form its multimodal subcorpus (QT30-MM).
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Mean confidence scores ($\mu$) and standard deviation of confidence scores ($\sigma$) across each QT30 subcorpus. \label{tbl:qt-confidence}}
 \begin{tabular}{|l|ll|}
@@ -178,9 +184,9 @@ Corpus Name     & $\mu$ & $\sigma$ \\ \hline
 \end{tabular}
 \end{table}
 
-Table \ref{tbl:qt-confidence} shows the mean and standard deviation of the confidence scores across each of the QT30 subcorpora. The lowest two mean scores are shown in bold. Manually analysing samples in these episodes indicates a high error rate in the alignment of locutions. Because of this high error rate, it was decided to exclude these episodes from the corpus used for training. The excluded episodes are: 22July2021 and 30September2021. The rest of the episodes from QT30 will form its multimodal subcorpus (QT30-MM).
+Similarly to the complete QT30 corpus, Table \ref{tbl:qt-mm-rel} shows that Inference and Rephrase make up the vast majority of the QT30-MM dataset, with the proportion of Conflict relations decreasing to 8.4%.
 
-\begin{table}[t]
+\begin{table}[H]
 \centering
 \caption{Disribution of propositional relations in QT30-MM. \label{tbl:qt-mm-rel}}
 \begin{tabular}{|l|ll|}
@@ -193,17 +199,17 @@ Total         & 11,156      & 100\%      \\ \hline
 \end{tabular}
 \end{table}
 
-Similarly to the complete QT30 corpus, Inference and Rephrase make up the vast majority of the QT30-MM dataset, with the proportion of Conflict relations decreasing to 8.4%.
+As can be seen in Figure \ref{fig:qt30-mm-confidence} the distribution of confidence scores closely matches that shown in Figure \ref{fig:complete-confidence}. This still indicates that the audio alignments are calculated with high accuracy.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=8cm]{qt30-mm-confidence}
 \caption{Confidence distribution across QT30-MM. \label{fig:qt30-mm-confidence}}
 \end{figure}
 
-As can be seen in Figure \ref{fig:qt30-mm-confidence} the distribution of confidence scores closely matches that shown in Figure \ref{fig:complete-confidence}. This still indicates that the audio alignments are calculated with high accuracy.
+Table \ref{tbl:qt-mm-rel-no} shows the distribution of relations after sampling unrelated nodes, this process increases the dataset size to a total of almost 17k samples.
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Distribution of propositional relations after sampling non-related nodes. \label{tbl:qt-mm-rel-no}}
 \begin{tabular}{|l|ll|}
@@ -217,9 +223,9 @@ Total         & 16,896 & 100\%           \\ \hline
 \end{tabular}
 \end{table}
 
-Table \ref{tbl:audio-data-qt} shows the statistics for the audio part of QT30-MM. Generally the values are very similar to those shown in Table \ref{tbl:audio-complete}. The QT30-MM dataset contains almost 20 hours of argumentative audio taken from approximately 29.5 hours of total audio.
+The audio data contained within the dataset can also be analysed as shown in Table \ref{tbl:audio-data-qt}. Generally the values are very similar to those shown in Table \ref{tbl:audio-complete}. The QT30-MM dataset contains almost 20 hours of argumentative audio taken from approximately 29.5 hours of total audio. This makes the QT30-MM corpus the largest multimodal ARI dataset currently available.
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Audio data for locutions across QT30-MM.\label{tbl:audio-data-qt}}
 \begin{tabular}{|l|ll|}
@@ -234,9 +240,9 @@ Maximum         & 30         & 470,000        \\ \hline
 
 ## Moral Maze
 
-Similar to Question Time, the BBC's Moral Maze is a series of radio broadcast debates, with each episode focusing on a certain topic. Nine different Moral Maze episodes have been AIF annotated and made available on AIFdb. It is therefore these nine episodes, released from 2012 to 2019, which this project considers. Each episode focuses on a very different domain which allows for a robust, cross-domain analysis of any models trained on another corpus (e.g. QT30). The Moral Maze corpus contains data from nine different episodes: Banking (B), Empire (E), Money (M), Problem (P), Syria (S), Green Belt (G), D-Day (D), Hypocrisy (H) and Welfare (W). Each episode consists of a debate focusing on a different topic, and hence has a different distribution of classes.
+Similar to Question Time, the BBC's Moral Maze is a series of radio broadcast debates, with each episode focusing on a certain topic. Several episodes of the Moral Maze have been annotated with IAT and AIF and also made available on AIFdb. Of these episodes, eight were chosen from different fields. It is therefore these eight episodes, released from 2012 to 2019, which this project considers. Each episode focuses on a very different domain which allows for a robust, cross-domain analysis of any models trained on another corpus (e.g. QT30). The Moral Maze corpus contains data from eight different episodes: Banking (B), Empire (E), Money (M), Problem (P), Syria (S), Green Belt (G), Hypocrisy (H) and Welfare (W). Each episode consists of a debate focusing on a different topic, and hence has a different distribution of classes.
 
-Table \ref{tbl:moral-rel-no} shows the distribution of propositional relations across the Moral Maze corpus, after non-related pairs have been sampled. Comparing the corpus to QT30, a significantly lower proportion of the corpus is made up of Rephrase relations. It is possible that the differing formats of the debates has an impact here.
+Table \ref{tbl:moral-rel-no} shows the distribution of propositional relations across the Moral Maze corpus, after unrelated pairs have been sampled. Comparing the corpus to QT30, a significantly lower proportion of the corpus is made up of Rephrase relations. It is possible that the differing formats of the debates has an impact here.
 
 \begin{table*}[t]
 \centering
@@ -250,14 +256,13 @@ M             & 255 (43\%)   & 255 (43\%)   & 29 (5\%)  & 58 (10\%) & 597   \\
 P             & 236 (42\%)   & 236 (42\%)   & 40 (7\%)  & 45 (8\%)  & 557   \\
 S             & 181 (42\%)   & 181 (42\%)   & 63 (14\%) & 10 (2\%)  & 435   \\
 G             & 301 (41\%)   & 301 (41\%)   & 46 (6\%)  & 93 (13\%) & 741   \\
-D             & 72 (40\%)    & 72 (40\%)    & 7 (4\%)   & 28 (16\%) & 179   \\
 H             & 207 (43\%)   & 207 (43\%)   & 23 (5\%)  & 43 (9\%)  & 480   \\
 W             & 211 (40\%)   & 211 (40\%)   & 59 (11\%)  & 43 (8\%)  & 524   \\ \hline
-Total         & 1,746 (42\%) & 1,746 (42\%) & 330 (8\%) & 348 (8\%) & 4,170 \\ \hline
+Total         & 1,674 (42\%) & 1,674 (42\%) & 323 (8\%) & 320 (8\%) & 3,991 \\ \hline
 \end{tabular}
 \end{table*}
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Mean confidence scores ($\mu$) and Standard Deviation of confidence scores ($\sigma$) across Moral Maze subcorpora. \label{tbl:moral-confidence}}
 \begin{tabular}{|l|ll|}
@@ -269,25 +274,24 @@ M         & 0.78 & 0.14   \\
 P         & 0.80 & 0.15   \\
 S         & 0.74 & 0.16   \\
 G         & 0.80 & 0.14   \\
-D         & \textbf{0.50} & \textbf{0.34}   \\
 H         & 0.74 & 0.16   \\
 W         & 0.75 & 0.15   \\ \hline
 \end{tabular}
 \end{table}
 
-In Table \ref{tbl:moral-confidence} the mean and standard deviation of audio alignemnt confidence scores are compared across subcorpora. Generally the results match what is expected and are similar to those in QT30, the system does achieve unusually low scores when considering the D-Day subcorpus, the reason for this is unclear, however, manually analysing both random and low-confidence samples indicates they are generally correct and so the subcorpus can be used for the cross-domain evaluation.
+In Table \ref{tbl:moral-confidence} the mean and standard deviation of audio alignemnt confidence scores are compared across subcorpora. Generally the results match what is expected and are similar to those in QT30.
 
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
 \includegraphics[width=8cm]{moral-confidence}
 \caption{Confidence distribution across all Moral Maze subcorpora. \label{fig:moral-confidence}}
 \end{figure}
 
-Figure \ref{fig:moral-confidence} shows the distribution of audio alignment confidence scores across all Moral Maze episodes. This follows the expected pattern as shown in Figures \ref{fig:complete-confidence} and \ref{fig:qt30-mm-confidence}. The secondary peak around a confidence of $0.10$ is caused by the D-Day subcorpus.
+Figure \ref{fig:moral-confidence} shows the distribution of audio alignment confidence scores across all Moral Maze episodes. This follows the expected pattern as shown in Figures \ref{fig:complete-confidence} and \ref{fig:qt30-mm-confidence}.
 
 Table \ref{tbl:audio-data-mm} shows the statistics for the audio part of the combined Moral Maze corpus. Generally the locutions seem to be a bit longer in the Moral Maze when compared to QT30. The Moral Maze combined corpus contains almost 5 hours of argumentative audio taken from approximately 6.5 hours of total audio.
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Audio data for locutions across Moral Maze.\label{tbl:audio-data-mm}}
 \begin{tabular}{|l|ll|}

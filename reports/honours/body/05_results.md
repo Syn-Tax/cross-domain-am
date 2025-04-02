@@ -20,9 +20,9 @@ $$ \text{Recall} = \frac{TP}{TP + FN} $$ {#eq:recall}
 
 Generally the macro-averaged F1 score is the standard to evaluate a multi-class classification problem, including ARI systems [@ruiz-dolzTransformerBasedModelsAutomatic2021;@ruiz-dolzLookingUnseenEffective2025;@manciniMAMKitComprehensiveMultimodal2024], where only a single metric is reported, it will be a macro-averaged F1 score for this reason.
 
-The QT30-MM dataset is split into three splits: train, validation and test. 70% of the data is allocated for training, 10% for validation and the remaining 20% for testing. The model is evaluated on the validation split after every training epoch, the best performing model, based on macro-F1, is then chosen to be tested on the testing split, the metrics are then calculated and reported in the following sections.
+To provide a useful evaluation and simulate a real-world environment, the QT30-MM dataset is split into three splits: train, validation and test. 70% of the data is allocated for training, 10% for validation and the remaining 20% for testing. The model is evaluated on the validation split after every training epoch, the best performing model, based on macro-F1, is then chosen to be tested on the testing split, the metrics are then calculated and reported in the following sections.
 
-Each model is then evaluated on the complete dataset for each Moral Maze episode (Banking, Empire, Money, Problem, Syria, Green Belt and D-Day) and each metric calculated to provide an overview of the cross-domain performance of the model.
+After training, each model is then evaluated on the complete dataset for each Moral Maze episode (Banking, Empire, Money, Problem, Syria, Green Belt, Hypocrisy and Welfare) and each metric calculated to provide an overview of the cross-domain performance of the model.
 
 In order to evaluate the different methods to sample unrelated arguments as described in Section @sec:pair-creation. Models are trained on SCS, US and LCS, the validation dataset is sampled identically to the training set, and tested, both in-domain and cross-domain on SCS. This is used because of its description as a more realistic problem [@ruiz-dolzLookingUnseenEffective2025]. All code used for the experiments can be found on GitHub^[https://github.com/Syn-Tax/cross-domain-am].
 
@@ -110,7 +110,23 @@ Majority      & .22          & .22          & .22          \\ \hline
 \end{tabular}
 \end{table}
 
-The class F1 distribution for the 3-class problem is shown in Table \ref{tbl:class-f1-3class}. Similarly to the 4-class F1 distribution, the Attack class appears to be significantly harder to prodict than the other classes. Similarly to the 4-class problem it can be hypothesised that this is due to the class imbalance in the dataset. What is interesting, is the fact that the class F1 scores for the Attack/CA relations have dropped when compared with the 4-class results and the scores for non-attack/CA relations have risen. It is possible that this is simply due to the change in the number of classes, however, it can also be considered that the 3-class dataset is more heavily unbalanced against the Attack relation which could also have this effect.
+Table \ref{tbl:results-seq-3class} shows the results when considering the different sequence fusion techniques. It can be seen that early fusion techniques significantly outperform late sequence fusion. Similarly to the 4-class US run, the early audio-only model was not able to learn during this run. For both the text only and multimodal models, early fusion improves upon late fusion by approximately 44%.
+
+\begin{table}[h]
+\centering
+\caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 3-class problem. \label{tbl:results-seq-3class}}
+\begin{tabular}{|l|ll|}
+\hline
+Model         & Early       & Late      \\ \hline
+Text-Only     & .62         & .43    \\
+Audio-Only    & .21         & .33    \\
+Concatenation & .61         & .43    \\ \hline
+Random        & \multicolumn{2}{c|}{.23} \\
+Majority      & \multicolumn{2}{c|}{.15} \\ \hline
+\end{tabular}
+\end{table}
+
+What follows is a more in-depth analysis of the 3-class in-domain results. The class F1 distribution for the 3-class problem is shown in Table \ref{tbl:class-f1-3class}. Similarly to the 4-class F1 distribution, the Attack class appears to be significantly harder to prodict than the other classes. Similarly to the 4-class problem it can be hypothesised that this is due to the class imbalance in the dataset. What is interesting, is the fact that the class F1 scores for the Attack/CA relations have dropped when compared with the 4-class results and the scores for non-attack/CA relations have risen. It is possible that this is simply due to the change in the number of classes, however, it can also be considered that the 3-class dataset is more heavily unbalanced against the Attack relation which could also have this effect.
 
 \begin{table}[h]
 \centering
@@ -130,27 +146,13 @@ The confusion matrix for the 3-class problem, as shown in Figure \ref{fig:text-o
 \caption{Confusion matrix showing true and predicted labels for the text-only SCS model.\label{fig:text-only-conf-mat-3class}}
 \end{figure}
 
-\begin{table}[h]
-\centering
-\caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 4-class problem. The mean is taken across all Moral Maze subcorpora. \label{tbl:results-seq-4class-cd}}
-\begin{tabular}{|l|ll|}
-\hline
-Model         & Early       & Late      \\ \hline
-Text-Only     & .54         &        \\
-Audio-Only    & .21         &        \\
-Concatenation & .54         &        \\ \hline
-Random        & \multicolumn{2}{c|}{.23} \\
-Majority      & \multicolumn{2}{c|}{.15} \\ \hline
-\end{tabular}
-\end{table}
-
 ## Cross-Domain {#sec:res-cd}
 
 In this section the results presented in Section @sec:res-id are extended across the Moral Maze subcorpora. Results here are presented across each subcorpus and the arithmetic mean calculated and also reported. The goal of this section is to analyse how well the models and techniques are able to generalise into different topics and domains. Similar to the In-Domain results, first the 4-class problem is discussed and then its 3-class equivalent. Only the Macro-F1 scores are reported here with precision and recall scores added in Appendix @app:res-cd.
 
 ### The 4-Class Problem {#sec:cd-4class}
 
-Table \ref{tbl:cross-4-SCS} provides a cross-domain evaluation of the different model architectures across the nine Moral Maze subcorpora when trained on SCS. Taking a broad overview, there is a distinct lack of significant improvement when the addition of acoustic features is considered. The models show a significant decrease in the macro-F1 scores when comparing back to the in-domain results. This drop shows how challenging it is for the models to generalise effectively across the different domains.
+Table \ref{tbl:cross-4-SCS} provides a cross-domain evaluation of the different model architectures across the nine Moral Maze subcorpora when trained on SCS. Taking a broad overview, there is a distinct lack of significant improvement when the addition of acoustic features is considered. Since the evaluation is significantly harder than evaluating in-domain, the models show a significant decrease in the macro-F1 scores when comparing back to the in-domain results. This drop shows how challenging it is for the models to generalise effectively across the different domains.
 
 \begin{table}[h]
 \centering
@@ -169,6 +171,24 @@ Majority      & .15          & .15          & .15          \\ \hline
 \end{tabular}
 \end{table}
 
+Table \ref{tbl:results-seq-4class-cd} compares early and late sequence fusion in a cross-domain setting. The results reported are the arithmetic mean across the Moral Maze subcorpora. Generally the increase is similar to that found in the in-domain evaluation with approximately a 50% increase for the text only and multimodal models and a 32% increase in performance for the audio only model.
+
+\begin{table}[h]
+\centering
+\caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 4-class problem. The mean is taken across all Moral Maze subcorpora. \label{tbl:results-seq-4class-cd}}
+\begin{tabular}{|l|ll|}
+\hline
+Model         & Early       & Late      \\ \hline
+Text-Only     & .46         & .30       \\
+Audio-Only    & .37         & .28       \\
+Concatenation & .45         & .30       \\ \hline
+Random        & \multicolumn{2}{c|}{.23} \\
+Majority      & \multicolumn{2}{c|}{.15} \\ \hline
+\end{tabular}
+\end{table}
+
+Table \ref{tbl:results-cd-4class-sampling} can be used to compare the different NO-sampling strategies which again, seem to show little difference between the various methods, both for unimodal and multimodal approaches. Similarly to the in-domain results, what follows is a close look into the results of both the text only and CA audio models when trained on SCS and evaluated on the Banking subcorpus.
+
 \begin{table}[h]
 \centering
 \caption{Class F1 distribution for text only and CA audio SCS models on banking subcorpus.\label{tbl:class-f1-4class-banking}}
@@ -179,8 +199,6 @@ Text-Only & .67         & .60         & .41         & .065 \\
 CA Audio  & .65         & .64         & .41         & .095 \\ \hline
 \end{tabular}
 \end{table}
-
-Table \ref{tbl:results-cd-4class-sampling} can be used to compare the different NO-sampling strategies which again, seem to show little difference between the various methods, both for unimodal and multimodal approaches. Similarly to the in-domain results, what follows is a close look into the results of both the text only and CA audio models when trained on SCS and evaluated on the Banking subcorpus.
 
 The class F1 distribution can be found in Table \ref{tbl:class-f1-4class}. Similarly to the in-domain results, the model is very able to predict unrelated pairs and pairs connected by an inference, and the score for pairs connected by a conflict are similar. The major difference in the class distribution is the inability of the model to accurately predict rephrases, it is possible that this is the result of an increase in domain specific knowledge and terminology necessary to predict these rephrases but these data are in no way conclusive in that respect.
 
@@ -216,22 +234,6 @@ Majority      & .16          & .15          & .15          & .15          & .15 
 
 Figures \ref{fig:res-cd-text-banking} and \ref{fig:res-cd-ca-banking} show the confusion matrices for both the text only model and the CA audio model when trained on SCS and evaluated on the Banking subcorpus. While the matrices are generally very similar, there are some notable differences that show as a trend across all subcorpora. Firstly the crossmodal attention model is better able to distinguish the rephrases. The text only model seems to be more likely to predict MA for true CA or RA samples. The other notable distinction between the two models' performance is that the text only model is more likely to confuse conflict-labelled pairs as being unrelated, as opposed to the crossmodal attention model which is more likely to predict the label as an inference in all cases. Similarly to the in-domain results, there was no resampling of training data that could be found to change the F1 distribution across classes.
 
-\begin{table}[H]
-\centering
-\caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 4-class problem. The mean is taken across all Moral Maze subcorpora. \label{tbl:results-seq-4class-cd}}
-\begin{tabular}{|l|ll|}
-\hline
-Model         & Early       & Late      \\ \hline
-Text-Only     & .46         & .30       \\
-Audio-Only    & .37         & .28       \\
-Concatenation & .45         & .30       \\ \hline
-Random        & \multicolumn{2}{c|}{.23} \\
-Majority      & \multicolumn{2}{c|}{.15} \\ \hline
-\end{tabular}
-\end{table}
-
-Table \ref{tbl:results-seq-4class-cd} compares early and late sequence fusion in a cross-domain setting. The results reported are the arithmetic mean across the Moral Maze subcorpora. Generally the increase is similar to that found in the in-domain evaluation with approximately a 50% increase for the text only and multimodal models and a 32% increase in performance for the audio only model.
-
 ### The 3-Class Problem {#sec:cd-3class}
 
 \begin{table*}[t]
@@ -251,7 +253,23 @@ Majority      & .21          & .21          & .22          & .21          & .20 
 \end{tabular}
 \end{table*}
 
-Next, the data from the 3-class problem is extended across different domains. The data can be seen in Table \ref{tbl:cross-3-SCS}. Generally the results are similar to the 4-class problem with a similar drop in macro-F1 scores from the in-domain results. Although the 3-class problem is slightly easier than the 4-class problem, the drop in performance is still roughly analogous.
+Next, the data from the 3-class problem is extended across different domains. The data can be seen in Table \ref{tbl:cross-3-SCS}. Generally the results are similar to the 4-class problem with a similar drop in macro-F1 scores from the in-domain results. Although the 3-class problem is slightly easier than the 4-class problem, the drop in performance is still roughly similar.
+
+Table \ref{tbl:results-seq-3class-cd} allows a comparison between early and late sequence fusion methods on the 3-class problem. Here for both the text-only and multimodal approaches early fusion improves performance by around 40% whereas the early audio only model did not learn effectively. It should be noted that although generally achieving lower performance, the late fusion models were always able to learn when only trained on audio data.
+
+\begin{table}[h]
+\centering
+\caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 3-class problem. The mean is taken across all Moral Maze subcorpora. \label{tbl:results-seq-3class-cd}}
+\begin{tabular}{|l|ll|}
+\hline
+Model         & Early       & Late      \\ \hline
+Text-Only     & .54         & .38    \\
+Audio-Only    & .21         & .33    \\
+Concatenation & .54         & .40    \\ \hline
+Random        & \multicolumn{2}{c|}{.23} \\
+Majority      & \multicolumn{2}{c|}{.15} \\ \hline
+\end{tabular}
+\end{table}
 
 What follows is another discussion regarding the detailed results of the CA Audio model and the text only model. First, the class F1 distribution can be found in Table \ref{tbl:class-f1-3class-banking}. Here, as could reasonably be expected, the results differ significantly from the 4-class problem. The model is able to effectively classify the support relations and no significant drop is observed when compared to the in-domain results. However, the drop in macro-F1 seems to originate from the drop in the model's ability to classify unrelated nodes.
 
@@ -266,26 +284,10 @@ CA Audio  & .58           & .69              & \multicolumn{1}{l|}{.29}         
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[width=8cm]{ca-audio-conf-mat-3class-banking}
 \caption{CA Audio model confusion matrix on the banking subcorpus.\label{fig:res-cd-ca-banking-3}}
 \end{figure}
 
 Figure \ref{fig:res-cd-ca-banking-3} shows the confusion matrix for the CA audio model when evaluated on the banking subcorpus. Much like what was seen in Section @sec:id-3class the matrix is characterised by the overprediction of Support relations, with the main difference being that this overprediction is worse than when evaluated in-domain.
-
-Table \ref{tbl:results-seq-3class-cd} allows a comparison between early and late sequence fusion methods on the 3-class problem. Here for both the text-only and multimodal approaches early fusion improves performance by around 40% whereas the early audio only model did not learn effectively. It should be noted that although generally achieving lower performance, the late fusion models were always able to learn when only trained on audio data.
-
-\begin{table}[H]
-\centering
-\caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 3-class problem. The mean is taken across all Moral Maze subcorpora. \label{tbl:results-seq-3class-cd}}
-\begin{tabular}{|l|ll|}
-\hline
-Model         & Early       & Late      \\ \hline
-Text-Only     & .54         & .38    \\
-Audio-Only    & .21         & .33    \\
-Concatenation & .54         & .40    \\ \hline
-Random        & \multicolumn{2}{c|}{.23} \\
-Majority      & \multicolumn{2}{c|}{.15} \\ \hline
-\end{tabular}
-\end{table}
