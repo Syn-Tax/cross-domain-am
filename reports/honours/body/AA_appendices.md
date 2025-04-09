@@ -3,6 +3,67 @@ bibliography: [../../Cross-Domain AM.bib]
 ---
 
 \appendix
+# Datasets
+
+
+\begin{table}[H]
+\centering
+\caption{Mean confidence scores ($\mu$) and standard deviation of confidence scores ($\sigma$) across each QT30 subcorpus. \label{tbl:qt-confidence}}
+\begin{tabular}{|l|ll|}
+\hline
+Corpus Name     & $\mu$ & $\sigma$ \\ \hline
+28May2020       & 0.76            & 0.16               \\
+4June2020       & 0.72            & 0.17               \\
+18June2020      & 0.76            & 0.16               \\
+30July2020      & 0.75            & 0.16               \\
+2September2020  & 0.78            & 0.15               \\
+22October2020   & 0.76            & 0.16               \\
+5November2020   & 0.77            & 0.17               \\
+19November2020  & 0.74            & 0.19               \\
+10December2020  & 0.77            & 0.16               \\
+14January2021   & 0.74            & 0.17               \\
+28January2021   & 0.70            & 0.17               \\
+18February2021  & 0.75            & 0.16               \\
+4March2021      & 0.76            & 0.16               \\
+18March2021     & 0.75            & 0.17               \\
+15April2021     & 0.75            & 0.15               \\
+29April2021     & 0.70            & 0.19               \\
+20May2021       & 0.76            & 0.17               \\
+27May2021       & 0.79            & 0.15               \\
+10June2021      & 0.75            & 0.17               \\
+24June2021      & 0.74            & 0.17               \\
+8July2021       & 0.72            & 0.17               \\
+\textbf{22July2021}      & \textbf{0.44}   & \textbf{0.28}      \\
+5August2021     & 0.76            & 0.17               \\
+19August2021    & 0.77            & 0.17               \\
+2September2021  & 0.78            & 0.16               \\
+16September2021 & 0.77            & 0.16               \\
+\textbf{30September2021} & \textbf{0.24}   & \textbf{0.08}      \\
+14October2021   & 0.75            & 0.19               \\
+28October2021   & 0.75            & 0.17               \\
+11November2021  & 0.78            & 0.16               \\ \hline
+\textbf{QT30}   & 0.75            & 0.17               \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Mean confidence scores ($\mu$) and Standard Deviation of confidence scores ($\sigma$) across Moral Maze subcorpora. \label{tbl:moral-confidence}}
+\begin{tabular}{|l|ll|}
+\hline
+Subcorpus & $\mu$ & $\sigma$ \\ \hline
+B         & 0.79 & 0.14   \\
+E         & 0.76 & 0.15   \\
+M         & 0.78 & 0.14   \\
+P         & 0.80 & 0.15   \\
+S         & 0.74 & 0.16   \\
+G         & 0.80 & 0.14   \\
+H         & 0.74 & 0.16   \\
+W         & 0.75 & 0.15   \\ \hline
+\end{tabular}
+\end{table}
+
+\appendix
 # Results {#app:results}
 
 ## In-Domain {#app:res-id}

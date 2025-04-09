@@ -10,6 +10,8 @@ To provide a comparable set of results, all experiments were run using the same 
 
 $$ w_i = \frac{\max(\mathbf{c})}{c_i} $$ {#eq:weight}
 
+Using these hyperparameters was found to provide a good balance between model performance and training time on the hardware used with the weighted cross-entropy loss.
+
 In order to evaluate the models, the following metrics are reported: macro-averaged F1 score, precision and recall. These are all described for each class in Equations @eq:f1, @eq:precision and @eq:recall where $TP$ is the number of true positives, $FP$ is the number of false positives and $FN$ is the number of false negatives. The arithmetic mean can then be taken for each class to provide a holistic overview of the model's performance.
 
 $$ F1 = \frac{2TP}{2TP + FP + FN} $$ {#eq:f1}
@@ -73,10 +75,10 @@ What follows is a more in-depth discussion of the results with the hope that it 
 
 \begin{table}[h]
 \centering
-\caption{Class F1 distribution for text-only SCS model on test split.\label{tbl:class-f1-4class}}
+\caption{Class F1 distribution for text-only SCS model.\label{tbl:class-f1-4class}}
 \begin{tabular}{|llll|}
 \hline
-\textbf{NO} & \textbf{RA} & \textbf{CA} & \textbf{MA}              \\ \hline
+NO & RA & CA & MA              \\ \hline
 .76         & .60         & .30         & .66 \\ \hline
 \end{tabular}
 \end{table}
@@ -133,7 +135,7 @@ What follows is a more in-depth analysis of the 3-class in-domain results. The c
 \caption{Class F1 distribution for text-only SCS model on test split.\label{tbl:class-f1-3class}}
 \begin{tabular}{|lll|}
 \hline
-\textbf{None} & \textbf{Support} & \textbf{Attack}              \\ \hline
+None & Support & Attack              \\ \hline
 .82         & .78         & .26  \\ \hline
 \end{tabular}
 \end{table}
@@ -171,8 +173,6 @@ Majority      & .15          & .15          & .15          \\ \hline
 \end{tabular}
 \end{table}
 
-Table \ref{tbl:results-seq-4class-cd} compares early and late sequence fusion in a cross-domain setting. The results reported are the arithmetic mean across the Moral Maze subcorpora. Generally the increase is similar to that found in the in-domain evaluation with approximately a 50% increase for the text only and multimodal models and a 32% increase in performance for the audio only model.
-
 \begin{table}[h]
 \centering
 \caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 4-class problem. The mean is taken across all Moral Maze subcorpora. \label{tbl:results-seq-4class-cd}}
@@ -187,22 +187,18 @@ Majority      & \multicolumn{2}{c|}{.15} \\ \hline
 \end{tabular}
 \end{table}
 
-Table \ref{tbl:results-cd-4class-sampling} can be used to compare the different NO-sampling strategies which again, seem to show little difference between the various methods, both for unimodal and multimodal approaches. Similarly to the in-domain results, what follows is a close look into the results of both the text only and CA audio models when trained on SCS and evaluated on the Banking subcorpus.
-
 \begin{table}[h]
 \centering
 \caption{Class F1 distribution for text only and CA audio SCS models on banking subcorpus.\label{tbl:class-f1-4class-banking}}
 \begin{tabular}{|l|llll|}
 \hline
-Model     & \textbf{NO} & \textbf{RA} & \textbf{CA} & \textbf{MA}              \\ \hline
+Model     & NO & RA & CA & MA              \\ \hline
 Text-Only & .67         & .60         & .41         & .065 \\
 CA Audio  & .65         & .64         & .41         & .095 \\ \hline
 \end{tabular}
 \end{table}
 
-The class F1 distribution can be found in Table \ref{tbl:class-f1-4class}. Similarly to the in-domain results, the model is very able to predict unrelated pairs and pairs connected by an inference, and the score for pairs connected by a conflict are similar. The major difference in the class distribution is the inability of the model to accurately predict rephrases, it is possible that this is the result of an increase in domain specific knowledge and terminology necessary to predict these rephrases but these data are in no way conclusive in that respect.
-
-\begin{table*}[t]
+\begin{table*}[t!]
 \centering
 \caption{Cross-Domain macro-averaged F1 scores on 4-class SCS trained models. Best scores in each column are shown in bold. \label{tbl:cross-4-SCS}}
 \begin{tabular}{|l|llllllll|l|}
@@ -219,6 +215,14 @@ Majority      & .16          & .15          & .15          & .15          & .15 
 \end{tabular}
 \end{table*}
 
+Table \ref{tbl:results-seq-4class-cd} compares early and late sequence fusion in a cross-domain setting. The results reported are the arithmetic mean across the Moral Maze subcorpora. Generally the increase is similar to that found in the in-domain evaluation with approximately a 50% increase for the text only and multimodal models and a 32% increase in performance for the audio only model.
+
+Table \ref{tbl:results-cd-4class-sampling} can be used to compare the different NO-sampling strategies which again, seem to show little difference between the various methods, both for unimodal and multimodal approaches. Similarly to the in-domain results, what follows is a close look into the results of both the text only and CA audio models when trained on SCS and evaluated on the Banking subcorpus.
+
+The class F1 distribution can be found in Table \ref{tbl:class-f1-4class}. Similarly to the in-domain results, the model is very able to predict unrelated pairs and pairs connected by an inference, and the score for pairs connected by a conflict are similar. The major difference in the class distribution is the inability of the model to accurately predict rephrases, it is possible that this is the result of an increase in domain specific knowledge and terminology necessary to predict these rephrases but these data are in no way conclusive in that respect.
+
+Figures \ref{fig:res-cd-text-banking} and \ref{fig:res-cd-ca-banking} show the confusion matrices for both the text only model and the CA audio model when trained on SCS and evaluated on the Banking subcorpus. While the matrices are generally very similar, there are some notable differences that show as a trend across all subcorpora. Firstly the crossmodal attention model is better able to distinguish the rephrases. The text only model seems to be more likely to predict MA for true CA or RA samples. The other notable distinction between the two models' performance is that the text only model is more likely to confuse conflict-labelled pairs as being unrelated, as opposed to the crossmodal attention model which is more likely to predict the label as an inference in all cases. Similarly to the in-domain results, there was no resampling of training data that could be found to change the F1 distribution across classes.
+
 \begin{figure}[H]
 \centering
 \centering
@@ -231,10 +235,6 @@ Majority      & .16          & .15          & .15          & .15          & .15 
 \includegraphics[width=5cm]{ca-audio-conf-mat-4class-banking}
 \caption{CA Audio model confusion matrix on the banking subcorpus.\label{fig:res-cd-ca-banking}}
 \end{figure}
-
-Figures \ref{fig:res-cd-text-banking} and \ref{fig:res-cd-ca-banking} show the confusion matrices for both the text only model and the CA audio model when trained on SCS and evaluated on the Banking subcorpus. While the matrices are generally very similar, there are some notable differences that show as a trend across all subcorpora. Firstly the crossmodal attention model is better able to distinguish the rephrases. The text only model seems to be more likely to predict MA for true CA or RA samples. The other notable distinction between the two models' performance is that the text only model is more likely to confuse conflict-labelled pairs as being unrelated, as opposed to the crossmodal attention model which is more likely to predict the label as an inference in all cases. Similarly to the in-domain results, there was no resampling of training data that could be found to change the F1 distribution across classes.
-
-### The 3-Class Problem {#sec:cd-3class}
 
 \begin{table*}[t]
 \centering
@@ -253,11 +253,13 @@ Majority      & .21          & .21          & .22          & .21          & .20 
 \end{tabular}
 \end{table*}
 
+### The 3-Class Problem {#sec:cd-3class}
+
 Next, the data from the 3-class problem is extended across different domains. The data can be seen in Table \ref{tbl:cross-3-SCS}. Generally the results are similar to the 4-class problem with a similar drop in macro-F1 scores from the in-domain results. Although the 3-class problem is slightly easier than the 4-class problem, the drop in performance is still roughly similar.
 
 Table \ref{tbl:results-seq-3class-cd} allows a comparison between early and late sequence fusion methods on the 3-class problem. Here for both the text-only and multimodal approaches early fusion improves performance by around 40% whereas the early audio only model did not learn effectively. It should be noted that although generally achieving lower performance, the late fusion models were always able to learn when only trained on audio data.
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 3-class problem. The mean is taken across all Moral Maze subcorpora. \label{tbl:results-seq-3class-cd}}
 \begin{tabular}{|l|ll|}
@@ -273,7 +275,7 @@ Majority      & \multicolumn{2}{c|}{.15} \\ \hline
 
 What follows is another discussion regarding the detailed results of the CA Audio model and the text only model. First, the class F1 distribution can be found in Table \ref{tbl:class-f1-3class-banking}. Here, as could reasonably be expected, the results differ significantly from the 4-class problem. The model is able to effectively classify the support relations and no significant drop is observed when compared to the in-domain results. However, the drop in macro-F1 seems to originate from the drop in the model's ability to classify unrelated nodes.
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Class F1 distribution for text only and CA audio SCS models on banking subcorpus.\label{tbl:class-f1-3class-banking}}
 \begin{tabular}{|l|llll|}
@@ -284,10 +286,10 @@ CA Audio  & .58           & .69              & \multicolumn{1}{l|}{.29}         
 \end{tabular}
 \end{table}
 
-\begin{figure}[h]
+Figure \ref{fig:res-cd-ca-banking-3} shows the confusion matrix for the CA audio model when evaluated on the banking subcorpus. Much like what was seen in Section @sec:id-3class the matrix is characterised by the overprediction of Support relations, with the main difference being that this overprediction is worse than when evaluated in-domain.
+
+\begin{figure}[H]
 \centering
 \includegraphics[width=8cm]{ca-audio-conf-mat-3class-banking}
 \caption{CA Audio model confusion matrix on the banking subcorpus.\label{fig:res-cd-ca-banking-3}}
 \end{figure}
-
-Figure \ref{fig:res-cd-ca-banking-3} shows the confusion matrix for the CA audio model when evaluated on the banking subcorpus. Much like what was seen in Section @sec:id-3class the matrix is characterised by the overprediction of Support relations, with the main difference being that this overprediction is worse than when evaluated in-domain.

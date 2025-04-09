@@ -21,7 +21,7 @@ Figure \ref{fig:model-diag-early} shows an example of a model architecture using
 \begin{figure}[h]
 \centering
 \includegraphics[width=8cm]{model-diag-early}
-\caption{Model diagram with early sequence and late multimodal fusion.\label{fig:model-diag-early}}
+\caption{Model diagram with early sequence and late multimodal fusion. Purple denotes textual data and green denotes acoustic data.\label{fig:model-diag-early}}
 \end{figure}
 
 Mestre *et al.* [@mestreMArgMultimodalArgument2021] and Mancini *et al.* [@manciniMAMKitComprehensiveMultimodal2024] approach the problem differently. They first put each sequence through the text encoder independently, before fusing the outputs and feeding the combined encodings into the classification head. While concatenation is the only fusion method examined for this sequence fusion technique, others (such as an element-wise product or cross-attention) could be used. This approach extends much more easily to the audio modality, since the audio encodings can be combined in the same way as the text encodings. This approach to fusing the data in each sequence can be termed late sequence fusion. Figure \ref{fig:model-diag-late} shows an example of a model architecture using late sequence fusion, text processing steps and data are shown in purple and audio-related steps are shown in green.
@@ -29,7 +29,7 @@ Mestre *et al.* [@mestreMArgMultimodalArgument2021] and Mancini *et al.* [@manci
 \begin{figure}[h]
 \centering
 \includegraphics[width=8cm]{model-diag-late}
-\caption{Model diagram with late concatenation sequence and multimodal fusion.\label{fig:model-diag-late}}
+\caption{Model diagram with late concatenation sequence and multimodal fusion. Purple denotes textual data and green denotes acoustic data.\label{fig:model-diag-late}}
 \end{figure}
 
 ## Multimodal Fusion {#sec:mm-fusion}
