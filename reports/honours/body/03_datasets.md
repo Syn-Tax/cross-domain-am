@@ -50,7 +50,7 @@ An array of these JSON objects can then be used to create the node pairs require
 
 The audio data first had to be downsampled from 44.1kHz to the 16kHz which is best accepted by the Wav2Vec2 transformer [@baevskiWav2vec20Framework2020] among many others. This can easily be achieved using FFmpeg^[https://ffmpeg.org/]. In the case of QT30, first audio had to be extracted from the video, and collapsed into a mono track before it could be downsampled, this was also easily achieved with FFmpeg.
 
-Next, start and end times for each locution in the argument graph need to be found, to allow the audio to be split per-locution (and therefore per node). This can be achieved using Connectionist Temporal Classification (CTC) [@gravesConnectionistTemporalClassification2006] as exposed by PyTorch's forced alignment api^[https://pytorch.org/audio/]. CTC allows a model to classify a the data at a certain timestep into one of several categories (in this case each letter) considering the data at surrounding timesteps. This then provides the probability distribution across a set of tokens, for each timestep (known as a frame). For a forced alignment task, these tokens are typically each letter of the alphabet and a blank token. The blank token is used for frames which cannot be classified as any other token (e.g. silence).
+Next, start and end times for each locution in the argument graph need to be found, to allow the audio to be split per-locution (and therefore per node). This can be achieved using Connectionist Temporal Classification (CTC) [@gravesConnectionistTemporalClassification2006] as exposed by PyTorch's forced alignment api^[https://pytorch.org/audio/]. CTC allows a model to classify the data in a certain timestep into one of several categories (in this case each letter) considering the data in surrounding timesteps. This then provides the probability distribution across a set of tokens, for each timestep (known as a frame). For a forced alignment task, these tokens are typically each letter of the alphabet and a blank token. The blank token is used for frames which cannot be classified as any other token (e.g. silence).
 
 \begin{figure}[h]
 \centering
@@ -84,7 +84,7 @@ At this point, we have start and end frame-numbers for each token, and based on 
 
 #### Implementation
 
-Initially the forced alignment of the argumentative discourse was achieved by aligning each word in the complete transcript of the episode, producing start and end times for each word. A search can then be performed through this data to find the required locution. While this technique initially produced promising results, it was not robust enough to allow for errors in the transcripts or the crosstalk common in debates. This problem can be seen in the fact that the trellis matrix only allows for a single token to appear in each timeframe, which is trivially not applicable to the real world in an argumentative context where a lot of crosstalk (multiple speakers talking over each other) exists.
+Initially the forced alignment of the argumentative discourse was achieved by aligning each word in the complete transcript of the episode, producing start and end times for each word. A search can then be performed through these data to find the required locution. While this technique initially produced promising results, it was not robust enough to allow for errors in the transcripts or the crosstalk common in debates. This problem can be seen in the fact that the trellis matrix only allows for a single token to appear in each timeframe, which is trivially not applicable to the real world in an argumentative context where a lot of crosstalk (multiple speakers talking over each other) exists.
 
 To solve this problem, the PyTorch forced alignment API is able to take wildcard tokens as input, therefore, each locution can be searched for individually. To achieve this, the partial transcript used as input to the forced aligner took the following form: `* {locution} *`.
 
@@ -102,7 +102,7 @@ Figure \ref{fig:complete-confidence} shows the distribution of confidence scores
 
 In order to further analyse the performance of this system, locutions were selected at random and qualitatively analysed. Throughout this process, all locutions appeared correct, however, it was very challenging to manually determine the accuracy of the system on locutions with confidence scores $<0.2$ due to high amounts of crosstalk or other acoustic artefacts. This shows that this method of aligning locutions with their corresponding audio is accurate for the purposes of this project, as long as the confidence scores are taken into account. However, these confidence scores should not be mistaken for a 'probability of being correct'.
 
-The distribution of lengths for each audio clip was also analysed in order to ensure the models are being provided with enough data. The primary statistics are shown in Table \ref{tbl:audio-complete}. This data shows that the majority of locutions are shorter than 8 seconds (approximately 120,000 samples at the sampling rate of 16kHz). In total, across both corpora, there is over 24 hours of argumentative audio, out of over 36 hours of total audio processed. The relevant data for the specific corpora are detailed in the relevant section.
+The distribution of lengths for each audio clip was also analysed in order to ensure the models are being provided with enough data. The primary statistics are shown in Table \ref{tbl:audio-complete}. These data shows that the majority of locutions are shorter than 8 seconds (approximately 120,000 samples at the sampling rate of 16kHz). In total, across both corpora, there is over 24 hours of argumentative audio, out of over 36 hours of total audio processed. The relevant data for the specific corpora are detailed in the relevant section.
 
 \begin{table}[h]
 \centering
@@ -147,13 +147,13 @@ It has also been shown that how unrelated node pairs are sampled is very relevan
 
 ## QT30
 
-The QT30 argument corpus [@hautli-janiszQT30CorpusArgument2022] contains transcripts and argument annotations for 30 episodes of the BBC's Question Time, a series of televised topical debates across the United Kingdom. All episodes aired in 2020 and 2021. The corpus is split into 30 subcorpora, each spanning a single episode. This creates a large corpus with almost 20k locutions. What follows is an analysis of the corpus and how audio data was added.
+The QT30 argument corpus [@hautli-janiszQT30CorpusArgument2022] contains transcripts and argument annotations for 30 episodes of the BBC's Question Time, a series of televised topical debates across the United Kingdom. All episodes aired in 2020 and 2021. The corpus is split into 30 subcorpora, each spanning a single episode. This creates a large corpus with almost 20k locutions. What follows is an analysis of the corpus and how audio data were added.
 
 Table \ref{tbl:qt-rel} shows the distribution of each type of relation across QT30. Inference and Rephrase relations make up a total of $91.5\%$ of the dataset, with Conflict relations being significantly less common, only making up $8.5\%$ of the dataset. It is obvious that this is an unbalanced dataset, which will have to be considered during training.
 
 \begin{table}[h]
 \centering
-\caption{Disribution of propositional relations in QT30. \label{tbl:qt-rel}}
+\caption{Distribution of propositional relations in QT30. \label{tbl:qt-rel}}
 \begin{tabular}{|l|ll|}
 \hline
 Relation Type & Count & Proportion (\%) \\ \hline

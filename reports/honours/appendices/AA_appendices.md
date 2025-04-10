@@ -63,7 +63,6 @@ W         & 0.75 & 0.15   \\ \hline
 \end{tabular}
 \end{table}
 
-\appendix
 # Results {#app:results}
 
 ## In-Domain {#app:res-id}

@@ -30,13 +30,13 @@ In order to evaluate the different methods to sample unrelated arguments as desc
 
 ## In-Domain {#sec:res-id}
 
-Results are reported for both the 3-class problem (considering support, attack and no relation) and the 4-class problem (considering RA, CA, MA and NO). First results are considered when evaluating in-domain, i.e. on the test set of the QT30-MM dataset. Only macro-f1 scores are reported here, precision and recall scores are also reported in Appendix @app:res-id.
+Results are reported for both the 3-class problem (considering support, attack and no relation) and the 4-class problem (considering RA, CA, MA and NO). First results are considered when evaluating in-domain, i.e. on the test set of the QT30-MM dataset. Only macro-f1 scores are reported here, precision and recall scores are also reported in Appendix @app:results.
 
 ### The 4-Class Problem {#sec:id-4class}
 
 Table \ref{tbl:results-early-4class} shows the macro-f1 scores of each model using RoBERTa-base as the text encoder and Wav2Vec2-base as the audio encoder. All that is shown are the results for models performing early sequence fusion across different NO-sampling strategies. In the 4-class problem it does not seem that the addition of acoustic features makes much if any difference to the performance of the model on the ARI task. This result has also been found by others [@mestreMArgMultimodalArgument2021].
 
-In some runs, the audio-only models do not learn above the performance of the random baseline, it is unclear why this occurs but it appears to be random. Comparing the NO-sampling strategies there does not seem to make an appreciable difference when tested on SCS. Because SCS is considered a much more challenging task [@ruiz-dolzLookingUnseenEffective2025] it would not be expected that models trained on LCS or US would perform nearly as well as those trained on SCS, however, this does not seem to be the case. The result of this experiment implies that regardless of the sampling strategy the model is able to acquire the same knowledge and would likely perform similarly in a real-world setting, it is simply that SCS evaluations are harder than US evaluations which in turn are harder than LCS evaluations.
+In some runs, the audio only models do not learn above the performance of the random baseline, it is unclear why this occurs but it appears to be random. Comparing the NO-sampling strategies there does not seem to make an appreciable difference when tested on SCS. Because SCS is considered a much more challenging task [@ruiz-dolzLookingUnseenEffective2025] it would not be expected that models trained on LCS or US would perform nearly as well as those trained on SCS, however, this does not seem to be the case. The result of this experiment implies that regardless of the sampling strategy the model is able to acquire the same knowledge and would likely perform similarly in a real-world setting, it is simply that SCS evaluations are harder than US evaluations which in turn are harder than LCS evaluations.
 
 \begin{table}[h]
 \centering
@@ -44,8 +44,8 @@ In some runs, the audio-only models do not learn above the performance of the ra
 \begin{tabular}{|l|lll|}
 \hline
 Model         & SCS          & LCS          & US          \\ \hline
-Text-Only     & \textbf{.58} & \textbf{.59} & \textbf{.59} \\
-Audio-Only    & .43          & .41          & .20          \\ \hline
+Text Only     & \textbf{.58} & \textbf{.59} & \textbf{.59} \\
+Audio Only    & .43          & .41          & .20          \\ \hline
 Concatenation & \textbf{.58} & .57          & .58          \\
 Product       & .56          & .57          & .58          \\
 CA Text       & .57          & .46          & .57          \\
@@ -55,7 +55,7 @@ Majority      & .14          & .14          & .14          \\ \hline
 \end{tabular}
 \end{table}
 
-The different sequence fusion techniques are also compared in Table \ref{tbl:results-seq-4class}. Here it can be seen that early sequence fusion techniques outperform late fusion techniques by approximately 50% for both text-only and audio-only with concatenation showing greater improvement at approximately 60%. This increase in performance is likely attributed to the fact that when the sequences are fused before the attention mechanisms are applied the model is able to make the long-range dependencies across sequences. This comes in contrast to the fact that the model is unable to make any dependencies cross-sequence when they are fused after the attention mechanisms are applied.
+The different sequence fusion techniques are also compared in Table \ref{tbl:results-seq-4class}. Here it can be seen that early sequence fusion techniques outperform late fusion techniques by approximately 50% for both text only and audio only with concatenation showing greater improvement at approximately 60%. This increase in performance is likely attributed to the fact that when the sequences are fused before the attention mechanisms are applied the model is able to make the long-range dependencies across sequences. This comes in contrast to the fact that the model is unable to make any dependencies cross-sequence when they are fused after the attention mechanisms are applied.
 
 \begin{table}[h]
 \centering
@@ -63,19 +63,19 @@ The different sequence fusion techniques are also compared in Table \ref{tbl:res
 \begin{tabular}{|l|ll|}
 \hline
 Model         & Early       & Late      \\ \hline
-Text-Only     & .58         & .36       \\
-Audio-Only    & .43         & .28       \\
+Text Only     & .58         & .36       \\
+Audio Only    & .43         & .28       \\
 Concatenation & .58         & .38       \\ \hline
 Random        & \multicolumn{2}{c|}{.22} \\
 Majority      & \multicolumn{2}{c|}{.14} \\ \hline
 \end{tabular}
 \end{table}
 
-What follows is a more in-depth discussion of the results with the hope that it will yield some understanding of the models' limitations and how they could be improved. In order to do this the Text-Only model trained on SCS is explored in detail, however, the conclusions were found to hold on other models. A good place to begin here is by analysing the class F1 distribution, here F1 scores are reported for each of the four classes (NO, RA, CA and MA). As can be seen in Table \ref{tbl:class-f1-4class} the model performs significantly worse when shown a conflict relation as opposed to the other possible classes. It is possible that this is due to the significant class imbalance present in almost all ARI datasets as discussed in Section @sec:datasets.
+What follows is a more in-depth discussion of the results with the hope that it will yield some understanding of the models' limitations and how they could be improved. In order to do this the text only model trained on SCS is explored in detail, however, the conclusions were found to hold on other models. A good place to begin here is by analysing the class F1 distribution, here F1 scores are reported for each of the four classes (NO, RA, CA and MA). As can be seen in Table \ref{tbl:class-f1-4class} the model performs significantly worse when shown a conflict relation as opposed to the other possible classes. It is possible that this is due to the significant class imbalance present in almost all ARI datasets as discussed in Section @sec:datasets.
 
 \begin{table}[h]
 \centering
-\caption{Class F1 distribution for text-only SCS model.\label{tbl:class-f1-4class}}
+\caption{Class F1 distribution for text only SCS model.\label{tbl:class-f1-4class}}
 \begin{tabular}{|llll|}
 \hline
 NO & RA & CA & MA              \\ \hline
@@ -88,12 +88,12 @@ A further analysis can be conducted by looking at the confusion matrix generated
 \begin{figure}[h]
 \centering
 \includegraphics[width=8cm]{text-only-conf-mat-4class}
-\caption{Confusion matrix showing true and predicted labels for the text-only SCS model.\label{fig:text-only-conf-mat-4class}}
+\caption{Confusion matrix showing true and predicted labels for the text only SCS model.\label{fig:text-only-conf-mat-4class}}
 \end{figure}
 
 ### The 3-Class Problem {#sec:id-3class}
 
-Table \ref{tbl:results-early-3class} shows the macro-f1 scores across each NO-sampling strategy for the 3-class problem using RoBERTa-base as the text encoder and Wav2Vec2-base as the audio encoder. Similarly to the 4-class problem, the addition of acoustic features to not seem to make an appreciable difference to the performance of the model. However, it is still useful to discuss the results in more detail, again using the text-only model trained on SCS.
+Table \ref{tbl:results-early-3class} shows the macro-f1 scores across each NO-sampling strategy for the 3-class problem using RoBERTa-base as the text encoder and Wav2Vec2-base as the audio encoder. Similarly to the 4-class problem, the addition of acoustic features to not seem to make an appreciable difference to the performance of the model. However, it is still useful to discuss the results in more detail, again using the text only model trained on SCS.
 
 \begin{table}[h]
 \centering
@@ -101,8 +101,8 @@ Table \ref{tbl:results-early-3class} shows the macro-f1 scores across each NO-sa
 \begin{tabular}{|l|lll|}
 \hline
 Model         & SCS          & LCS          & US           \\ \hline
-Text-Only     & \textbf{.62} & .59          & .61          \\
-Audio-Only    & .21          & .54          & .22          \\ \hline
+Text Only     & \textbf{.62} & .59          & .61          \\
+Audio Only    & .21          & .54          & .22          \\ \hline
 Concatenation & .61          & .61          & .60          \\
 Product       & .58          & .61          & .62          \\
 CA Text       & .53          & .53          & .52          \\
@@ -112,7 +112,7 @@ Majority      & .22          & .22          & .22          \\ \hline
 \end{tabular}
 \end{table}
 
-Table \ref{tbl:results-seq-3class} shows the results when considering the different sequence fusion techniques. It can be seen that early fusion techniques significantly outperform late sequence fusion. Similarly to the 4-class US run, the early audio-only model was not able to learn during this run. For both the text only and multimodal models, early fusion improves upon late fusion by approximately 44%.
+Table \ref{tbl:results-seq-3class} shows the results when considering the different sequence fusion techniques. It can be seen that early fusion techniques significantly outperform late sequence fusion. Similarly to the 4-class US run, the early audio only model was not able to learn during this run. For both the text only and multimodal models, early fusion improves upon late fusion by approximately 44%.
 
 \begin{table}[h]
 \centering
@@ -120,8 +120,8 @@ Table \ref{tbl:results-seq-3class} shows the results when considering the differ
 \begin{tabular}{|l|ll|}
 \hline
 Model         & Early       & Late      \\ \hline
-Text-Only     & .62         & .43    \\
-Audio-Only    & .21         & .33    \\
+Text Only     & .62         & .43    \\
+Audio Only    & .21         & .33    \\
 Concatenation & .61         & .43    \\ \hline
 Random        & \multicolumn{2}{c|}{.23} \\
 Majority      & \multicolumn{2}{c|}{.15} \\ \hline
@@ -132,7 +132,7 @@ What follows is a more in-depth analysis of the 3-class in-domain results. The c
 
 \begin{table}[h]
 \centering
-\caption{Class F1 distribution for text-only SCS model on test split.\label{tbl:class-f1-3class}}
+\caption{Class F1 distribution for text only SCS model on test split.\label{tbl:class-f1-3class}}
 \begin{tabular}{|lll|}
 \hline
 None & Support & Attack              \\ \hline
@@ -145,12 +145,12 @@ The confusion matrix for the 3-class problem, as shown in Figure \ref{fig:text-o
 \begin{figure}[h]
 \centering
 \includegraphics[width=8cm]{text-only-conf-mat-3class}
-\caption{Confusion matrix showing true and predicted labels for the text-only SCS model.\label{fig:text-only-conf-mat-3class}}
+\caption{Confusion matrix showing true and predicted labels for the text only SCS model.\label{fig:text-only-conf-mat-3class}}
 \end{figure}
 
 ## Cross-Domain {#sec:res-cd}
 
-In this section the results presented in Section @sec:res-id are extended across the Moral Maze subcorpora. Results here are presented across each subcorpus and the arithmetic mean calculated and also reported. The goal of this section is to analyse how well the models and techniques are able to generalise into different topics and domains. Similar to the In-Domain results, first the 4-class problem is discussed and then its 3-class equivalent. Only the Macro-F1 scores are reported here with precision and recall scores added in Appendix @app:res-cd.
+In this section the results presented in Section @sec:res-id are extended across the Moral Maze subcorpora. Results here are presented across each subcorpus and the arithmetic mean calculated and also reported. The goal of this section is to analyse how well the models and techniques are able to generalise into different topics and domains. Similar to the In-Domain results, first the 4-class problem is discussed and then its 3-class equivalent. Only the Macro-F1 scores are reported here with precision and recall scores added in Appendix @app:results.
 
 ### The 4-Class Problem {#sec:cd-4class}
 
@@ -162,8 +162,8 @@ Table \ref{tbl:cross-4-SCS} provides a cross-domain evaluation of the different 
 \begin{tabular}{|l|lll|}
 \hline
 Model         & SCS          & LCS          & US           \\ \hline
-Text-Only     & .46          & \textbf{.46} & \textbf{.46}          \\
-Audio-Only    & .37          & .36          & .22          \\ \hline
+Text Only     & .46          & \textbf{.46} & \textbf{.46}          \\
+Audio Only    & .37          & .36          & .22          \\ \hline
 Concatenation & .45          & .43          & .45          \\
 Product       & .45          & .44          & \textbf{.46}          \\
 CA Text       & .43          & .32          & .41          \\
@@ -179,8 +179,8 @@ Majority      & .15          & .15          & .15          \\ \hline
 \begin{tabular}{|l|ll|}
 \hline
 Model         & Early       & Late      \\ \hline
-Text-Only     & .46         & .30       \\
-Audio-Only    & .37         & .28       \\
+Text Only     & .46         & .30       \\
+Audio Only    & .37         & .28       \\
 Concatenation & .45         & .30       \\ \hline
 Random        & \multicolumn{2}{c|}{.23} \\
 Majority      & \multicolumn{2}{c|}{.15} \\ \hline
@@ -193,7 +193,7 @@ Majority      & \multicolumn{2}{c|}{.15} \\ \hline
 \begin{tabular}{|l|llll|}
 \hline
 Model     & NO & RA & CA & MA              \\ \hline
-Text-Only & .67         & .60         & .41         & .065 \\
+Text Only & .67         & .60         & .41         & .065 \\
 CA Audio  & .65         & .64         & .41         & .095 \\ \hline
 \end{tabular}
 \end{table}
@@ -204,8 +204,8 @@ CA Audio  & .65         & .64         & .41         & .095 \\ \hline
 \begin{tabular}{|l|llllllll|l|}
 \hline
 Model         & B            & E            & M            & P            & S            & G            & H            & W            & Mean \\ \hline
-Text-Only     & .44          & .46          & \textbf{.48} & .42          & .43          & .50          & \textbf{.51} & .41          & .46  \\
-Audio-Only    & .34          & .37          & .39          & .38          & .33          & .38          & .40          & .37          & .37 \\ \hline
+Text Only     & .44          & .46          & \textbf{.48} & .42          & .43          & .50          & \textbf{.51} & .41          & .46  \\
+Audio Only    & .34          & .37          & .39          & .38          & .33          & .38          & .40          & .37          & .37 \\ \hline
 Concatenation & .43          & .43          & .45          & \textbf{.45} & .45          & .49          & .45          & .43          & .45  \\
 Product       & .41          & .44          & .42          & .42          & \textbf{.46} & \textbf{.52} & .46          & .43          & .45 \\
 CA Text       & .40          & .44          & .44          & .40          & .42          & .49          & .43          & .44          & .43  \\
@@ -221,7 +221,7 @@ Table \ref{tbl:results-cd-4class-sampling} can be used to compare the different 
 
 The class F1 distribution can be found in Table \ref{tbl:class-f1-4class}. Similarly to the in-domain results, the model is very able to predict unrelated pairs and pairs connected by an inference, and the score for pairs connected by a conflict are similar. The major difference in the class distribution is the inability of the model to accurately predict rephrases, it is possible that this is the result of an increase in domain specific knowledge and terminology necessary to predict these rephrases but these data are in no way conclusive in that respect.
 
-Figures \ref{fig:res-cd-text-banking} and \ref{fig:res-cd-ca-banking} show the confusion matrices for both the text only model and the CA audio model when trained on SCS and evaluated on the Banking subcorpus. While the matrices are generally very similar, there are some notable differences that show as a trend across all subcorpora. Firstly the crossmodal attention model is better able to distinguish the rephrases. The text only model seems to be more likely to predict MA for true CA or RA samples. The other notable distinction between the two models' performance is that the text only model is more likely to confuse conflict-labelled pairs as being unrelated, as opposed to the crossmodal attention model which is more likely to predict the label as an inference in all cases. Similarly to the in-domain results, there was no resampling of training data that could be found to change the F1 distribution across classes.
+Figures \ref{fig:res-cd-text-banking} and \ref{fig:res-cd-ca-banking} show the confusion matrices for both the text only model and the CA audio model when trained on SCS and evaluated on the Banking subcorpus. While the matrices are generally very similar, there are some notable differences that show as a trend across all subcorpora. Firstly the crossmodal attention model is better able to distinguish the rephrases. The text only model seems to be more likely to predict MA for true CA or RA samples. The other notable distinction between the two models' performance is that the text only model is more likely to confuse conflict-labelled pairs as being unrelated, as opposed to the crossmodal attention model which is more likely to predict the label as an inference in all cases. Similarly to the in-domain results, there was no resampling of the training data that could be found to change the F1 distribution across classes.
 
 \begin{figure}[H]
 \centering
@@ -242,8 +242,8 @@ Figures \ref{fig:res-cd-text-banking} and \ref{fig:res-cd-ca-banking} show the c
 \begin{tabular}{|l|llllllll|l|}
 \hline
 Model         & B            & E            & M            & P            & S            & G            & H            & W            & Mean  \\ \hline
-Text-Only     & .54          & .47          & .50          & \textbf{.50} & .58          & .55          & .63          & .51          & \textbf{.54} \\
-Audio-Only    & .21          & .20          & .22          & .21          & .20          & .21          & .22          & .21          & .21           \\ \hline
+Text Only     & .54          & .47          & .50          & \textbf{.50} & .58          & .55          & .63          & .51          & \textbf{.54} \\
+Audio Only    & .21          & .20          & .22          & .21          & .20          & .21          & .22          & .21          & .21           \\ \hline
 Concatenation & .58          & \textbf{.49} & .47          & \textbf{.50} & .57          & \textbf{.57} & .59          & .49          & \textbf{.54} \\
 Product       & .51          & .45          & .44          & .47          & .53          & .54          & \textbf{.64} & .47          & .51          \\
 CA Text       & .43          & .40          & .43          & .41          & .44          & .46          & .47          & .44          & .44          \\
@@ -257,7 +257,7 @@ Majority      & .21          & .21          & .22          & .21          & .20 
 
 Next, the data from the 3-class problem is extended across different domains. The data can be seen in Table \ref{tbl:cross-3-SCS}. Generally the results are similar to the 4-class problem with a similar drop in macro-F1 scores from the in-domain results. Although the 3-class problem is slightly easier than the 4-class problem, the drop in performance is still roughly similar.
 
-Table \ref{tbl:results-seq-3class-cd} allows a comparison between early and late sequence fusion methods on the 3-class problem. Here for both the text-only and multimodal approaches early fusion improves performance by around 40% whereas the early audio only model did not learn effectively. It should be noted that although generally achieving lower performance, the late fusion models were always able to learn when only trained on audio data.
+Table \ref{tbl:results-seq-3class-cd} allows a comparison between early and late sequence fusion methods on the 3-class problem. Here for both the text only and multimodal approaches early fusion improves performance by around 40% whereas the early audio only model did not learn effectively. It should be noted that although generally achieving lower performance, the late fusion models were always able to learn when only trained on audio data.
 
 \begin{table}[H]
 \centering
@@ -265,8 +265,8 @@ Table \ref{tbl:results-seq-3class-cd} allows a comparison between early and late
 \begin{tabular}{|l|ll|}
 \hline
 Model         & Early       & Late      \\ \hline
-Text-Only     & .54         & .38    \\
-Audio-Only    & .21         & .33    \\
+Text Only     & .54         & .38    \\
+Audio Only    & .21         & .33    \\
 Concatenation & .54         & .40    \\ \hline
 Random        & \multicolumn{2}{c|}{.23} \\
 Majority      & \multicolumn{2}{c|}{.15} \\ \hline
@@ -281,7 +281,7 @@ What follows is another discussion regarding the detailed results of the CA Audi
 \begin{tabular}{|l|llll|}
 \hline
 Model     & None & Support & \multicolumn{1}{l|}{Attack} \\ \hline
-Text-Only & .66           & .72              & \multicolumn{1}{l|}{.26}         \\
+Text Only & .66           & .72              & \multicolumn{1}{l|}{.26}         \\
 CA Audio  & .58           & .69              & \multicolumn{1}{l|}{.29}         \\ \hline
 \end{tabular}
 \end{table}
