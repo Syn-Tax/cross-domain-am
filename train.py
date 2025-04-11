@@ -24,7 +24,7 @@ device = accelerator.device
 
 
 # data parameters
-ID_DATA_DIR = "data/Question Time"
+ID_DATA_DIR = "data/Moral Maze/Welfare"
 CD_DIRS = [
     "data/Moral Maze/Banking",
     "data/Moral Maze/Empire",

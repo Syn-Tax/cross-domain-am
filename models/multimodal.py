@@ -376,6 +376,8 @@ class MultimodalEarlyLateModel(nn.Module):
 class CrossModalAttention(nn.Module):
     def __init__(self, query_dim, kv_dim, hidden_dim):
         super(CrossModalAttention, self).__init__()
+
+        # define query, key and value projection layers
         self.query_proj = nn.Linear(query_dim, hidden_dim)
         self.key_proj = nn.Linear(kv_dim, hidden_dim)
         self.value_proj = nn.Linear(kv_dim, hidden_dim)

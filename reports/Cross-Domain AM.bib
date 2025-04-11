@@ -1,3 +1,18 @@
+@inproceedings{al-khatibCrossDomainMiningArgumentative2016,
+  title = {Cross-{{Domain Mining}} of {{Argumentative Text}} through {{Distant Supervision}}},
+  booktitle = {Proceedings of the 2016 {{Conference}} of the {{North American Chapter}} of the {{Association}} for {{Computational Linguistics}}: {{Human Language Technologies}}},
+  author = {{Al-Khatib}, Khalid and Wachsmuth, Henning and Hagen, Matthias and K{\"o}hler, Jonas and Stein, Benno},
+  editor = {Knight, Kevin and Nenkova, Ani and Rambow, Owen},
+  year = {2016},
+  month = jun,
+  pages = {1395--1404},
+  publisher = {Association for Computational Linguistics},
+  address = {San Diego, California},
+  doi = {10.18653/v1/N16-1165},
+  urldate = {2025-02-21},
+  file = {C:\Users\twoca\Zotero\storage\GJ5PD64C\Al-Khatib et al. - 2016 - Cross-Domain Mining of Argumentative Text through Distant Supervision.pdf}
+}
+
 @misc{baevskiWav2vec20Framework2020,
   title = {Wav2vec 2.0: {{A Framework}} for {{Self-Supervised Learning}} of {{Speech Representations}}},
   shorttitle = {Wav2vec 2.0},
@@ -10,8 +25,33 @@
   urldate = {2024-10-16},
   abstract = {We show for the first time that learning powerful representations from speech audio alone followed by fine-tuning on transcribed speech can outperform the best semi-supervised methods while being conceptually simpler. wav2vec 2.0 masks the speech input in the latent space and solves a contrastive task defined over a quantization of the latent representations which are jointly learned. Experiments using all labeled data of Librispeech achieve 1.8/3.3 WER on the clean/other test sets. When lowering the amount of labeled data to one hour, wav2vec 2.0 outperforms the previous state of the art on the 100 hour subset while using 100 times less labeled data. Using just ten minutes of labeled data and pre-training on 53k hours of unlabeled data still achieves 4.8/8.2 WER. This demonstrates the feasibility of speech recognition with limited amounts of labeled data.},
   archiveprefix = {arXiv},
-  keywords = {Computer Science - Computation and Language,Computer Science - Machine Learning,Computer Science - Sound,Electrical Engineering and Systems Science - Audio and Speech Processing},
+  keywords = {Audio,NLP},
   file = {C\:\\Users\\twoca\\Zotero\\storage\\Q26TQS78\\Baevski et al. - 2020 - wav2vec 2.0 A Framework for Self-Supervised Learning of Speech Representations.pdf;C\:\\Users\\twoca\\Zotero\\storage\\7C72PL3J\\2006.html}
+}
+
+@article{bexInterchangingArgumentsCarneades,
+  title = {Interchanging Arguments between {{Carneades}} and {{AIF}}},
+  author = {Bex, Floris and Gordon, Thomas and Lawrence, John and Reed, Chris},
+  abstract = {We have implemented a translator that translates Carneades Argument Graphs as specified in the LKIF files of the Carneades editor to a database specification of the Argument Interchange Format and vice versa. In this paper the algorithms for this translation are presented.},
+  langid = {english},
+  file = {C:\Users\twoca\Zotero\storage\T3PTNBV3\Bex et al. - Interchanging arguments between Carneades and AIF.pdf}
+}
+
+@misc{brownLanguageModelsAre2020,
+  title = {Language {{Models}} Are {{Few-Shot Learners}}},
+  author = {Brown, Tom B. and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared and Dhariwal, Prafulla and Neelakantan, Arvind and Shyam, Pranav and Sastry, Girish and Askell, Amanda and Agarwal, Sandhini and {Herbert-Voss}, Ariel and Krueger, Gretchen and Henighan, Tom and Child, Rewon and Ramesh, Aditya and Ziegler, Daniel M. and Wu, Jeffrey and Winter, Clemens and Hesse, Christopher and Chen, Mark and Sigler, Eric and Litwin, Mateusz and Gray, Scott and Chess, Benjamin and Clark, Jack and Berner, Christopher and McCandlish, Sam and Radford, Alec and Sutskever, Ilya and Amodei, Dario},
+  year = {2020},
+  month = jul,
+  number = {arXiv:2005.14165},
+  eprint = {2005.14165},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2005.14165},
+  urldate = {2025-02-21},
+  abstract = {Recent work has demonstrated substantial gains on many NLP tasks and benchmarks by pre-training on a large corpus of text followed by fine-tuning on a specific task. While typically task-agnostic in architecture, this method still requires task-specific fine-tuning datasets of thousands or tens of thousands of examples. By contrast, humans can generally perform a new language task from only a few examples or from simple instructions - something which current NLP systems still largely struggle to do. Here we show that scaling up language models greatly improves task-agnostic, few-shot performance, sometimes even reaching competitiveness with prior state-of-the-art fine-tuning approaches. Specifically, we train GPT-3, an autoregressive language model with 175 billion parameters, 10x more than any previous non-sparse language model, and test its performance in the few-shot setting. For all tasks, GPT-3 is applied without any gradient updates or fine-tuning, with tasks and few-shot demonstrations specified purely via text interaction with the model. GPT-3 achieves strong performance on many NLP datasets, including translation, question-answering, and cloze tasks, as well as several tasks that require on-the-fly reasoning or domain adaptation, such as unscrambling words, using a novel word in a sentence, or performing 3-digit arithmetic. At the same time, we also identify some datasets where GPT-3's few-shot learning still struggles, as well as some datasets where GPT-3 faces methodological issues related to training on large web corpora. Finally, we find that GPT-3 can generate samples of news articles which human evaluators have difficulty distinguishing from articles written by humans. We discuss broader societal impacts of this finding and of GPT-3 in general.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\I3NWPQVC\\Brown et al. - 2020 - Language Models are Few-Shot Learners.pdf;C\:\\Users\\twoca\\Zotero\\storage\\ERM5ZEB5\\2005.html}
 }
 
 @incollection{budzynskaArgumentMiningDialogue2014,
@@ -22,13 +62,14 @@
   pages = {185--196},
   publisher = {IOS Press},
   doi = {10.3233/978-1-61499-436-7-185},
-  urldate = {2025-01-27}
+  urldate = {2025-01-27},
+  keywords = {Argument Mining}
 }
 
 @inproceedings{budzynskaModelProcessingIllocutionary2014,
   title = {A {{Model}} for {{Processing Illocutionary Structures}} and {{Argumentation}} in {{Debates}}},
   booktitle = {Proceedings of the {{Ninth International Conference}} on {{Language Resources}} and {{Evaluation}} ({{LREC}}`14)},
-  author = {Budzynska, Kasia and Janier, Mathilde and Reed, Chris and {Saint-Dizier}, Patrick and Stede, Manfred and Yakorska, Olena},
+  author = {Budzynska, Katarzyna and Janier, Mathilde and Reed, Chris and {Saint-Dizier}, Patrick and Stede, Manfred and Yakorska, Olena},
   editor = {Calzolari, Nicoletta and Choukri, Khalid and Declerck, Thierry and Loftsson, Hrafn and Maegaard, Bente and Mariani, Joseph and Moreno, Asuncion and Odijk, Jan and Piperidis, Stelios},
   year = {2014},
   month = may,
@@ -37,7 +78,107 @@
   address = {Reykjavik, Iceland},
   urldate = {2025-01-27},
   abstract = {In this paper, we briefly present the objectives of Inference Anchoring Theory (IAT) and the formal structure which is proposed for dialogues. Then, we introduce our development corpus, and a computational model designed for the identification of discourse minimal units in the context of argumentation and the illocutionary force associated with each unit. We show the categories of resources which are needed and how they can be reused in different contexts.},
+  keywords = {Argumentation Theory,IAT},
   file = {C:\Users\twoca\Zotero\storage\KJ9NZAB7\Budzynska et al. - 2014 - A Model for Processing Illocutionary Structures and Argumentation in Debates.pdf}
+}
+
+@article{budzynskaTheoreticalFoundationsIllocutionary2016,
+  title = {Theoretical Foundations for Illocutionary Structure Parsing},
+  author = {Budzynska, Katarzyna and Janier, Mathilde and Reed, Chris and {Saint-Dizier}, Patrick},
+  editor = {Grasso, Floriana and Bex, Floris and Green, Nancy},
+  year = {2016},
+  month = jul,
+  journal = {Argument \& Computation},
+  volume = {7},
+  number = {1},
+  pages = {91--108},
+  issn = {1946-2166, 1946-2174},
+  doi = {10.3233/AAC-160005},
+  urldate = {2025-02-21},
+  abstract = {Illocutionary structure in real language use is intricate and complex, and nowhere more so than in argument and debate. Identifying this structure without any theoretical scaffolding is extremely challenging even for humans. New work in Inference Anchoring Theory has provided significant advances in such scaffolding which are helping to allow the analytical challenges of argumentation structure to be tackled. This paper demonstrates how these advances can also pave the way to automated and semi-automated research in understanding the structure of natural debate.},
+  langid = {english},
+  keywords = {Argumentation Theory},
+  file = {C:\Users\twoca\Zotero\storage\JCH9MXQW\Budzynska et al. - 2016 - Theoretical foundations for illocutionary structure parsing.pdf}
+}
+
+@article{cabrioFiveYearsArgument2018,
+  title = {Five {{Years}} of {{Argument Mining}}: A {{Data-driven Analysis}}},
+  shorttitle = {Five {{Years}} of {{Argument Mining}}},
+  author = {Cabrio, Elena and Villata, Serena},
+  year = {2018},
+  pages = {5427--5433},
+  urldate = {2025-02-21},
+  abstract = {Electronic proceedings of IJCAI 2018},
+  file = {C:\Users\twoca\Zotero\storage\8LSHGQ4G\766.html}
+}
+
+@inproceedings{cabrioFiveYearsArgument2018a,
+  title = {Five {{Years}} of {{Argument Mining}}: A {{Data-driven Analysis}}},
+  shorttitle = {Five {{Years}} of {{Argument Mining}}},
+  booktitle = {Proceedings of the {{Twenty-Seventh International Joint Conference}} on {{Artificial Intelligence}}},
+  author = {Cabrio, Elena and Villata, Serena},
+  year = {2018},
+  month = jul,
+  pages = {5427--5433},
+  publisher = {International Joint Conferences on Artificial Intelligence Organization},
+  address = {Stockholm, Sweden},
+  doi = {10.24963/ijcai.2018/766},
+  urldate = {2025-02-28},
+  abstract = {Argument mining is the research area aiming at extracting natural language arguments and their relations from text, with the final goal of providing machine-processable structured data for computational models of argument. This research topic has started to attract the attention of a small community of researchers around 2014, and it is nowadays counted as one of the most promising research areas in Artificial Intelligence in terms of growing of the community, funded projects, and involvement of companies. In this paper, we present the argument mining tasks, and we discuss the obtained results in the area from a data-driven perspective. An open discussion highlights the main weaknesses suffered by the existing work in the literature, and proposes open challenges to be faced in the future.},
+  isbn = {978-0-9992411-2-7},
+  langid = {english},
+  file = {C:\Users\twoca\Zotero\storage\HLV44S9Z\Cabrio and Villata - 2018 - Five Years of Argument Mining a Data-driven Analysis.pdf}
+}
+
+@article{carlettaAssessingAgreementClassification1996,
+  title = {Assessing {{Agreement}} on {{Classification Tasks}}: {{The Kappa Statistic}}},
+  shorttitle = {Assessing {{Agreement}} on {{Classification Tasks}}},
+  author = {Carletta, Jean},
+  editor = {Hirschberg, Julia},
+  year = {1996},
+  journal = {Computational Linguistics},
+  volume = {22},
+  number = {2},
+  pages = {249--254},
+  publisher = {MIT Press},
+  address = {Cambridge, MA},
+  urldate = {2025-02-21},
+  file = {C:\Users\twoca\Zotero\storage\ZMFVRCAX\Carletta - 1996 - Assessing Agreement on Classification Tasks The Kappa Statistic.pdf}
+}
+
+@inproceedings{carlileGiveMeMore2018,
+  title = {Give {{Me More Feedback}}: {{Annotating Argument Persuasiveness}} and {{Related Attributes}} in {{Student Essays}}},
+  shorttitle = {Give {{Me More Feedback}}},
+  booktitle = {Proceedings of the 56th {{Annual Meeting}} of the {{Association}} for {{Computational Linguistics}} ({{Volume}} 1: {{Long Papers}})},
+  author = {Carlile, Winston and Gurrapadi, Nishant and Ke, Zixuan and Ng, Vincent},
+  editor = {Gurevych, Iryna and Miyao, Yusuke},
+  year = {2018},
+  month = jul,
+  pages = {621--631},
+  publisher = {Association for Computational Linguistics},
+  address = {Melbourne, Australia},
+  doi = {10.18653/v1/P18-1058},
+  urldate = {2025-02-21},
+  abstract = {While argument persuasiveness is one of the most important dimensions of argumentative essay quality, it is relatively little studied in automated essay scoring research. Progress on scoring argument persuasiveness is hindered in part by the scarcity of annotated corpora. We present the first corpus of essays that are simultaneously annotated with argument components, argument persuasiveness scores, and attributes of argument components that impact an argument`s persuasiveness. This corpus could trigger the development of novel computational models concerning argument persuasiveness that provide useful feedback to students on why their arguments are (un)persuasive in addition to how persuasive they are.},
+  file = {C:\Users\twoca\Zotero\storage\C9F5DRCD\Carlile et al. - 2018 - Give Me More Feedback Annotating Argument Persuasiveness and Related Attributes in Student Essays.pdf}
+}
+
+@article{chenWavLMLargeScaleSelfSupervised2022,
+  title = {{{WavLM}}: {{Large-Scale Self-Supervised Pre-Training}} for {{Full Stack Speech Processing}}},
+  shorttitle = {{{WavLM}}},
+  author = {Chen, Sanyuan and Wang, Chengyi and Chen, Zhengyang and Wu, Yu and Liu, Shujie and Chen, Zhuo and Li, Jinyu and Kanda, Naoyuki and Yoshioka, Takuya and Xiao, Xiong and Wu, Jian and Zhou, Long and Ren, Shuo and Qian, Yanmin and Qian, Yao and Wu, Jian and Zeng, Michael and Yu, Xiangzhan and Wei, Furu},
+  year = {2022},
+  month = oct,
+  journal = {IEEE Journal of Selected Topics in Signal Processing},
+  volume = {16},
+  number = {6},
+  pages = {1505--1518},
+  issn = {1941-0484},
+  doi = {10.1109/JSTSP.2022.3188113},
+  urldate = {2025-02-21},
+  abstract = {Self-supervised learning (SSL) achieves great success in speech recognition, while limited exploration has been attempted for other speech processing tasks. As speech signal contains multi-faceted information including speaker identity, paralinguistics, spoken content, etc., learning universal representations for all speech tasks is challenging. To tackle the problem, we propose a new pre-trained model, WavLM, to solve full-stack downstream speech tasks. WavLM jointly learns masked speech prediction and denoising in pre-training. By this means, WavLM does not only keep the speech content modeling capability by the masked speech prediction, but also improves the potential to non-ASR tasks by the speech denoising. In addition, WavLM employs gated relative position bias for the Transformer structure to better capture the sequence ordering of input speech. We also scale up the training dataset from 60 k hours to 94 k hours. WavLM Large achieves state-of-the-art performance on the SUPERB benchmark, and brings significant improvements for various speech processing tasks on their representative benchmarks.},
+  keywords = {Benchmark testing,Convolution,Predictive models,Self-supervised learning,speech pre-training,Speech processing,Speech recognition},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\XHPFZIGR\\Chen et al. - 2022 - WavLM Large-Scale Self-Supervised Pre-Training for Full Stack Speech Processing.pdf;C\:\\Users\\twoca\\Zotero\\storage\\6JQ6MH7K\\9814838.html}
 }
 
 @article{chesnevarArgumentInterchangeFormat2006,
@@ -55,7 +196,98 @@
   abstract = {The theory of argumentation is a rich, interdisciplinary area of research straddling the fields of artificial intelligence, philosophy, communication studies, linguistics, and psychology. In the last years, significant progress has been made in understanding the theoretical properties of different argumentation logics. However, one major barrier to the development and practical deployment of argumentation systems is the lack of a shared, agreed notation or ``interchange format'' for argumentation and arguments. This article describes a draft specification for an Argument Interchange Format (AIF) intended for representation and exchange of data between various argumentation tools and agent-based applications. It represents a consensus `abstract model' established by researchers across fields of argumentation, artificial intelligence and multi-agent systems.1 In its current form, this specification is intended as a starting point for further discussion and elaboration by the community, rather than an attempt at a definitive, all encompassing model. However, to demonstrate proof of concept, a use case scenario is briefly described. Moreover, three concrete realisations or `reifications' of the abstract model are illustrated.},
   copyright = {https://www.cambridge.org/core/terms},
   langid = {english},
+  keywords = {Argumentation Theory},
   file = {C:\Users\twoca\Zotero\storage\CJGBMPVI\Chesñevar et al. - 2006 - Towards an argument interchange format.pdf}
+}
+
+@misc{cocarascuDatasetIndependentSet2020,
+  title = {A {{Dataset Independent Set}} of {{Baselines}} for {{Relation Prediction}} in {{Argument Mining}}},
+  author = {Cocarascu, Oana and Cabrio, Elena and Villata, Serena and Toni, Francesca},
+  year = {2020},
+  month = feb,
+  number = {arXiv:2003.04970},
+  eprint = {2003.04970},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2003.04970},
+  urldate = {2025-02-21},
+  abstract = {Argument Mining is the research area which aims at extracting argument components and predicting argumentative relations (i.e.,support and attack) from text. In particular, numerous approaches have been proposed in the literature to predict the relations holding between the arguments, and application-specific annotated resources were built for this purpose. Despite the fact that these resources have been created to experiment on the same task, the definition of a single relation prediction method to be successfully applied to a significant portion of these datasets is an open research problem in Argument Mining. This means that none of the methods proposed in the literature can be easily ported from one resource to another. In this paper, we address this problem by proposing a set of dataset independent strong neural baselines which obtain homogeneous results on all the datasets proposed in the literature for the argumentative relation prediction task. Thus, our baselines can be employed by the Argument Mining community to compare more effectively how well a method performs on the argumentative relation prediction task.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\EYEZ27V5\\Cocarascu et al. - 2020 - A Dataset Independent Set of Baselines for Relation Prediction in Argument Mining.pdf;C\:\\Users\\twoca\\Zotero\\storage\\NKZA6GCS\\2003.html}
+}
+
+@inproceedings{Comma2014corpora,
+  title = {Comma2014-Corpora},
+  doi = {http://dx.doi.org/10.3233/978-1-61499-436-7-465},
+  urldate = {2025-03-22}
+}
+
+@misc{daiSemisupervisedSequenceLearning2015,
+  title = {Semi-Supervised {{Sequence Learning}}},
+  author = {Dai, Andrew M. and Le, Quoc V.},
+  year = {2015},
+  month = nov,
+  number = {arXiv:1511.01432},
+  eprint = {1511.01432},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.1511.01432},
+  urldate = {2025-02-25},
+  abstract = {We present two approaches that use unlabeled data to improve sequence learning with recurrent networks. The first approach is to predict what comes next in a sequence, which is a conventional language model in natural language processing. The second approach is to use a sequence autoencoder, which reads the input sequence into a vector and predicts the input sequence again. These two algorithms can be used as a "pretraining" step for a later supervised sequence learning algorithm. In other words, the parameters obtained from the unsupervised step can be used as a starting point for other supervised training models. In our experiments, we find that long short term memory recurrent networks after being pretrained with the two approaches are more stable and generalize better. With pretraining, we are able to train long short term memory recurrent networks up to a few hundred timesteps, thereby achieving strong performance in many text classification tasks, such as IMDB, DBpedia and 20 Newsgroups.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language,Computer Science - Machine Learning},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\PLE6BFH9\\Dai and Le - 2015 - Semi-supervised Sequence Learning.pdf;C\:\\Users\\twoca\\Zotero\\storage\\H5NXHW7F\\1511.html}
+}
+
+@inproceedings{daxenbergerWhatEssenceClaim2017,
+  title = {What Is the {{Essence}} of a {{Claim}}? {{Cross-Domain Claim Identification}}},
+  shorttitle = {What Is the {{Essence}} of a {{Claim}}?},
+  booktitle = {Proceedings of the 2017 {{Conference}} on {{Empirical Methods}} in {{Natural}}           {{Language Processing}}},
+  author = {Daxenberger, Johannes and Eger, Steffen and Habernal, Ivan and Stab, Christian and Gurevych, Iryna},
+  year = {2017},
+  eprint = {1704.07203},
+  primaryclass = {cs},
+  pages = {2055--2066},
+  doi = {10.18653/v1/D17-1218},
+  urldate = {2025-02-21},
+  abstract = {Argument mining has become a popular research area in NLP. It typically includes the identification of argumentative components, e.g. claims, as the central component of an argument. We perform a qualitative analysis across six different datasets and show that these appear to conceptualize claims quite differently. To learn about the consequences of such different conceptualizations of claim for practical applications, we carried out extensive experiments using state-of-the-art feature-rich and deep learning systems, to identify claims in a cross-domain fashion. While the divergent perception of claims in different datasets is indeed harmful to cross-domain classification, we show that there are shared properties on the lexical level as well as system configurations that can help to overcome these gaps.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\YSE6C22E\\Daxenberger et al. - 2017 - What is the Essence of a Claim Cross-Domain Claim Identification.pdf;C\:\\Users\\twoca\\Zotero\\storage\\I75IQJCF\\1704.html}
+}
+
+@inproceedings{delbrouckViLMedicFrameworkResearch2022,
+  title = {{{ViLMedic}}: A Framework for Research at the Intersection of Vision and Language in Medical {{AI}}},
+  shorttitle = {{{ViLMedic}}},
+  booktitle = {Proceedings of the 60th {{Annual Meeting}} of the {{Association}} for {{Computational Linguistics}}: {{System Demonstrations}}},
+  author = {Delbrouck, Jean-benoit and Saab, Khaled and Varma, Maya and Eyuboglu, Sabri and Chambon, Pierre and Dunnmon, Jared and Zambrano, Juan and Chaudhari, Akshay and Langlotz, Curtis},
+  editor = {Basile, Valerio and Kozareva, Zornitsa and Stajner, Sanja},
+  year = {2022},
+  month = may,
+  pages = {23--34},
+  publisher = {Association for Computational Linguistics},
+  address = {Dublin, Ireland},
+  doi = {10.18653/v1/2022.acl-demo.3},
+  urldate = {2025-02-21},
+  abstract = {There is a growing need to model interactions between data modalities (e.g., vision, language) --- both to improve AI predictions on existing tasks and to enable new applications. In the recent field of multimodal medical AI, integrating multiple modalities has gained widespread popularity as multimodal models have proven to improve performance, robustness, require less training samples and add complementary information. To improve technical reproducibility and transparency for multimodal medical tasks as well as speed up progress across medical AI, we present ViLMedic, a Vision-and-Language medical library. As of 2022, the library contains a dozen reference implementations replicating the state-of-the-art results for problems that range from medical visual question answering and radiology report generation to multimodal representation learning on widely adopted medical datasets. In addition, ViLMedic hosts a model-zoo with more than twenty pretrained models for the above tasks designed to be extensible by researchers but also simple for practitioners. Ultimately, we hope our reproducible pipelines can enable clinical translation and create real impact. The library is available at https://github.com/jbdel/vilmedic.},
+  file = {C:\Users\twoca\Zotero\storage\DCXMSTNR\Delbrouck et al. - 2022 - ViLMedic a framework for research at the intersection of vision and language in medical AI.pdf}
+}
+
+@inproceedings{demarneffeStanfordTypedDependencies2008,
+  title = {The {{Stanford}} Typed Dependencies Representation},
+  booktitle = {Coling 2008: {{Proceedings}} of the Workshop on {{Cross-Framework}} and {{Cross-Domain Parser Evaluation}} - {{CrossParser}} '08},
+  author = {De Marneffe, Marie-Catherine and Manning, Christopher D.},
+  year = {2008},
+  pages = {1--8},
+  publisher = {Association for Computational Linguistics},
+  address = {Manchester, United Kingdom},
+  doi = {10.3115/1608858.1608859},
+  urldate = {2025-02-21},
+  abstract = {This paper examines the Stanford typed dependencies representation, which was designed to provide a straightforward description of grammatical relations for any user who could benefit from automatic text understanding. For such purposes, we argue that dependency schemes must follow a simple design and provide semantically contentful information, as well as offer an automatic procedure to extract the relations. We consider the underlying design principles of the Stanford scheme from this perspective, and compare it to the GR and PARC representations. Finally, we address the question of the suitability of the Stanford scheme for parser evaluation.},
+  isbn = {978-1-905593-50-7},
+  langid = {english},
+  file = {C:\Users\twoca\Zotero\storage\NJJHX66Q\De Marneffe and Manning - 2008 - The Stanford typed dependencies representation.pdf}
 }
 
 @misc{devlinBERTPretrainingDeep2019b,
@@ -72,7 +304,7 @@
   urldate = {2025-01-13},
   abstract = {We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5\% (7.7\% point absolute improvement), MultiNLI accuracy to 86.7\% (4.6\% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).},
   archiveprefix = {arXiv},
-  keywords = {Computer Science - Computation and Language},
+  keywords = {NLP},
   file = {C\:\\Users\\twoca\\Zotero\\storage\\AN5I3PLY\\Devlin et al. - 2019 - BERT Pre-training of Deep Bidirectional Transformers for Language Understanding.pdf;C\:\\Users\\twoca\\Zotero\\storage\\M9JU6UCV\\1810.html}
 }
 
@@ -88,7 +320,40 @@
   address = {Berlin, Germany},
   doi = {10.18653/v1/W16-2805},
   urldate = {2024-10-24},
+  keywords = {Argument Mining,Argumentation Theory},
   file = {C:\Users\twoca\Zotero\storage\75JZYJCI\Duthie et al. - 2016 - The CASS Technique for Evaluating the Performance of Argument Mining.pdf}
+}
+
+@inproceedings{egerCrosslingualArgumentationMining2018,
+  title = {Cross-Lingual {{Argumentation Mining}}: {{Machine Translation}} (and a Bit of {{Projection}}) Is {{All You Need}}!},
+  shorttitle = {Cross-Lingual {{Argumentation Mining}}},
+  booktitle = {Proceedings of the 27th {{International Conference}} on {{Computational Linguistics}}},
+  author = {Eger, Steffen and Daxenberger, Johannes and Stab, Christian and Gurevych, Iryna},
+  editor = {Bender, Emily M. and Derczynski, Leon and Isabelle, Pierre},
+  year = {2018},
+  month = aug,
+  pages = {831--844},
+  publisher = {Association for Computational Linguistics},
+  address = {Santa Fe, New Mexico, USA},
+  urldate = {2025-02-21},
+  abstract = {Argumentation mining (AM) requires the identification of complex discourse structures and has lately been applied with success monolingually. In this work, we show that the existing resources are, however, not adequate for assessing cross-lingual AM, due to their heterogeneity or lack of complexity. We therefore create suitable parallel corpora by (human and machine) translating a popular AM dataset consisting of persuasive student essays into German, French, Spanish, and Chinese. We then compare (i) annotation projection and (ii) bilingual word embeddings based direct transfer strategies for cross-lingual AM, finding that the former performs considerably better and almost eliminates the loss from cross-lingual transfer. Moreover, we find that annotation projection works equally well when using either costly human or cheap machine translations. Our code and data are available at http://github.com/UKPLab/coling2018-xling\_argument\_mining.},
+  file = {C:\Users\twoca\Zotero\storage\EEXKCSAP\Eger et al. - 2018 - Cross-lingual Argumentation Mining Machine Translation (and a bit of Projection) is All You Need!.pdf}
+}
+
+@inproceedings{egerNeuralEndtoEndLearning2017,
+  title = {Neural {{End-to-End Learning}} for {{Computational Argumentation Mining}}},
+  booktitle = {Proceedings of the 55th {{Annual Meeting}} of the {{Association}} for {{Computational Linguistics}} ({{Volume}} 1: {{Long Papers}})},
+  author = {Eger, Steffen and Daxenberger, Johannes and Gurevych, Iryna},
+  editor = {Barzilay, Regina and Kan, Min-Yen},
+  year = {2017},
+  month = jul,
+  pages = {11--22},
+  publisher = {Association for Computational Linguistics},
+  address = {Vancouver, Canada},
+  doi = {10.18653/v1/P17-1002},
+  urldate = {2025-02-21},
+  abstract = {We investigate neural techniques for end-to-end computational argumentation mining (AM). We frame AM both as a token-based dependency parsing and as a token-based sequence tagging problem, including a multi-task learning setup. Contrary to models that operate on the argument component level, we find that framing AM as dependency parsing leads to subpar performance results. In contrast, less complex (local) tagging models based on BiLSTMs perform robustly across classification scenarios, being able to catch long-range dependencies inherent to the AM problem. Moreover, we find that jointly learning `natural' subtasks, in a multi-task learning setup, improves performance.},
+  file = {C:\Users\twoca\Zotero\storage\2SACSKR9\Eger et al. - 2017 - Neural End-to-End Learning for Computational Argumentation Mining.pdf}
 }
 
 @inproceedings{gemechuARIESGeneralBenchmark2024,
@@ -105,7 +370,115 @@
   doi = {10.18653/v1/2024.argmining-1.1},
   urldate = {2024-10-14},
   abstract = {Measuring advances in argument mining is one of the main challenges in the area. Different theories of argument, heterogeneous annotations, and a varied set of argumentation domains make it difficult to contextualise and understand the results reported in different work from a general perspective. In this paper, we present ARIES, a general benchmark for Argument Relation Identification aimed at providing with a standard evaluation for argument mining research. ARIES covers the three different language modelling approaches: sequence and token modelling, and sequence-to-sequence-to-sequence alignment, together with the three main Transformer-based model architectures: encoder-only, decoder-only, and encoder-decoder. Furthermore, the benchmark consists of eight different argument mining datasets, covering the most common argumentation domains, and standardised with the same annotation structures. This paper provides a first comprehensive and comparative set of results in argument mining across a broad range of configurations to compare with, both advancing the state-of-the-art, and establishing a standard way to measure future advances in the area. Across varied task setups and architectures, our experiments reveal consistent challenges in cross-dataset evaluation, with notably poor results. Given the models' struggle to acquire transferable skills, the task remains challenging, opening avenues for future research.},
+  keywords = {Argument mining,ARI,Cross-Domain},
   file = {C:\Users\twoca\Zotero\storage\XVMPNCHL\Gemechu et al. - 2024 - ARIES A General Benchmark for Argument Relation Identification.pdf}
+}
+
+@inproceedings{gleizeAreYouConvinced2019,
+  title = {Are {{You Convinced}}? {{Choosing}} the {{More Convincing Evidence}} with a {{Siamese Network}}},
+  shorttitle = {Are {{You Convinced}}?},
+  booktitle = {Proceedings of the 57th {{Annual Meeting}} of the {{Association}} for {{Computational Linguistics}}},
+  author = {Gleize, Martin and Shnarch, Eyal and Choshen, Leshem and Dankin, Lena and Moshkowich, Guy and Aharonov, Ranit and Slonim, Noam},
+  editor = {Korhonen, Anna and Traum, David and M{\`a}rquez, Llu{\'i}s},
+  year = {2019},
+  month = jul,
+  pages = {967--976},
+  publisher = {Association for Computational Linguistics},
+  address = {Florence, Italy},
+  doi = {10.18653/v1/P19-1093},
+  urldate = {2025-02-21},
+  abstract = {With the advancement in argument detection, we suggest to pay more attention to the challenging task of identifying the more convincing arguments. Machines capable of responding and interacting with humans in helpful ways have become ubiquitous. We now expect them to discuss with us the more delicate questions in our world, and they should do so armed with effective arguments. But what makes an argument more persuasive? What will convince you? In this paper, we present a new data set, IBM-EviConv, of pairs of evidence labeled for convincingness, designed to be more challenging than existing alternatives. We also propose a Siamese neural network architecture shown to outperform several baselines on both a prior convincingness data set and our own. Finally, we provide insights into our experimental results and the various kinds of argumentative value our method is capable of detecting.},
+  file = {C:\Users\twoca\Zotero\storage\DSRP29BB\Gleize et al. - 2019 - Are You Convinced Choosing the More Convincing Evidence with a Siamese Network.pdf}
+}
+
+@misc{gorurCanLargeLanguage2024,
+  title = {Can {{Large Language Models}} Perform {{Relation-based Argument Mining}}?},
+  author = {Gorur, Deniz and Rago, Antonio and Toni, Francesca},
+  year = {2024},
+  month = feb,
+  number = {arXiv:2402.11243},
+  eprint = {2402.11243},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2402.11243},
+  urldate = {2025-02-21},
+  abstract = {Argument mining (AM) is the process of automatically extracting arguments, their components and/or relations amongst arguments and components from text. As the number of platforms supporting online debate increases, the need for AM becomes ever more urgent, especially in support of downstream tasks. Relation-based AM (RbAM) is a form of AM focusing on identifying agreement (support) and disagreement (attack) relations amongst arguments. RbAM is a challenging classification task, with existing methods failing to perform satisfactorily. In this paper, we show that general-purpose Large Language Models (LLMs), appropriately primed and prompted, can significantly outperform the best performing (RoBERTa-based) baseline. Specifically, we experiment with two open-source LLMs (Llama-2 and Mistral) with ten datasets.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\E3Y6R36C\\Gorur et al. - 2024 - Can Large Language Models perform Relation-based Argument Mining.pdf;C\:\\Users\\twoca\\Zotero\\storage\\63AEYTBG\\2402.html}
+}
+
+@inproceedings{gravesConnectionistTemporalClassification2006,
+  title = {Connectionist Temporal Classification: Labelling Unsegmented Sequence Data with Recurrent Neural Networks},
+  shorttitle = {Connectionist Temporal Classification},
+  booktitle = {Proceedings of the 23rd International Conference on {{Machine}} Learning  - {{ICML}} '06},
+  author = {Graves, Alex and Fern{\'a}ndez, Santiago and Gomez, Faustino and Schmidhuber, J{\"u}rgen},
+  year = {2006},
+  pages = {369--376},
+  publisher = {ACM Press},
+  address = {Pittsburgh, Pennsylvania},
+  doi = {10.1145/1143844.1143891},
+  urldate = {2025-03-18},
+  isbn = {978-1-59593-383-6},
+  langid = {english},
+  file = {C:\Users\twoca\Zotero\storage\6ITZEDGE\Graves et al. - 2006 - Connectionist temporal classification labelling unsegmented sequence data with recurrent neural net.pdf}
+}
+
+@article{griceLogicConversation1975,
+  title = {{Logic and Conversation}},
+  author = {Grice, H.P},
+  year = {1975},
+  journal = {Syntax and Semantics},
+  volume = {3},
+  pages = {41--58},
+  langid = {xxx},
+  lccn = {80},
+  file = {C:\Users\twoca\Zotero\storage\SH492N6J\Kimball et al. - 1975 - Syntax and semantics.pdf}
+}
+
+@article{habernalArgumentationMiningUserGenerated2017,
+  title = {Argumentation {{Mining}} in {{User-Generated Web Discourse}}},
+  author = {Habernal, Ivan and Gurevych, Iryna},
+  year = {2017},
+  month = apr,
+  journal = {Computational Linguistics},
+  volume = {43},
+  number = {1},
+  pages = {125--179},
+  issn = {0891-2017},
+  doi = {10.1162/COLI_a_00276},
+  urldate = {2025-02-21},
+  abstract = {The goal of argumentation mining, an evolving research field in computational linguistics, is to design methods capable of analyzing people's argumentation. In this article, we go beyond the state of the art in several ways. (i) We deal with actual Web data and take up the challenges given by the variety of registers, multiple domains, and unrestricted noisy user-generated Web discourse. (ii) We bridge the gap between normative argumentation theories and argumentation phenomena encountered in actual data by adapting an argumentation model tested in an extensive annotation study. (iii) We create a new gold standard corpus (90k tokens in 340 documents) and experiment with several machine learning methods to identify argument components. We offer the data, source codes, and annotation guidelines to the community under free licenses. Our findings show that argumentation mining in user-generated Web discourse is a feasible but challenging task.},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\MAF2VSXD\\Habernal and Gurevych - 2017 - Argumentation Mining in User-Generated Web Discourse.pdf;C\:\\Users\\twoca\\Zotero\\storage\\9BBQ9A9U\\Argumentation-Mining-in-User-Generated-Web.html}
+}
+
+@inproceedings{haddadanYesWeCan2019,
+  title = {Yes, We Can! {{Mining Arguments}} in 50 {{Years}} of {{US Presidential Campaign Debates}}},
+  booktitle = {Proceedings of the 57th {{Annual Meeting}} of the {{Association}} for {{Computational Linguistics}}},
+  author = {Haddadan, Shohreh and Cabrio, Elena and Villata, Serena},
+  editor = {Korhonen, Anna and Traum, David and M{\`a}rquez, Llu{\'i}s},
+  year = {2019},
+  month = jul,
+  pages = {4684--4690},
+  publisher = {Association for Computational Linguistics},
+  address = {Florence, Italy},
+  doi = {10.18653/v1/P19-1463},
+  urldate = {2025-02-21},
+  abstract = {Political debates offer a rare opportunity for citizens to compare the candidates' positions on the most controversial topics of the campaign. Thus they represent a natural application scenario for Argument Mining. As existing research lacks solid empirical investigation of the typology of argument components in political debates, we fill this gap by proposing an Argument Mining approach to political debates. We address this task in an empirical manner by annotating 39 political debates from the last 50 years of US presidential campaigns, creating a new corpus of 29k argument components, labeled as premises and claims. We then propose two tasks: (1) identifying the argumentative components in such debates, and (2) classifying them as premises and claims. We show that feature-rich SVM learners and Neural Network architectures outperform standard baselines in Argument Mining over such complex data. We release the new corpus USElecDeb60To16 and the accompanying software under free licenses to the research community.},
+  file = {C:\Users\twoca\Zotero\storage\RVMXAYVY\Haddadan et al. - 2019 - Yes, we can! Mining Arguments in 50 Years of US Presidential Campaign Debates.pdf}
+}
+
+@book{hamblinFallacies1970,
+  title = {Fallacies},
+  author = {Hamblin, Charles Leonard},
+  year = {1970},
+  month = mar,
+  edition = {First Edition},
+  publisher = {Methuen young books},
+  address = {London},
+  abstract = {Hardback book. Looks at fallacies and false reasoning in argument from a Logical point-of-view. 326pp.},
+  isbn = {978-0-416-14570-0},
+  langid = {english}
 }
 
 @inproceedings{hautli-janiszQT30CorpusArgument2022,
@@ -121,6 +494,7 @@
   address = {Marseille, France},
   urldate = {2024-10-21},
   abstract = {Broadcast political debate is a core pillar of democracy: it is the public's easiest access to opinions that shape policies and enables the general public to make informed choices. With QT30, we present the largest corpus of analysed dialogical argumentation ever created (19,842 utterances, 280,000 words) and also the largest corpus of analysed broadcast political debate to date, using 30 episodes of BBC's `Question Time' from 2020 and 2021. Question Time is the prime institution in UK broadcast political debate and features questions from the public on current political issues, which are responded to by a weekly panel of five figures of UK politics and society. QT30 is highly argumentative and combines language of well-versed political rhetoric with direct, often combative, justification-seeking of the general public. QT30 is annotated with Inference Anchoring Theory, a framework well-known in argument mining, which encodes the way arguments and conflicts are created and reacted to in dialogical settings. The resource is freely available at http://corpora.aifdb.org/qt30.},
+  keywords = {Argument Mining,Dataset},
   file = {C:\Users\twoca\Zotero\storage\HGPYQRJR\Hautli-Janisz et al. - 2022 - QT30 A Corpus of Argument and Conflict in Broadcast Debate.pdf}
 }
 
@@ -138,8 +512,107 @@
   urldate = {2025-01-29},
   abstract = {Self-supervised approaches for speech representation learning are challenged by three unique problems: (1) there are multiple sound units in each input utterance, (2) there is no lexicon of input sound units during the pre-training phase, and (3) sound units have variable lengths with no explicit segmentation. To deal with these three problems, we propose the Hidden-Unit BERT (HuBERT) approach for self-supervised speech representation learning, which utilizes an offline clustering step to provide aligned target labels for a BERT-like prediction loss. A key ingredient of our approach is applying the prediction loss over the masked regions only, which forces the model to learn a combined acoustic and language model over the continuous inputs. HuBERT relies primarily on the consistency of the unsupervised clustering step rather than the intrinsic quality of the assigned cluster labels. Starting with a simple k-means teacher of 100 clusters, and using two iterations of clustering, the HuBERT model either matches or improves upon the state-of-the-art wav2vec 2.0 performance on the Librispeech (960h) and Libri-light (60,000h) benchmarks with 10min, 1h, 10h, 100h, and 960h fine-tuning subsets. Using a 1B parameter model, HuBERT shows up to 19\% and 13\% relative WER reduction on the more challenging dev-other and test-other evaluation subsets.},
   archiveprefix = {arXiv},
-  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language,Computer Science - Machine Learning,Electrical Engineering and Systems Science - Audio and Speech Processing},
+  keywords = {Audio,NLP},
   file = {C\:\\Users\\twoca\\Zotero\\storage\\UGXLMT8R\\Hsu et al. - 2021 - HuBERT Self-Supervised Speech Representation Learning by Masked Prediction of Hidden Units.pdf;C\:\\Users\\twoca\\Zotero\\storage\\SH72VBZL\\2106.html}
+}
+
+@incollection{janierSystemDisputeMediation2016,
+  title = {A {{System}} for {{Dispute Mediation}}: {{The Mediation Dialogue Game}}},
+  shorttitle = {A {{System}} for {{Dispute Mediation}}},
+  booktitle = {Computational {{Models}} of {{Argument}}},
+  author = {Janier, Mathilde and Snaith, Mark and Budzynska, Katarzyna and Lawrence, John and Reed, Chris},
+  year = {2016},
+  pages = {351--358},
+  publisher = {IOS Press},
+  doi = {10.3233/978-1-61499-686-6-351},
+  urldate = {2025-02-21},
+  file = {C:\Users\twoca\Zotero\storage\RBT2W57W\Janier et al. - 2016 - A System for Dispute Mediation The Mediation Dialogue Game.pdf}
+}
+
+@inproceedings{junsomboonCombiningOverSamplingUnderSampling2017,
+  title = {Combining {{Over-Sampling}} and {{Under-Sampling Techniques}} for {{Imbalance Dataset}}},
+  booktitle = {Proceedings of the 9th {{International Conference}} on {{Machine Learning}} and {{Computing}}},
+  author = {Junsomboon, Nutthaporn and Phienthrakul, Tanasanee},
+  year = {2017},
+  month = feb,
+  series = {{{ICMLC}} '17},
+  pages = {243--247},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  doi = {10.1145/3055635.3056643},
+  urldate = {2025-02-21},
+  abstract = {An important problem in medical data analysis is imbalance dataset. This problem is a cause of diagnostic mistake. The results of diagnostic affect to life of patients. If a doctor fails in diagnostic of patient who have disease that means he cannot treat patient in timely. However, the problem can be easily solved by adding or removing the data to closely balance for performance of diagnostic in medically. This paper proposed a solution to adjust imbalance dataset by combining Neighbor Cleaning Rule (NCL) and Synthetic Minority Over-Sampling Technique (SMOTE) techniques. The process of work is using NCL technique for removing sample data that are outliers in majority class and SMOTE technique is used for increasing sample data in minority class to closely balance dataset. After that, the balanced medical dataset is classified by Naive Bayes, SMO and KNN algorithm. The experimental results show that the recall rate can be improved from the models that were created from balanced dataset.},
+  isbn = {978-1-4503-4817-1},
+  file = {C:\Users\twoca\Zotero\storage\AWM54DKJ\Junsomboon and Phienthrakul - 2017 - Combining Over-Sampling and Under-Sampling Techniques for Imbalance Dataset.pdf}
+}
+
+@article{keLearningGiveFeedback2018,
+  title = {Learning to {{Give Feedback}}: {{Modeling Attributes Affecting Argument Persuasiveness}} in {{Student Essays}}},
+  shorttitle = {Learning to {{Give Feedback}}},
+  author = {Ke, Zixuan and Carlile, Winston and Gurrapadi, Nishant and Ng, Vincent},
+  year = {2018},
+  pages = {4130--4136},
+  urldate = {2025-02-21},
+  abstract = {Electronic proceedings of IJCAI 2018},
+  file = {C:\Users\twoca\Zotero\storage\PFHENC9B\574.html}
+}
+
+@article{klineMultimodalMachineLearning2022,
+  title = {Multimodal Machine Learning in Precision Health: {{A}} Scoping Review},
+  shorttitle = {Multimodal Machine Learning in Precision Health},
+  author = {Kline, Adrienne and Wang, Hanyin and Li, Yikuan and Dennis, Saya and Hutch, Meghan and Xu, Zhenxing and Wang, Fei and Cheng, Feixiong and Luo, Yuan},
+  year = {2022},
+  month = nov,
+  journal = {NPJ Digital Medicine},
+  volume = {5},
+  pages = {171},
+  issn = {2398-6352},
+  doi = {10.1038/s41746-022-00712-8},
+  urldate = {2025-02-25},
+  abstract = {Machine learning is frequently being leveraged to tackle problems in the health sector including utilization for clinical decision-support. Its use has historically been focused on single modal data. Attempts to improve prediction and mimic the multimodal nature of clinical expert decision-making has been met in the biomedical field of machine learning by fusing disparate data. This review was conducted to summarize the current studies in this field and identify topics ripe for future research. We conducted this review in accordance with the PRISMA extension for Scoping Reviews to characterize multi-modal data fusion in health. Search strings were established and used in databases: PubMed, Google Scholar, and IEEEXplore from 2011 to 2021. A final set of 128 articles were included in the analysis. The most common health areas utilizing multi-modal methods were neurology and oncology. Early fusion was the most common data merging strategy. Notably, there was an improvement in predictive performance when using data fusion. Lacking from the papers were clear clinical deployment strategies, FDA-approval, and analysis of how using multimodal approaches from diverse sub-populations may improve biases and healthcare disparities. These findings provide a summary on multimodal data fusion as applied to health diagnosis/prognosis problems. Few papers compared the outputs of a multimodal approach with a unimodal prediction. However, those that did achieved an average increase of 6.4\% in predictive accuracy. Multi-modal machine learning, while more robust in its estimations over unimodal methods, has drawbacks in its scalability and the time-consuming nature of information concatenation.},
+  pmcid = {PMC9640667},
+  pmid = {36344814},
+  file = {C:\Users\twoca\Zotero\storage\GRWUMMD7\Kline et al. - 2022 - Multimodal machine learning in precision health A scoping review.pdf}
+}
+
+@inproceedings{kotonyaGradualArgumentationEvaluation2019,
+  title = {Gradual {{Argumentation Evaluation}} for {{Stance Aggregation}} in {{Automated Fake News Detection}}},
+  booktitle = {Proceedings of the 6th {{Workshop}} on {{Argument Mining}}},
+  author = {Kotonya, Neema and Toni, Francesca},
+  editor = {Stein, Benno and Wachsmuth, Henning},
+  year = {2019},
+  month = aug,
+  pages = {156--166},
+  publisher = {Association for Computational Linguistics},
+  address = {Florence, Italy},
+  doi = {10.18653/v1/W19-4518},
+  urldate = {2025-04-04},
+  abstract = {Stance detection plays a pivot role in fake news detection. The task involves determining the point of view or stance -- for or against -- a text takes towards a claim. One very important stage in employing stance detection for fake news detection is the aggregation of multiple stance labels from different text sources in order to compute a prediction for the veracity of a claim. Typically, aggregation is treated as a credibility-weighted average of stance predictions. In this work, we take the novel approach of applying, for aggregation, a gradual argumentation semantics to bipolar argumentation frameworks mined using stance detection. Our empirical evaluation shows that our method results in more accurate veracity predictions.},
+  file = {C:\Users\twoca\Zotero\storage\FWHLSHA6\Kotonya and Toni - 2019 - Gradual Argumentation Evaluation for Stance Aggregation in Automated Fake News Detection.pdf}
+}
+
+@incollection{lawrenceAIFdbCorpora2014,
+  title = {{{AIFdb Corpora}}},
+  booktitle = {Frontiers in {{Artificial Intelligence}} and {{Applications}}},
+  author = {Lawrence, John and Reed, Chris},
+  year = {2014},
+  publisher = {IOS Press},
+  doi = {10.3233/978-1-61499-436-7-465},
+  urldate = {2025-03-22},
+  abstract = {This paper introduces AIFdb Corpora, an addition to AIFdb for collecting and presenting sets of AIF argument maps. AIFdb Corpora allows any user to create a corpus and share the contents.},
+  file = {C:\Users\twoca\Zotero\storage\8XRBDKBQ\Lawrence John and Reed Chris - 2014 - AIFdb Corpora.pdf}
+}
+
+@incollection{lawrenceAIFdbInfrastructureArgument2012,
+  title = {{{AIFdb}}: {{Infrastructure}} for the {{Argument Web}}},
+  shorttitle = {{{AIFdb}}},
+  booktitle = {Computational {{Models}} of {{Argument}}},
+  author = {Lawrence, John and Bex, Floris and Reed, Chris and Snaith, Mark},
+  year = {2012},
+  pages = {515--516},
+  publisher = {IOS Press},
+  doi = {10.3233/978-1-61499-111-3-515},
+  urldate = {2025-02-21}
 }
 
 @article{lawrenceArgumentMiningSurvey2020,
@@ -156,7 +629,95 @@
   doi = {10.1162/coli_a_00364},
   urldate = {2024-10-08},
   abstract = {Argument mining is the automatic identification and extraction of the structure of inference and reasoning expressed as arguments presented in natural language. Understanding argumentative structure makes it possible to determine not only what positions people are adopting, but also why they hold the opinions they do, providing valuable insights in domains as diverse as financial market prediction and public relations. This survey explores the techniques that establish the foundations for argument mining, provides a review of recent advances in argument mining techniques, and discusses the challenges faced in automatically extracting a deeper understanding of reasoning expressed in language in general.},
+  keywords = {Argument Mining,Argumentation Theory},
   file = {C\:\\Users\\twoca\\Zotero\\storage\\QGF95NS3\\Lawrence and Reed - 2020 - Argument Mining A Survey.pdf;C\:\\Users\\twoca\\Zotero\\storage\\NQ2J6392\\Argument-Mining-A-Survey.html}
+}
+
+@inproceedings{lenzArgueMapperAssistantInteractive2025,
+  title = {{{ArgueMapper Assistant}}: {{Interactive Argument Mining Using Generative Language Models}}},
+  shorttitle = {{{ArgueMapper Assistant}}},
+  booktitle = {Artificial {{Intelligence XLI}}},
+  author = {Lenz, Mirko and Bergmann, Ralph},
+  editor = {Bramer, Max and Stahl, Frederic},
+  year = {2025},
+  pages = {189--203},
+  publisher = {Springer Nature Switzerland},
+  address = {Cham},
+  doi = {10.1007/978-3-031-77915-2_14},
+  abstract = {Structured arguments are a valuable resource for analyzing and understanding complex topics. However, manual annotation is time-consuming and often not feasible for large datasets, and automated approaches are less accurate. To address this issue, we propose an interactive argument mining system that takes advantage of generative language models to support humans in the creation of argument graphs. We present the open source ArgueMapper Assistant featuring two prompting strategies and evaluate it on a real-world news dataset. The resulting corpus containing 88 argument graphs is publicly available as well. With generative models, the annotation time is reduced by about 20\% while the number of errors is slightly increased (mostly due to missing argumentative units and wrong relation types). A survey provides insights into the usefulness and reliability of the assistant features and shows that participants prefer to use the assistant in the future.},
+  isbn = {978-3-031-77915-2},
+  langid = {english},
+  keywords = {Argument Graphs,Argument Mining,Data Annotation,Interactive Systems,Large Language Models},
+  file = {C:\Users\twoca\Zotero\storage\4WII3A7Z\Lenz and Bergmann - 2025 - ArgueMapper Assistant Interactive Argument Mining Using Generative Language Models.pdf}
+}
+
+@inproceedings{liLAVISOnestopLibrary2023,
+  title = {{{LAVIS}}: {{A One-stop Library}} for {{Language-Vision Intelligence}}},
+  shorttitle = {{{LAVIS}}},
+  booktitle = {Proceedings of the 61st {{Annual Meeting}} of the {{Association}} for {{Computational Linguistics}} ({{Volume}} 3: {{System Demonstrations}})},
+  author = {Li, Dongxu and Li, Junnan and Le, Hung and Wang, Guangsen and Savarese, Silvio and Hoi, Steven C.H.},
+  editor = {Bollegala, Danushka and Huang, Ruihong and Ritter, Alan},
+  year = {2023},
+  month = jul,
+  pages = {31--41},
+  publisher = {Association for Computational Linguistics},
+  address = {Toronto, Canada},
+  doi = {10.18653/v1/2023.acl-demo.3},
+  urldate = {2025-02-21},
+  abstract = {We introduce LAVIS, an open-source deep learning library for LAnguage-VISion research and applications. LAVIS aims to serve as a one-stop comprehensive library that brings recent advancements in the language-vision field accessible for researchers and practitioners, as well as fertilizing future research and development. It features a unified interface to easily access state-of-the-art image-language, video-language models and common datasets. LAVIS supports training, evaluation and benchmarking on a rich variety of tasks, including multimodal classification, retrieval, captioning, visual question answering, dialogue and pre-training. In the meantime, the library is also highly extensible and configurable, facilitating future development and customization. In this technical report, we describe design principles, key components and functionalities of the library, and also present benchmarking results across common language-vision tasks.},
+  file = {C:\Users\twoca\Zotero\storage\3QXJ4E9Q\Li et al. - 2023 - LAVIS A One-stop Library for Language-Vision Intelligence.pdf}
+}
+
+@article{lippiArgumentMiningSpeech2016,
+  title = {Argument {{Mining}} from {{Speech}}: {{Detecting Claims}} in {{Political Debates}}},
+  shorttitle = {Argument {{Mining}} from {{Speech}}},
+  author = {Lippi, Marco and Torroni, Paolo},
+  year = {2016},
+  month = mar,
+  journal = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume = {30},
+  number = {1},
+  issn = {2374-3468},
+  doi = {10.1609/aaai.v30i1.10384},
+  urldate = {2025-04-09},
+  abstract = {The automatic extraction of arguments from text, also known as argument mining, has recently become a hot topic in artificial intelligence. Current research has only focused on linguistic analysis. However, in many domains where communication may be also vocal or visual, paralinguistic features too may contribute to the transmission of the message that arguments intend to convey. For example, in political debates a crucial role is played by speech. The research question we address in this work is whether in such domains one can improve claim detection for argument mining, by employing features from text and speech in combination. To explore this hypothesis, we develop a machine learning classifier and train it on an original dataset based on the 2015 UK political elections debate.},
+  copyright = {Copyright (c)},
+  langid = {english},
+  keywords = {argumentation,Argumentation mining,claim detection,natural language processing,paralinguistic feature analysis,political debate,speech processing},
+  file = {C:\Users\twoca\Zotero\storage\P9MLRWFE\Lippi and Torroni - 2016 - Argument Mining from Speech Detecting Claims in Political Debates.pdf}
+}
+
+@inproceedings{liuImageArgMultimodalTweet2022,
+  title = {{{ImageArg}}: {{A Multi-modal Tweet Dataset}} for {{Image Persuasiveness Mining}}},
+  shorttitle = {{{ImageArg}}},
+  booktitle = {Proceedings of the 9th {{Workshop}} on {{Argument Mining}}},
+  author = {Liu, Zhexiong and Guo, Meiqi and Dai, Yue and Litman, Diane},
+  editor = {Lapesa, Gabriella and Schneider, Jodi and Jo, Yohan and Saha, Sougata},
+  year = {2022},
+  month = oct,
+  pages = {1--18},
+  publisher = {International Conference on Computational Linguistics},
+  address = {Online and in Gyeongju, Republic of Korea},
+  urldate = {2025-02-21},
+  abstract = {The growing interest in developing corpora of persuasive texts has promoted applications in automated systems, e.g., debating and essay scoring systems; however, there is little prior work mining image persuasiveness from an argumentative perspective. To expand persuasiveness mining into a multi-modal realm, we present a multi-modal dataset, ImageArg, consisting of annotations of image persuasiveness in tweets. The annotations are based on a persuasion taxonomy we developed to explore image functionalities and the means of persuasion. We benchmark image persuasiveness tasks on ImageArg using widely-used multi-modal learning methods. The experimental results show that our dataset offers a useful resource for this rich and challenging topic, and there is ample room for modeling improvement.},
+  file = {C:\Users\twoca\Zotero\storage\8XIN8A8J\Liu et al. - 2022 - ImageArg A Multi-modal Tweet Dataset for Image Persuasiveness Mining.pdf}
+}
+
+@inproceedings{liuOverviewImageArg2023First2023,
+  title = {Overview of {{ImageArg-2023}}: {{The First Shared Task}} in {{Multimodal Argument Mining}}},
+  shorttitle = {Overview of {{ImageArg-2023}}},
+  booktitle = {Proceedings of the 10th {{Workshop}} on {{Argument Mining}}},
+  author = {Liu, Zhexiong and Elaraby, Mohamed and Zhong, Yang and Litman, Diane},
+  editor = {Alshomary, Milad and Chen, Chung-Chi and Muresan, Smaranda and Park, Joonsuk and Romberg, Julia},
+  year = {2023},
+  month = dec,
+  pages = {120--132},
+  publisher = {Association for Computational Linguistics},
+  address = {Singapore},
+  doi = {10.18653/v1/2023.argmining-1.12},
+  urldate = {2025-02-21},
+  abstract = {This paper presents an overview of the ImageArg shared task, the first multimodal Argument Mining shared task co-located with the 10th Workshop on Argument Mining at EMNLP 2023. The shared task comprises two classification subtasks - (1) Subtask-A: Argument Stance Classification; (2) Subtask-B: Image Persuasiveness Classification. The former determines the stance of a tweet containing an image and a piece of text toward a controversial topic (e.g., gun control and abortion). The latter determines whether the image makes the tweet text more persuasive. The shared task received 31 submissions for Subtask-A and 21 submissions for Subtask-B from 9 different teams across 6 countries. The top submission in Subtask-A achieved an F1-score of 0.8647 while the best submission in Subtask-B achieved an F1-score of 0.5561.},
+  file = {C:\Users\twoca\Zotero\storage\TSW7AJ6W\Liu et al. - 2023 - Overview of ImageArg-2023 The First Shared Task in Multimodal Argument Mining.pdf}
 }
 
 @misc{liuRoBERTaRobustlyOptimized2019a,
@@ -173,8 +734,43 @@
   urldate = {2025-01-13},
   abstract = {Language model pretraining has led to significant performance gains but careful comparison between different approaches is challenging. Training is computationally expensive, often done on private datasets of different sizes, and, as we will show, hyperparameter choices have significant impact on the final results. We present a replication study of BERT pretraining (Devlin et al., 2019) that carefully measures the impact of many key hyperparameters and training data size. We find that BERT was significantly undertrained, and can match or exceed the performance of every model published after it. Our best model achieves state-of-the-art results on GLUE, RACE and SQuAD. These results highlight the importance of previously overlooked design choices, and raise questions about the source of recently reported improvements. We release our models and code.},
   archiveprefix = {arXiv},
-  keywords = {Computer Science - Computation and Language},
+  keywords = {NLP},
   file = {C\:\\Users\\twoca\\Zotero\\storage\\3ZJ95HYU\\Liu et al. - 2019 - RoBERTa A Robustly Optimized BERT Pretraining Approach.pdf;C\:\\Users\\twoca\\Zotero\\storage\\GECP5ZP7\\1907.html}
+}
+
+@inproceedings{liXmodalerVersatileHighperformance2021,
+  title = {X-Modaler: {{A Versatile}} and {{High-performance Codebase}} for {{Cross-modal Analytics}}},
+  shorttitle = {X-Modaler},
+  booktitle = {Proceedings of the 29th {{ACM International Conference}} on {{Multimedia}}},
+  author = {Li, Yehao and Pan, Yingwei and Chen, Jingwen and Yao, Ting and Mei, Tao},
+  year = {2021},
+  month = oct,
+  series = {{{MM}} '21},
+  pages = {3799--3802},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  doi = {10.1145/3474085.3478331},
+  urldate = {2025-02-21},
+  abstract = {With the rise and development of deep learning over the past decade, there has been a steady momentum of innovation and breakthroughs that convincingly push the state-of-the-art of cross-modal analytics between vision and language in multimedia field. Nevertheless, there has not been an open-source codebase in support of training and deploying numerous neural network models for cross-modal analytics in a unified and modular fashion. In this work, we propose X-modaler --- a versatile and high-performance codebase that encapsulates the state-of-the-art cross-modal analytics into several general-purpose stages (e.g., pre-processing, encoder, cross-modal interaction, decoder, and decode strategy). Each stage is empowered with the functionality that covers a series of modules widely adopted in state-of-the-arts and allows seamless switching in between. This way naturally enables a flexible implementation of state-of-the-art algorithms for image captioning, video captioning, and vision-language pre-training, aiming to facilitate the rapid development of research community. Meanwhile, since the effective modular designs in several stages (e.g., cross-modal interaction) are shared across different vision-language tasks, X-modaler can be simply extended to power startup prototypes for other tasks in cross-modal analytics, including visual question answering, visual commonsense reasoning, and cross-modal retrieval. X-modaler is an Apache-licensed codebase, and its source codes, sample projects and pre-trained models are available on-line: https://github.com/YehLi/xmodaler.},
+  isbn = {978-1-4503-8651-7},
+  file = {C:\Users\twoca\Zotero\storage\S8TW8E7D\Li et al. - 2021 - X-modaler A Versatile and High-performance Codebase for Cross-modal Analytics.pdf}
+}
+
+@misc{loshchilovDecoupledWeightDecay2019a,
+  title = {Decoupled {{Weight Decay Regularization}}},
+  author = {Loshchilov, Ilya and Hutter, Frank},
+  year = {2019},
+  month = jan,
+  number = {arXiv:1711.05101},
+  eprint = {1711.05101},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.1711.05101},
+  urldate = {2025-01-08},
+  abstract = {L\$\_2\$ regularization and weight decay regularization are equivalent for standard stochastic gradient descent (when rescaled by the learning rate), but as we demonstrate this is {\textbackslash}emph\{not\} the case for adaptive gradient algorithms, such as Adam. While common implementations of these algorithms employ L\$\_2\$ regularization (often calling it "weight decay" in what may be misleading due to the inequivalence we expose), we propose a simple modification to recover the original formulation of weight decay regularization by {\textbackslash}emph\{decoupling\} the weight decay from the optimization steps taken w.r.t. the loss function. We provide empirical evidence that our proposed modification (i) decouples the optimal choice of weight decay factor from the setting of the learning rate for both standard SGD and Adam and (ii) substantially improves Adam's generalization performance, allowing it to compete with SGD with momentum on image classification datasets (on which it was previously typically outperformed by the latter). Our proposed decoupled weight decay has already been adopted by many researchers, and the community has implemented it in TensorFlow and PyTorch; the complete source code for our experiments is available at https://github.com/loshchil/AdamW-and-SGDW},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Machine Learning,Computer Science - Neural and Evolutionary Computing,Mathematics - Optimization and Control},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\WH5HHZTX\\Loshchilov and Hutter - 2019 - Decoupled Weight Decay Regularization.pdf;C\:\\Users\\twoca\\Zotero\\storage\\SN8UJRNA\\1711.html}
 }
 
 @inproceedings{manciniMAMKitComprehensiveMultimodal2024,
@@ -191,6 +787,7 @@
   doi = {10.18653/v1/2024.argmining-1.7},
   urldate = {2024-10-14},
   abstract = {Multimodal Argument Mining (MAM) is a recent area of research aiming to extend argument analysis and improve discourse understanding by incorporating multiple modalities. Initial results confirm the importance of paralinguistic cues in this field. However, the research community still lacks a comprehensive platform where results can be easily reproduced, and methods and models can be stored, compared, and tested against a variety of benchmarks. To address these challenges, we propose MAMKit, an open, publicly available, PyTorch toolkit that consolidates datasets and models, providing a standardized platform for experimentation. MAMKit also includes some new baselines, designed to stimulate research on text and audio encoding and fusion for MAM tasks. Our initial results with MAMKit indicate that advancements in MAM require novel annotation processes to encompass auditory cues effectively.},
+  keywords = {Argument Mining,ARI,Multimodal},
   file = {C:\Users\twoca\Zotero\storage\BUVVFAUI\Mancini et al. - 2024 - MAMKit A Comprehensive Multimodal Argument Mining Toolkit.pdf}
 }
 
@@ -210,6 +807,88 @@
   file = {C:\Users\twoca\Zotero\storage\KF8LP66B\Mancini et al. - 2022 - Multimodal Argument Mining A Case Study in Political Debates.pdf}
 }
 
+@inproceedings{manciniMultimodalFallacyClassification2024,
+  title = {Multimodal {{Fallacy Classification}} in {{Political Debates}}},
+  booktitle = {Proceedings of the 18th {{Conference}} of the {{European Chapter}} of the {{Association}} for {{Computational Linguistics}} ({{Volume}} 2: {{Short Papers}})},
+  author = {Mancini, Eleonora and Ruggeri, Federico and Torroni, Paolo},
+  editor = {Graham, Yvette and Purver, Matthew},
+  year = {2024},
+  month = mar,
+  pages = {170--178},
+  publisher = {Association for Computational Linguistics},
+  address = {St. Julian's, Malta},
+  urldate = {2025-02-21},
+  abstract = {Recent advances in NLP suggest that some tasks, such as argument detection and relation classification, are better framed in a multimodal perspective. We propose multimodal argument mining for argumentative fallacy classification in political debates. To this end, we release the first corpus for multimodal fallacy classification. Our experiments show that the integration of the audio modality leads to superior classification performance. Our findings confirm that framing fallacy classification as a multimodal task is essential to capture paralinguistic aspects of fallacious arguments.},
+  file = {C:\Users\twoca\Zotero\storage\6BI8NJAL\Mancini et al. - 2024 - Multimodal Fallacy Classification in Political Debates.pdf}
+}
+
+@inproceedings{manciniMultimodalFallacyClassification2024a,
+  title = {Multimodal {{Fallacy Classification}} in {{Political Debates}}},
+  booktitle = {Proceedings of the 18th {{Conference}} of the {{European Chapter}} of the {{Association}} for {{Computational Linguistics}} ({{Volume}} 2: {{Short Papers}})},
+  author = {Mancini, Eleonora and Ruggeri, Federico and Torroni, Paolo},
+  editor = {Graham, Yvette and Purver, Matthew},
+  year = {2024},
+  month = mar,
+  pages = {170--178},
+  publisher = {Association for Computational Linguistics},
+  address = {St. Julian's, Malta},
+  urldate = {2025-04-09},
+  abstract = {Recent advances in NLP suggest that some tasks, such as argument detection and relation classification, are better framed in a multimodal perspective. We propose multimodal argument mining for argumentative fallacy classification in political debates. To this end, we release the first corpus for multimodal fallacy classification. Our experiments show that the integration of the audio modality leads to superior classification performance. Our findings confirm that framing fallacy classification as a multimodal task is essential to capture paralinguistic aspects of fallacious arguments.},
+  file = {C:\Users\twoca\Zotero\storage\EXI6886S\Mancini et al. - 2024 - Multimodal Fallacy Classification in Political Debates.pdf}
+}
+
+@article{mannRhetoricalStructureTheory1988,
+  title = {Rhetorical {{Structure Theory}}: {{Toward}} a Functional Theory of Text Organization},
+  shorttitle = {Rhetorical {{Structure Theory}}},
+  author = {Mann, William C. and Thompson, Sandra A.},
+  year = {1988},
+  month = jan,
+  journal = {Text - Interdisciplinary Journal for the Study of Discourse},
+  volume = {8},
+  number = {3},
+  pages = {243--281},
+  publisher = {De Gruyter Mouton},
+  issn = {1860-7349},
+  doi = {10.1515/text.1.1988.8.3.243},
+  urldate = {2025-02-24},
+  abstract = {Article Rhetorical Structure Theory: Toward a functional theory of text organization was published on January 1, 1988 in the journal Text \& Talk (volume 8, issue 3).},
+  chapter = {Text \& Talk},
+  copyright = {De Gruyter expressly reserves the right to use all content for commercial text and data mining within the meaning of Section 44b of the German Copyright Act.},
+  langid = {english}
+}
+
+@inproceedings{mestreAugmentingPretrainedLanguage2023,
+  title = {Augmenting Pre-Trained Language Models with Audio Feature Embedding for Argumentation Mining in Political Debates},
+  booktitle = {Findings of the {{Association}} for {{Computational Linguistics}}: {{EACL}} 2023},
+  author = {Mestre, Rafael and Middleton, Stuart E. and Ryan, Matt and Gheasi, Masood and Norman, Timothy and Zhu, Jiatong},
+  editor = {Vlachos, Andreas and Augenstein, Isabelle},
+  year = {2023},
+  month = may,
+  pages = {274--288},
+  publisher = {Association for Computational Linguistics},
+  address = {Dubrovnik, Croatia},
+  doi = {10.18653/v1/2023.findings-eacl.21},
+  urldate = {2025-02-21},
+  abstract = {The integration of multimodality in natural language processing (NLP) tasks seeks to exploit the complementary information contained in two or more modalities, such as text, audio and video. This paper investigates the integration of often under-researched audio features with text, using the task of argumentation mining (AM) as a case study. We take a previously reported dataset and present an audio-enhanced version (the Multimodal USElecDeb60To16 dataset). We report the performance of two text models based on BERT and GloVe embeddings, one audio model (based on CNN and Bi-LSTM) and multimodal combinations, on a dataset of 28,850 utterances. The results show that multimodal models do not outperform text-based models when using the full dataset. However, we show that audio features add value in fully supervised scenarios with limited data. We find that when data is scarce (e.g. with 10\% of the original dataset) multimodal models yield improved performance, whereas text models based on BERT considerably decrease performance. Finally, we conduct a study with artificially generated voices and an ablation study to investigate the importance of different audio features in the audio models.},
+  file = {C:\Users\twoca\Zotero\storage\EFSIK85F\Mestre et al. - 2023 - Augmenting pre-trained language models with audio feature embedding for argumentation mining in poli.pdf}
+}
+
+@inproceedings{mestreAugmentingPretrainedLanguage2023a,
+  title = {Augmenting Pre-Trained Language Models with Audio Feature Embedding for Argumentation Mining in Political Debates},
+  booktitle = {Findings of the {{Association}} for {{Computational Linguistics}}: {{EACL}} 2023},
+  author = {Mestre, Rafael and Middleton, Stuart E. and Ryan, Matt and Gheasi, Masood and Norman, Timothy and Zhu, Jiatong},
+  editor = {Vlachos, Andreas and Augenstein, Isabelle},
+  year = {2023},
+  month = may,
+  pages = {274--288},
+  publisher = {Association for Computational Linguistics},
+  address = {Dubrovnik, Croatia},
+  doi = {10.18653/v1/2023.findings-eacl.21},
+  urldate = {2025-03-27},
+  abstract = {The integration of multimodality in natural language processing (NLP) tasks seeks to exploit the complementary information contained in two or more modalities, such as text, audio and video. This paper investigates the integration of often under-researched audio features with text, using the task of argumentation mining (AM) as a case study. We take a previously reported dataset and present an audio-enhanced version (the Multimodal USElecDeb60To16 dataset). We report the performance of two text models based on BERT and GloVe embeddings, one audio model (based on CNN and Bi-LSTM) and multimodal combinations, on a dataset of 28,850 utterances. The results show that multimodal models do not outperform text-based models when using the full dataset. However, we show that audio features add value in fully supervised scenarios with limited data. We find that when data is scarce (e.g. with 10\% of the original dataset) multimodal models yield improved performance, whereas text models based on BERT considerably decrease performance. Finally, we conduct a study with artificially generated voices and an ablation study to investigate the importance of different audio features in the audio models.},
+  file = {C:\Users\twoca\Zotero\storage\LNQGG4NR\Mestre et al. - 2023 - Augmenting pre-trained language models with audio feature embedding for argumentation mining in poli.pdf}
+}
+
 @inproceedings{mestreMArgMultimodalArgument2021,
   title = {M-{{Arg}}: {{Multimodal Argument Mining Dataset}} for {{Political Debates}} with {{Audio}} and {{Transcripts}}},
   shorttitle = {M-{{Arg}}},
@@ -224,7 +903,24 @@
   doi = {10.18653/v1/2021.argmining-1.8},
   urldate = {2024-10-16},
   abstract = {Argumentation mining aims at extracting, analysing and modelling people's arguments, but large, high-quality annotated datasets are limited, and no multimodal datasets exist for this task. In this paper, we present M-Arg, a multimodal argument mining dataset with a corpus of US 2020 presidential debates, annotated through crowd-sourced annotations. This dataset allows models to be trained to extract arguments from natural dialogue such as debates using information like the intonation and rhythm of the speaker. Our dataset contains 7 hours of annotated US presidential debates, 6527 utterances and 4104 relation labels, and we report results from different baseline models, namely a text-only model, an audio-only model and multimodal models that extract features from both text and audio. With accuracy reaching 0.86 in multimodal models, we find that audio features provide added value with respect to text-only models.},
+  keywords = {Argument Mining,ARI,Multimodal},
   file = {C:\Users\twoca\Zotero\storage\LUT49QVY\Mestre et al. - 2021 - M-Arg Multimodal Argument Mining Dataset for Political Debates with Audio and Transcripts.pdf}
+}
+
+@inproceedings{mohammedMachineLearningOversampling2020,
+  title = {Machine {{Learning}} with {{Oversampling}} and {{Undersampling Techniques}}: {{Overview Study}} and {{Experimental Results}}},
+  shorttitle = {Machine {{Learning}} with {{Oversampling}} and {{Undersampling Techniques}}},
+  booktitle = {2020 11th {{International Conference}} on {{Information}} and {{Communication Systems}} ({{ICICS}})},
+  author = {Mohammed, Roweida and Rawashdeh, Jumanah and Abdullah, Malak},
+  year = {2020},
+  month = apr,
+  pages = {243--248},
+  issn = {2573-3346},
+  doi = {10.1109/ICICS49469.2020.239556},
+  urldate = {2025-02-21},
+  abstract = {Data imbalance in Machine Learning refers to an unequal distribution of classes within a dataset. This issue is encountered mostly in classification tasks in which the distribution of classes or labels in a given dataset is not uniform. The straightforward method to solve this problem is the resampling method by adding records to the minority class or deleting ones from the majority class. In this paper, we have experimented with the two resampling widely adopted techniques: oversampling and undersampling. In order to explore both techniques, we have chosen a public imbalanced dataset from kaggle website Santander Customer Transaction Prediction and have applied a group of well-known machine learning algorithms with different hyperparamters that give best results for both resampling techniques. One of the key findings of this paper is noticing that oversampling performs better than undersampling for different classifiers and obtains higher scores in different evaluation metrics.},
+  keywords = {Accuracy,Class Imbalance,Communication systems,Decision trees,Kernel,Machine Learning,Measurement,Naive Bayes,Oversampling,Precision,Random Forest,Random forests,Recall,Support vector machines,SVM,Undersampling},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\6E6ATLUR\\Mohammed et al. - 2020 - Machine Learning with Oversampling and Undersampling Techniques Overview Study and Experimental Res.pdf;C\:\\Users\\twoca\\Zotero\\storage\\8HACNQNL\\9078901.html}
 }
 
 @article{morioEndtoendArgumentMining2022,
@@ -239,7 +935,140 @@
   doi = {10.1162/tacl_a_00481},
   urldate = {2024-10-17},
   abstract = {Mining an argument structure from text is an important step for tasks such as argument search and summarization. While studies on argument(ation) mining have proposed promising neural network models, they usually suffer from a shortage of training data. To address this issue, we expand the training data with various auxiliary argument mining corpora and propose an end-to-end cross-corpus training method called Multi-Task Argument Mining (MT-AM). To evaluate our approach, we conducted experiments for the main argument mining tasks on several well-established argument mining corpora. The results demonstrate that MT-AM generally outperformed the models trained on a single corpus. Also, the smaller the target corpus was, the better the MT-AM performed. Our extensive analyses suggest that the improvement of MT-AM depends on several factors of transferability among auxiliary and target corpora.},
+  keywords = {Argument Mining},
   file = {C:\Users\twoca\Zotero\storage\GCWRJR8F\Morio et al. - 2022 - End-to-end Argument Mining with Cross-corpora Multi-task Learning.pdf}
+}
+
+@misc{openaiGPT4TechnicalReport2024,
+  title = {{{GPT-4 Technical Report}}},
+  author = {OpenAI and Achiam, Josh and Adler, Steven and Agarwal, Sandhini and Ahmad, Lama and Akkaya, Ilge and Aleman, Florencia Leoni and Almeida, Diogo and Altenschmidt, Janko and Altman, Sam and Anadkat, Shyamal and Avila, Red and Babuschkin, Igor and Balaji, Suchir and Balcom, Valerie and Baltescu, Paul and Bao, Haiming and Bavarian, Mohammad and Belgum, Jeff and Bello, Irwan and Berdine, Jake and {Bernadett-Shapiro}, Gabriel and Berner, Christopher and Bogdonoff, Lenny and Boiko, Oleg and Boyd, Madelaine and Brakman, Anna-Luisa and Brockman, Greg and Brooks, Tim and Brundage, Miles and Button, Kevin and Cai, Trevor and Campbell, Rosie and Cann, Andrew and Carey, Brittany and Carlson, Chelsea and Carmichael, Rory and Chan, Brooke and Chang, Che and Chantzis, Fotis and Chen, Derek and Chen, Sully and Chen, Ruby and Chen, Jason and Chen, Mark and Chess, Ben and Cho, Chester and Chu, Casey and Chung, Hyung Won and Cummings, Dave and Currier, Jeremiah and Dai, Yunxing and Decareaux, Cory and Degry, Thomas and Deutsch, Noah and Deville, Damien and Dhar, Arka and Dohan, David and Dowling, Steve and Dunning, Sheila and Ecoffet, Adrien and Eleti, Atty and Eloundou, Tyna and Farhi, David and Fedus, Liam and Felix, Niko and Fishman, Sim{\'o}n Posada and Forte, Juston and Fulford, Isabella and Gao, Leo and Georges, Elie and Gibson, Christian and Goel, Vik and Gogineni, Tarun and Goh, Gabriel and {Gontijo-Lopes}, Rapha and Gordon, Jonathan and Grafstein, Morgan and Gray, Scott and Greene, Ryan and Gross, Joshua and Gu, Shixiang Shane and Guo, Yufei and Hallacy, Chris and Han, Jesse and Harris, Jeff and He, Yuchen and Heaton, Mike and Heidecke, Johannes and Hesse, Chris and Hickey, Alan and Hickey, Wade and Hoeschele, Peter and Houghton, Brandon and Hsu, Kenny and Hu, Shengli and Hu, Xin and Huizinga, Joost and Jain, Shantanu and Jain, Shawn and Jang, Joanne and Jiang, Angela and Jiang, Roger and Jin, Haozhun and Jin, Denny and Jomoto, Shino and Jonn, Billie and Jun, Heewoo and Kaftan, Tomer and Kaiser, {\L}ukasz and Kamali, Ali and Kanitscheider, Ingmar and Keskar, Nitish Shirish and Khan, Tabarak and Kilpatrick, Logan and Kim, Jong Wook and Kim, Christina and Kim, Yongjik and Kirchner, Jan Hendrik and Kiros, Jamie and Knight, Matt and Kokotajlo, Daniel and Kondraciuk, {\L}ukasz and Kondrich, Andrew and Konstantinidis, Aris and Kosic, Kyle and Krueger, Gretchen and Kuo, Vishal and Lampe, Michael and Lan, Ikai and Lee, Teddy and Leike, Jan and Leung, Jade and Levy, Daniel and Li, Chak Ming and Lim, Rachel and Lin, Molly and Lin, Stephanie and Litwin, Mateusz and Lopez, Theresa and Lowe, Ryan and Lue, Patricia and Makanju, Anna and Malfacini, Kim and Manning, Sam and Markov, Todor and Markovski, Yaniv and Martin, Bianca and Mayer, Katie and Mayne, Andrew and McGrew, Bob and McKinney, Scott Mayer and McLeavey, Christine and McMillan, Paul and McNeil, Jake and Medina, David and Mehta, Aalok and Menick, Jacob and Metz, Luke and Mishchenko, Andrey and Mishkin, Pamela and Monaco, Vinnie and Morikawa, Evan and Mossing, Daniel and Mu, Tong and Murati, Mira and Murk, Oleg and M{\'e}ly, David and Nair, Ashvin and Nakano, Reiichiro and Nayak, Rajeev and Neelakantan, Arvind and Ngo, Richard and Noh, Hyeonwoo and Ouyang, Long and O'Keefe, Cullen and Pachocki, Jakub and Paino, Alex and Palermo, Joe and Pantuliano, Ashley and Parascandolo, Giambattista and Parish, Joel and Parparita, Emy and Passos, Alex and Pavlov, Mikhail and Peng, Andrew and Perelman, Adam and Peres, Filipe de Avila Belbute and Petrov, Michael and Pinto, Henrique Ponde de Oliveira and Michael and Pokorny and Pokrass, Michelle and Pong, Vitchyr H. and Powell, Tolly and Power, Alethea and Power, Boris and Proehl, Elizabeth and Puri, Raul and Radford, Alec and Rae, Jack and Ramesh, Aditya and Raymond, Cameron and Real, Francis and Rimbach, Kendra and Ross, Carl and Rotsted, Bob and Roussez, Henri and Ryder, Nick and Saltarelli, Mario and Sanders, Ted and Santurkar, Shibani and Sastry, Girish and Schmidt, Heather and Schnurr, David and Schulman, John and Selsam, Daniel and Sheppard, Kyla and Sherbakov, Toki and Shieh, Jessica and Shoker, Sarah and Shyam, Pranav and Sidor, Szymon and Sigler, Eric and Simens, Maddie and Sitkin, Jordan and Slama, Katarina and Sohl, Ian and Sokolowsky, Benjamin and Song, Yang and Staudacher, Natalie and Such, Felipe Petroski and Summers, Natalie and Sutskever, Ilya and Tang, Jie and Tezak, Nikolas and Thompson, Madeleine B. and Tillet, Phil and Tootoonchian, Amin and Tseng, Elizabeth and Tuggle, Preston and Turley, Nick and Tworek, Jerry and Uribe, Juan Felipe Cer{\'o}n and Vallone, Andrea and Vijayvergiya, Arun and Voss, Chelsea and Wainwright, Carroll and Wang, Justin Jay and Wang, Alvin and Wang, Ben and Ward, Jonathan and Wei, Jason and Weinmann, C. J. and Welihinda, Akila and Welinder, Peter and Weng, Jiayi and Weng, Lilian and Wiethoff, Matt and Willner, Dave and Winter, Clemens and Wolrich, Samuel and Wong, Hannah and Workman, Lauren and Wu, Sherwin and Wu, Jeff and Wu, Michael and Xiao, Kai and Xu, Tao and Yoo, Sarah and Yu, Kevin and Yuan, Qiming and Zaremba, Wojciech and Zellers, Rowan and Zhang, Chong and Zhang, Marvin and Zhao, Shengjia and Zheng, Tianhao and Zhuang, Juntang and Zhuk, William and Zoph, Barret},
+  year = {2024},
+  month = mar,
+  number = {arXiv:2303.08774},
+  eprint = {2303.08774},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2303.08774},
+  urldate = {2025-02-25},
+  abstract = {We report the development of GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs. While less capable than humans in many real-world scenarios, GPT-4 exhibits human-level performance on various professional and academic benchmarks, including passing a simulated bar exam with a score around the top 10\% of test takers. GPT-4 is a Transformer-based model pre-trained to predict the next token in a document. The post-training alignment process results in improved performance on measures of factuality and adherence to desired behavior. A core component of this project was developing infrastructure and optimization methods that behave predictably across a wide range of scales. This allowed us to accurately predict some aspects of GPT-4's performance based on models trained with no more than 1/1,000th the compute of GPT-4.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Computation and Language},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\X8QFYNV3\\OpenAI et al. - 2024 - GPT-4 Technical Report.pdf;C\:\\Users\\twoca\\Zotero\\storage\\F4P2S4U9\\2303.html}
+}
+
+@incollection{orrProtocolSwitchingMultiAgent2024,
+  title = {Protocol {{Switching}} in a {{Multi-Agent Dialogue System}}},
+  booktitle = {Computational {{Models}} of {{Argument}}},
+  author = {Orr, Nicole and Lawrence, John},
+  year = {2024},
+  pages = {193--204},
+  publisher = {IOS Press},
+  doi = {10.3233/FAIA240321},
+  urldate = {2025-03-21},
+  file = {C:\Users\twoca\Zotero\storage\VGSZAMVT\Orr and Lawrence - 2024 - Protocol Switching in a Multi-Agent Dialogue System.pdf}
+}
+
+@misc{petersDeepContextualizedWord2018,
+  title = {Deep Contextualized Word Representations},
+  author = {Peters, Matthew E. and Neumann, Mark and Iyyer, Mohit and Gardner, Matt and Clark, Christopher and Lee, Kenton and Zettlemoyer, Luke},
+  year = {2018},
+  month = mar,
+  number = {arXiv:1802.05365},
+  eprint = {1802.05365},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.1802.05365},
+  urldate = {2025-02-25},
+  abstract = {We introduce a new type of deep contextualized word representation that models both (1) complex characteristics of word use (e.g., syntax and semantics), and (2) how these uses vary across linguistic contexts (i.e., to model polysemy). Our word vectors are learned functions of the internal states of a deep bidirectional language model (biLM), which is pre-trained on a large text corpus. We show that these representations can be easily added to existing models and significantly improve the state of the art across six challenging NLP problems, including question answering, textual entailment and sentiment analysis. We also present an analysis showing that exposing the deep internals of the pre-trained network is crucial, allowing downstream models to mix different types of semi-supervision signals.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\XE9TWB2D\\Peters et al. - 2018 - Deep contextualized word representations.pdf;C\:\\Users\\twoca\\Zotero\\storage\\QT9RMA8P\\1802.html}
+}
+
+@article{rahwanLayingFoundationsWorld2007,
+  title = {Laying the Foundations for a {{World Wide Argument Web}}},
+  author = {Rahwan, Iyad and Zablith, Fouad and Reed, Chris},
+  year = {2007},
+  month = jul,
+  journal = {Artificial Intelligence},
+  volume = {171},
+  number = {10-15},
+  pages = {897--921},
+  issn = {00043702},
+  doi = {10.1016/j.artint.2007.04.015},
+  urldate = {2025-02-25},
+  abstract = {This paper lays theoretical and software foundations for a World Wide Argument Web (WWAW): a large-scale Web of interconnected arguments posted by individuals to express their opinions in a structured manner. First, we extend the recently proposed Argument Interchange Format (AIF) to express arguments with a structure based on Walton's theory of argumentation schemes. Then, we describe an implementation of this ontology using the RDF Schema Semantic Web-based ontology language, and demonstrate how our ontology enables the representation of networks of arguments on the Semantic Web. Finally, we present a pilot Semantic Web-based system, ArgDF, through which users can create arguments using different argumentation schemes and can query arguments using a Semantic Web query language. Manipulation of existing arguments is also handled in ArgDF: users can attack or support parts of existing arguments, or use existing parts of an argument in the creation of new arguments. ArgDF also enables users to create new argumentation schemes. As such, ArgDF is an open platform not only for representing arguments, but also for building interlinked and dynamic argument networks on the Semantic Web. This initial public-domain tool is intended to seed a variety of future applications for authoring, linking, navigating, searching, and evaluating arguments on the Web.},
+  copyright = {https://www.elsevier.com/tdm/userlicense/1.0/},
+  langid = {english},
+  file = {C:\Users\twoca\Zotero\storage\4EUAGN88\Rahwan et al. - 2007 - Laying the foundations for a World Wide Argument Web.pdf}
+}
+
+@misc{rajanCrossAttentionPreferableSelfAttention2022,
+  title = {Is {{Cross-Attention Preferable}} to {{Self-Attention}} for {{Multi-Modal Emotion Recognition}}?},
+  author = {Rajan, Vandana and Brutti, Alessio and Cavallaro, Andrea},
+  year = {2022},
+  month = feb,
+  number = {arXiv:2202.09263},
+  eprint = {2202.09263},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2202.09263},
+  urldate = {2025-02-13},
+  abstract = {Humans express their emotions via facial expressions, voice intonation and word choices. To infer the nature of the underlying emotion, recognition models may use a single modality, such as vision, audio, and text, or a combination of modalities. Generally, models that fuse complementary information from multiple modalities outperform their uni-modal counterparts. However, a successful model that fuses modalities requires components that can effectively aggregate task-relevant information from each modality. As cross-modal attention is seen as an effective mechanism for multi-modal fusion, in this paper we quantify the gain that such a mechanism brings compared to the corresponding self-attention mechanism. To this end, we implement and compare a cross-attention and a self-attention model. In addition to attention, each model uses convolutional layers for local feature extraction and recurrent layers for global sequential modelling. We compare the models using different modality combinations for a 7-class emotion classification task using the IEMOCAP dataset. Experimental results indicate that albeit both models improve upon the state-of-the-art in terms of weighted and unweighted accuracy for tri- and bi-modal configurations, their performance is generally statistically comparable. The code to replicate the experiments is available at https://github.com/smartcameras/SelfCrossAttn},
+  archiveprefix = {arXiv},
+  keywords = {NLP},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\BFR6FTVU\\Rajan et al. - 2022 - Is Cross-Attention Preferable to Self-Attention for Multi-Modal Emotion Recognition.pdf;C\:\\Users\\twoca\\Zotero\\storage\\S3UT68KX\\2202.html}
+}
+
+@article{reedAIFDialogueArgument,
+  title = {{{AIF}}+: {{Dialogue}} in the {{Argument Interchange Format}}},
+  author = {Reed, Chris and Devereux, Joseph and Wells, Simon and Rowe, Glenn},
+  abstract = {This paper extends the Argument Interchange Format to enable it to represent dialogic argumentation. One of the challenges is to tie together the rules expressed in dialogue protocols with the inferential relations between premises and conclusions. The extensions are founded upon two important analogies which minimise the extra ontological machinery required. First, locutions in a dialogue are analogous to AIF Inodes which capture propositional data. Second, steps between locutions are analogous to AIF S-nodes which capture inferential movement. This paper shows how these two analogies combine to allow both dialogue protocols and dialogue histories to be represented alongside monologic arguments in a single coherent system.},
+  langid = {english},
+  file = {C:\Users\twoca\Zotero\storage\5NJB3U9R\Reed et al. - AIF+ Dialogue in the Argument Interchange Format.pdf}
+}
+
+@article{reedAraucariaSoftwareArgument2004,
+  title = {Araucaria: Software for Argument Analysis, Diagramming and Representation},
+  shorttitle = {Araucaria},
+  author = {Reed, Chris and Rowe, Glenn},
+  year = {2004},
+  month = dec,
+  journal = {International Journal on Artificial Intelligence Tools},
+  volume = {13},
+  number = {04},
+  pages = {961--979},
+  publisher = {World Scientific Publishing Co.},
+  issn = {0218-2130},
+  doi = {10.1142/S0218213004001922},
+  urldate = {2025-02-21},
+  abstract = {Argumentation theory involves the analysis of naturally occurring argument, and one key tool employed to this end both in the academic community and in teaching critical thinking skills to undergraduates is argument diagramming. By identifying the structure of an argument in  terms of its constituents and the relationships between them, it becomes  easier to critically evaluate each part of an argument in turn. The task  of analysis and diagramming, however, is labor intensive and often  idiosyncratic, which can make academic exchange difficult. The Araucaria  system provides an interface which supports the diagramming process, and  then saves the result using AML, an open standard, designed in XML, for  describing argument structure. Araucaria aims to be of use not only in pedagogical situations, but also in support of research activity. As a  result, it has been designed from the outset to handle more advanced  argumentation theoretic concepts such as schemes, which capture  stereotypical patterns of reasoning. The software is also designed  to be compatible with a number of applications under development,  including dialogic interaction and online corpus provision. Together, these features, combined with its platform independence and ease of  use, have the potential to make Araucaria a valuable resource for  the academic community.},
+  keywords = {Argumentation schemes,argumentation theory,critical thinking,diagramming,informal logic,XML}
+}
+
+@article{reedAraucariaSoftwareArgument2004a,
+  title = {Araucaria: Software for Argument Analysis, Diagramming and Representation},
+  shorttitle = {Araucaria},
+  author = {Reed, Chris and Rowe, Glenn},
+  year = {2004},
+  journal = {International Journal on Artificial Intelligence Tools},
+  volume = {13},
+  number = {4},
+  pages = {961--979},
+  issn = {0218-2130},
+  doi = {10.1142/S0218213004001922},
+  abstract = {Argumentation theory involves the analysis of naturally occurring argument, and one key tool employed to this end both in the academic community and in teaching critical thinking skills to undergraduates is argument diagramming. By identifying the structure of an argument in terms of its constituents and the relationships between them, it becomes easier to critically evaluate each part of an argument in turn. The task of analysis and diagramming, however, is labor intensive and often idiosyncratic, which can make academic exchange difficult. The Araucaria system provides an interface which supports the diagramming process, and then saves the result using AML, an open standard, designed in XML, for describing argument structure. Araucaria aims to be of use not only in pedagogical situations, but also in support of research activity. As a result, it has been designed from the outset to handle more advanced argumentation theoretic concepts such as schemes, which capture stereotypical patterns of reasoning. The software is also designed to be compatible with a number of applications under development, including dialogic interaction and online corpus provision. Together, these features, combined with its platform independence and ease of use, have the potential to make Araucaria a valuable resource for the academic community.},
+  keywords = {Argumentation schemes,Argumentation theory,Critical thinking,Diagramming,Informal logic,XML}
+}
+
+@inproceedings{reedHowDialoguesCreate2011,
+  title = {How Dialogues Create Arguments},
+  booktitle = {Proceedings of the 7th {{Conference}} of the {{International Society}} for the {{Study}} of {{Argumentation}}},
+  author = {Reed, Chris and Budzynska, Kasia},
+  year = {2011},
+  publisher = {Sic Sat},
+  address = {Amsterdam},
+  file = {C:\Users\twoca\Zotero\storage\NRWL7BKT\issa2010.pdf}
 }
 
 @misc{reedQuickStartGuide2017,
@@ -247,6 +1076,7 @@
   author = {Reed, Chris},
   year = {2017},
   month = sep,
+  keywords = {Argumentation Theory,IAT},
   file = {C:\Users\twoca\Zotero\storage\C2X7J2VM\IAT-guidelines.pdf}
 }
 
@@ -263,6 +1093,7 @@
   address = {Abu Dhabi, UAE},
   urldate = {2025-01-27},
   abstract = {Traditionally, argument mining research has approached the task of automatic identification of argument structures by using existing definitions of what constitutes an argument, while leaving the equally important matter of what does not qualify as an argument unaddressed. With the ability to distinguish between what is and what is not a natural language argument being at the core of argument mining as a field, it is interesting that no previous work has explored approaches to effectively select non-related propositions (i.e., propositions that are not connected through an argumentative relation, such as support or attack) that improve the data for learning argument mining tasks better. In this paper, we address the question of how to effectively sample non-related propositions from six different argument mining corpora belonging to different domains and encompassing both monologue and dialogue forms of argumentation. To that end, in addition to considering undersampling baselines from previous work, we propose three new sampling strategies relying on context (i.e., short/long) and the semantic similarity between propositions. Our results indicate that using more informed sampling strategies improves the performance, not only when evaluating models on their respective test splits, but also in the case of cross-domain evaluation.},
+  keywords = {Argument Mining,Cross-Domain},
   file = {C:\Users\twoca\Zotero\storage\5GVHEBLW\Ruiz-Dolz et al. - 2025 - Looking at the Unseen Effective Sampling of Non-Related Propositions for Argument Mining.pdf}
 }
 
@@ -280,8 +1111,29 @@
   doi = {10.1109/MIS.2021.3073993},
   urldate = {2024-10-10},
   abstract = {Argument mining is defined as the task of automatically identifying and extracting argumentative components (e.g., premises, claims, etc.) and detecting the existing relations among them (i.e., support, attack, rephrase, no relation). One of the main issues when approaching this problem is the lack of data, and the size of the publicly available corpora. In this work, we use the recently annotated US2016 debate corpus. US2016 is the largest existing argument annotated corpus, which allows exploring the benefits of the most recent advances in natural language processing in a complex domain like argument (relation) mining. We present an exhaustive analysis of the behavior of transformer-based models (i.e., BERT, XLNET, RoBERTa, DistilBERT, and ALBERT) when predicting argument relations. Finally, we evaluate the models in five different domains, with the objective of finding the less domain-dependent model. We obtain a macro F1-score of 0.70 with the US2016 evaluation corpus, and a macro F1-score of 0.61 with the Moral Maze cross-domain corpus.},
-  keywords = {Computational modeling,Data mining,Ethics,Intelligent systems,Natural language processing,Transformers},
+  keywords = {Argument Mining,ARI,Cross-Domain},
   file = {C:\Users\twoca\Zotero\storage\ZX7CXEJF\Ruiz-Dolz et al. - 2021 - Transformer-Based Models for Automatic Identification of Argument Relations A Cross-Domain Evaluati.pdf}
+}
+
+@article{ruiz-dolzVivesDebateNewAnnotated2021,
+  title = {{{VivesDebate}}: {{A New Annotated Multilingual Corpus}} of {{Argumentation}} in a {{Debate Tournament}}},
+  shorttitle = {{{VivesDebate}}},
+  author = {{Ruiz-Dolz}, Ramon and Nofre, Montserrat and Taul{\'e}, Mariona and Heras, Stella and {Garc{\'i}a-Fornes}, Ana},
+  year = {2021},
+  month = jan,
+  journal = {Applied Sciences},
+  volume = {11},
+  number = {15},
+  pages = {7160},
+  publisher = {Multidisciplinary Digital Publishing Institute},
+  issn = {2076-3417},
+  doi = {10.3390/app11157160},
+  urldate = {2025-04-04},
+  abstract = {The application of the latest Natural Language Processing breakthroughs in computational argumentation has shown promising results, which have raised the interest in this area of research. However, the available corpora with argumentative annotations are often limited to a very specific purpose or are not of adequate size to take advantage of state-of-the-art deep learning techniques (e.g., deep neural networks). In this paper, we present VivesDebate, a large, richly annotated and versatile professional debate corpus for computational argumentation research. The corpus has been created from 29 transcripts of a debate tournament in Catalan and has been machine-translated into Spanish and English. The annotation contains argumentative propositions, argumentative relations, debate interactions and professional evaluations of the arguments and argumentation. The presented corpus can be useful for research on a heterogeneous set of computational argumentation underlying tasks such as Argument Mining, Argument Analysis, Argument Evaluation or Argument Generation, among others. All this makes VivesDebate a valuable resource for computational argumentation research within the context of massive corpora aimed at Natural Language Processing tasks.},
+  copyright = {http://creativecommons.org/licenses/by/3.0/},
+  langid = {english},
+  keywords = {Argument Analysis,Argument Evaluation,Argument Generation,Argument Mining,argumentation,corpus,debate,Natural Language Processing},
+  file = {C:\Users\twoca\Zotero\storage\A59LVXY6\Ruiz-Dolz et al. - 2021 - VivesDebate A New Annotated Multilingual Corpus of Argumentation in a Debate Tournament.pdf}
 }
 
 @inproceedings{ruiz-dolzVivesDebateSpeechCorpusSpoken2023,
@@ -298,7 +1150,16 @@
   doi = {10.18653/v1/2023.emnlp-main.128},
   urldate = {2024-10-14},
   abstract = {In this paper, we describe VivesDebate-Speech, a corpus of spoken argumentation created to leverage audio features for argument mining tasks. The creation of this corpus represents an important contribution to the intersection of speech processing and argument mining communities, and one of the most complete publicly available resources in this topic. Moreover, we have performed a set of first-of-their-kind experiments which show an improvement when integrating audio features into the argument mining pipeline. The provided results can be used as a baseline for future research.},
+  keywords = {Argument Mining,Multimodal},
   file = {C:\Users\twoca\Zotero\storage\VEWQURW8\Ruiz-Dolz and Iranzo-Sánchez - 2023 - VivesDebate-Speech A Corpus of Spoken Argumentation to Leverage Audio Features for Argument Mining.pdf}
+}
+
+@article{sahbiEmotionsArgumentationEmpirical,
+  title = {Emotions in {{Argumentation}}: An {{Empirical Evaluation}}},
+  author = {Sahbi, Benlamine and Chaouachi, Maher and Villata, Serena and Cabrio, Elena and Frasson, Claude and Gandon, Fabien},
+  abstract = {Argumentation is often seen as a mechanism to support different forms of reasoning such that decision-making and persuasion, but all these approaches assume a purely rational behavior of the involved actors. However, humans are proved to behave differently, mixing rational and emotional attitudes to guide their actions, and it has been claimed that there exists a strong connection between the argumentation process and the emotions felt by people involved in such process. In this paper, we assess this claim by means of an experiment: during several debates people's argumentation in plain English is connected and compared to the emotions automatically detected from the participants. Our results show a correspondence between emotions and argumentation elements, e.g., when in the argumentation two opposite opinions are conflicting this is reflected in a negative way on the debaters' emotions.},
+  langid = {english},
+  file = {C:\Users\twoca\Zotero\storage\6DQMB6NP\Sahbi et al. - Emotions in Argumentation an Empirical Evaluation.pdf}
 }
 
 @misc{schneiderWav2vecUnsupervisedPretraining2019,
@@ -313,8 +1174,126 @@
   urldate = {2024-10-17},
   abstract = {We explore unsupervised pre-training for speech recognition by learning representations of raw audio. wav2vec is trained on large amounts of unlabeled audio data and the resulting representations are then used to improve acoustic model training. We pre-train a simple multi-layer convolutional neural network optimized via a noise contrastive binary classification task. Our experiments on WSJ reduce WER of a strong character-based log-mel filterbank baseline by up to 36\% when only a few hours of transcribed data is available. Our approach achieves 2.43\% WER on the nov92 test set. This outperforms Deep Speech 2, the best reported character-based system in the literature while using two orders of magnitude less labeled training data.},
   archiveprefix = {arXiv},
-  keywords = {Computer Science - Computation and Language},
+  keywords = {Audio,NLP},
   file = {C\:\\Users\\twoca\\Zotero\\storage\\ZJL9CLMA\\Schneider et al. - 2019 - wav2vec Unsupervised Pre-training for Speech Recognition.pdf;C\:\\Users\\twoca\\Zotero\\storage\\LRP96J5W\\1904.html}
+}
+
+@book{searleSpeechActsEssay1969,
+  title = {Speech {{Acts}}: {{An Essay}} in the {{Philosophy}} of {{Language}}},
+  shorttitle = {Speech {{Acts}}},
+  author = {Searle, John R.},
+  year = {1969},
+  publisher = {Cambridge University Press},
+  address = {Cambridge},
+  doi = {10.1017/CBO9781139173438},
+  urldate = {2025-02-24},
+  abstract = {Written in an outstandingly clear and lively style, this 1969 book provokes its readers to rethink issues they may have regarded as long since settled.},
+  isbn = {978-0-521-09626-3},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\78HQ9L2J\\Searle - 1969 - Speech Acts An Essay in the Philosophy of Language.pdf;C\:\\Users\\twoca\\Zotero\\storage\\SYW79DXV\\D2D7B03E472C8A390ED60B86E08640E7.html}
+}
+
+@inproceedings{sharmaArgumentativeStancePrediction2023,
+  title = {Argumentative {{Stance Prediction}}: {{An Exploratory Study}} on {{Multimodality}} and {{Few-Shot Learning}}},
+  shorttitle = {Argumentative {{Stance Prediction}}},
+  booktitle = {Proceedings of the 10th {{Workshop}} on {{Argument Mining}}},
+  author = {Sharma, Arushi and Gupta, Abhibha and Bilalpur, Maneesh},
+  editor = {Alshomary, Milad and Chen, Chung-Chi and Muresan, Smaranda and Park, Joonsuk and Romberg, Julia},
+  year = {2023},
+  month = dec,
+  pages = {167--174},
+  publisher = {Association for Computational Linguistics},
+  address = {Singapore},
+  doi = {10.18653/v1/2023.argmining-1.18},
+  urldate = {2025-02-21},
+  abstract = {To advance argumentative stance prediction as a multimodal problem, the First Shared Task in Multimodal Argument Mining hosted stance prediction in crucial social topics of gun control and abortion. Our exploratory study attempts to evaluate the necessity of images for stance prediction in tweets and compare out-of-the-box text-based large-language models (LLM) in few-shot settings against fine-tuned unimodal and multimodal models. Our work suggests an ensemble of fine-tuned text-based language models (0.817 F1-score) outperforms both the multimodal (0.677 F1-score) and text-based few-shot prediction using a recent state-of-the-art LLM (0.550 F1-score). In addition to the differences in performance, our findings suggest that the multimodal models tend to perform better when image content is summarized as natural language over their native pixel structure and, using in-context examples improves few-shot learning of LLMs performance.},
+  file = {C:\Users\twoca\Zotero\storage\YLU36TDI\Sharma et al. - 2023 - Argumentative Stance Prediction An Exploratory Study on Multimodality and Few-Shot Learning.pdf}
+}
+
+@inproceedings{stabCrosstopicArgumentMining2018,
+  title = {Cross-Topic {{Argument Mining}} from {{Heterogeneous Sources}}},
+  booktitle = {Proceedings of the 2018 {{Conference}} on {{Empirical Methods}} in {{Natural Language Processing}}},
+  author = {Stab, Christian and Miller, Tristan and Schiller, Benjamin and Rai, Pranav and Gurevych, Iryna},
+  editor = {Riloff, Ellen and Chiang, David and Hockenmaier, Julia and Tsujii, Jun'ichi},
+  year = {2018},
+  month = oct,
+  pages = {3664--3674},
+  publisher = {Association for Computational Linguistics},
+  address = {Brussels, Belgium},
+  doi = {10.18653/v1/D18-1402},
+  urldate = {2025-02-21},
+  abstract = {Argument mining is a core technology for automating argument search in large document collections. Despite its usefulness for this task, most current approaches are designed for use only with specific text types and fall short when applied to heterogeneous texts. In this paper, we propose a new sentential annotation scheme that is reliably applicable by crowd workers to arbitrary Web texts. We source annotations for over 25,000 instances covering eight controversial topics. We show that integrating topic information into bidirectional long short-term memory networks outperforms vanilla BiLSTMs by more than 3 percentage points in F1 in two- and three-label cross-topic settings. We also show that these results can be further improved by leveraging additional data for topic relevance using multi-task learning.},
+  file = {C:\Users\twoca\Zotero\storage\23WPWSW7\Stab et al. - 2018 - Cross-topic Argument Mining from Heterogeneous Sources.pdf}
+}
+
+@article{sunCMAFNetCrossmodalAttention2024,
+  title = {{{CMAF-Net}}: A Cross-Modal Attention Fusion-Based Deep Neural Network for Incomplete Multi-Modal Brain Tumor Segmentation},
+  shorttitle = {{{CMAF-Net}}},
+  author = {Sun, Kangkang and Ding, Jiangyi and Li, Qixuan and Chen, Wei and Zhang, Heng and Sun, Jiawei and Jiao, Zhuqing and Ni, Xinye},
+  year = {2024},
+  month = jul,
+  journal = {Quantitative Imaging in Medicine and Surgery},
+  volume = {14},
+  number = {7},
+  pages = {4579--4604},
+  issn = {2223-4292},
+  doi = {10.21037/qims-24-9},
+  urldate = {2025-02-25},
+  abstract = {Background The information between multimodal magnetic resonance imaging (MRI) is complementary. Combining multiple modalities for brain tumor image segmentation can improve segmentation accuracy, which has great significance for disease diagnosis and treatment. However, different degrees of missing modality data often occur in clinical practice, which may lead to serious performance degradation or even failure of brain tumor segmentation methods relying on full-modality sequences to complete the segmentation task. To solve the above problems, this study aimed to design a new deep learning network for incomplete multimodal brain tumor segmentation. Methods We propose a novel cross-modal attention fusion-based deep neural network (CMAF-Net) for incomplete multimodal brain tumor segmentation, which is based on a three-dimensional (3D) U-Net architecture with encoding and decoding structure, a 3D Swin block, and a cross-modal attention fusion (CMAF) block. A convolutional encoder is initially used to extract the specific features from different modalities, and an effective 3D Swin block is constructed to model the long-range dependencies to obtain richer information for brain tumor segmentation. Then, a cross-attention based CMAF module is proposed that can deal with different missing modality situations by fusing features between different modalities to learn the shared representations of the tumor regions. Finally, the fused latent representation is decoded to obtain the final segmentation result. Additionally, channel attention module (CAM) and spatial attention module (SAM) are incorporated into the network to further improve the robustness of the model; the CAM to help focus on important feature channels, and the SAM to learn the importance of different spatial regions. Results Evaluation experiments on the widely-used BraTS 2018 and BraTS 2020 datasets demonstrated the effectiveness of the proposed CMAF-Net which achieved average Dice scores of 87.9\%, 81.8\%, and 64.3\%, as well as Hausdorff distances of 4.21, 5.35, and 4.02 for whole tumor, tumor core, and enhancing tumor on the BraTS 2020 dataset, respectively, outperforming several state-of-the-art segmentation methods in missing modalities situations. Conclusions The experimental results show that the proposed CMAF-Net can achieve accurate brain tumor segmentation in the case of missing modalities with promising application potential.},
+  pmcid = {PMC11250309},
+  pmid = {39022265},
+  file = {C:\Users\twoca\Zotero\storage\WK97TDS5\Sun et al. - 2024 - CMAF-Net a cross-modal attention fusion-based deep neural network for incomplete multi-modal brain.pdf}
+}
+
+@inproceedings{totoAudiBERTDeepTransfer2021,
+  title = {{{AudiBERT}}: {{A Deep Transfer Learning Multimodal Classification Framework}} for {{Depression Screening}}},
+  shorttitle = {{{AudiBERT}}},
+  booktitle = {Proceedings of the 30th {{ACM International Conference}} on {{Information}} \& {{Knowledge Management}}},
+  author = {Toto, Ermal and Tlachac, {\relax ML} and Rundensteiner, Elke A.},
+  year = {2021},
+  month = oct,
+  series = {{{CIKM}} '21},
+  pages = {4145--4154},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  doi = {10.1145/3459637.3481895},
+  urldate = {2025-02-21},
+  abstract = {Depression is a leading cause of disability with tremendous socioeconomic costs. In spite of early detection being crucial to improving prognosis, this mental illness remains largely undiagnosed. Depression classification from voice holds the promise to revolutionize diagnosis by ubiquitously integrating this screening capability into virtual assistants and smartphone technologies. Unfortunately, due to privacy concerns, audio datasets with depression labels have a small number of participants, causing current classification models to suffer from low performance. To tackle this challenge, we introduce Audio-Assisted BERT (AudiBERT), a novel deep learning framework that leverages the multimodal nature of human voice. To alleviate the small data problem, AudiBERT integrates pretrained audio and text representation models for the respective modalities augmented by a dual self-attention mechanism into a deep learning architecture. AudiBERT applied to depression classification consistently achieves promising performance with an increase in F1 scores between 6\% and 30\% compared to state-of-the-art audio and text models for 15 thematic question datasets. Using answers from medically targeted and general wellness questions, our framework achieves F1 scores of up to 0.92 and 0.86, respectively, demonstrating the feasibility of depression screening from informal dialogue using voice-enabled technologies.},
+  isbn = {978-1-4503-8446-9},
+  file = {C:\Users\twoca\Zotero\storage\DKILS24Z\Toto et al. - 2021 - AudiBERT A Deep Transfer Learning Multimodal Classification Framework for Depression Screening.pdf}
+}
+
+@misc{touvronLLaMAOpenEfficient2023,
+  title = {{{LLaMA}}: {{Open}} and {{Efficient Foundation Language Models}}},
+  shorttitle = {{{LLaMA}}},
+  author = {Touvron, Hugo and Lavril, Thibaut and Izacard, Gautier and Martinet, Xavier and Lachaux, Marie-Anne and Lacroix, Timoth{\'e}e and Rozi{\`e}re, Baptiste and Goyal, Naman and Hambro, Eric and Azhar, Faisal and Rodriguez, Aurelien and Joulin, Armand and Grave, Edouard and Lample, Guillaume},
+  year = {2023},
+  month = feb,
+  number = {arXiv:2302.13971},
+  eprint = {2302.13971},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.2302.13971},
+  urldate = {2025-02-25},
+  abstract = {We introduce LLaMA, a collection of foundation language models ranging from 7B to 65B parameters. We train our models on trillions of tokens, and show that it is possible to train state-of-the-art models using publicly available datasets exclusively, without resorting to proprietary and inaccessible datasets. In particular, LLaMA-13B outperforms GPT-3 (175B) on most benchmarks, and LLaMA-65B is competitive with the best models, Chinchilla-70B and PaLM-540B. We release all our models to the research community.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\73XBWAUL\\Touvron et al. - 2023 - LLaMA Open and Efficient Foundation Language Models.pdf;C\:\\Users\\twoca\\Zotero\\storage\\SBLC7IFV\\2302.html}
+}
+
+@inproceedings{tsaiMultimodalTransformerUnaligned2019,
+  title = {Multimodal {{Transformer}} for {{Unaligned Multimodal Language Sequences}}},
+  booktitle = {Proceedings of the 57th {{Annual Meeting}} of the {{Association}} for {{Computational Linguistics}}},
+  author = {Tsai, Yao-Hung Hubert and Bai, Shaojie and Liang, Paul Pu and Kolter, J. Zico and Morency, Louis-Philippe and Salakhutdinov, Ruslan},
+  editor = {Korhonen, Anna and Traum, David and M{\`a}rquez, Llu{\'i}s},
+  year = {2019},
+  month = jul,
+  pages = {6558--6569},
+  publisher = {Association for Computational Linguistics},
+  address = {Florence, Italy},
+  doi = {10.18653/v1/P19-1656},
+  urldate = {2025-02-21},
+  abstract = {Human language is often multimodal, which comprehends a mixture of natural language, facial gestures, and acoustic behaviors. However, two major challenges in modeling such multimodal human language time-series data exist: 1) inherent data non-alignment due to variable sampling rates for the sequences from each modality; and 2) long-range dependencies between elements across modalities. In this paper, we introduce the Multimodal Transformer (MulT) to generically address the above issues in an end-to-end manner without explicitly aligning the data. At the heart of our model is the directional pairwise crossmodal attention, which attends to interactions between multimodal sequences across distinct time steps and latently adapt streams from one modality to another. Comprehensive experiments on both aligned and non-aligned multimodal time-series show that our model outperforms state-of-the-art methods by a large margin. In addition, empirical analysis suggests that correlated crossmodal signals are able to be captured by the proposed crossmodal attention mechanism in MulT.},
+  file = {C:\Users\twoca\Zotero\storage\U8R2IXWZ\Tsai et al. - 2019 - Multimodal Transformer for Unaligned Multimodal Language Sequences.pdf}
 }
 
 @article{vaswaniAttentionAllYou2017,
@@ -324,7 +1303,69 @@
   pages = {11},
   abstract = {The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 Englishto-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.0 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature.},
   langid = {english},
-  keywords = {technology}
+  keywords = {NLP}
+}
+
+@book{waltonArgumentationSchemes2008,
+  title = {Argumentation {{Schemes}}},
+  author = {Walton, Douglas and Reed, Christopher and Macagno, Fabrizio},
+  year = {2008},
+  publisher = {Cambridge University Press},
+  address = {Cambridge},
+  doi = {10.1017/CBO9780511802034},
+  urldate = {2025-02-24},
+  abstract = {This book provides a systematic analysis of many common argumentation schemes and a compendium of 96 schemes. The study of these schemes, or forms of argument that capture stereotypical patterns of human reasoning, is at the core of argumentation research. Surveying all aspects of argumentation schemes from the ground up, the book takes the reader from the elementary exposition in the first chapter to the latest state of the art in the research efforts to formalize and classify the schemes, outlined in the last chapter. It provides a systematic and comprehensive account, with notation suitable for computational applications that increasingly make use of argumentation schemes.},
+  isbn = {978-0-521-89790-7},
+  file = {C:\Users\twoca\Zotero\storage\5S42GFMK\9AE7E4E6ABDE690565442B2BD516A8B6.html}
+}
+
+@incollection{waltonArgumentationTheoryVery2009,
+  title = {Argumentation {{Theory}}: {{A Very Short Introduction}}},
+  shorttitle = {Argumentation {{Theory}}},
+  booktitle = {Argumentation in {{Artificial Intelligence}}},
+  author = {Walton, Douglas},
+  editor = {Simari, Guillermo and Rahwan, Iyad},
+  year = {2009},
+  pages = {1--22},
+  publisher = {Springer US},
+  address = {Boston, MA},
+  doi = {10.1007/978-0-387-98197-0_1},
+  urldate = {2025-02-21},
+  abstract = {Since the time of the ancient Greek philosophers and rhetoricians, argumentation theorists have searched for the requirements that make an argument correct, by some appropriate standard of proof, by examining the errors of reasoning we make when we try to use arguments. These errors have long been called fallacies, and the logic textbooks have for over 2000 years tried to help students to identify these fallacies, and to deal with them when they are encountered. The problem was that deductive logic did not seem to be much use for this purpose, and there seemed to be no other obvious formal structure that could usefully be applied to them.},
+  isbn = {978-0-387-98197-0},
+  langid = {english},
+  keywords = {Argumentation Scheme,Argumentation Theory,Natural Language Text,Opening Stage,Short Introduction},
+  file = {C:\Users\twoca\Zotero\storage\6DYHPUVI\Walton - 2009 - Argumentation Theory A Very Short Introduction.pdf}
+}
+
+@misc{waltonArgumentMiningApplying2012,
+  type = {{{SSRN Scholarly Paper}}},
+  title = {Argument {{Mining}} by {{Applying Argumentation Schemes}}},
+  author = {Walton, Douglas},
+  year = {2012},
+  month = apr,
+  number = {2034890},
+  eprint = {2034890},
+  publisher = {Social Science Research Network},
+  address = {Rochester, NY},
+  urldate = {2025-02-21},
+  abstract = {This paper builds a method to help a student of informal logic to go through a text of discourse in a natural language and identify common types of arguments that occur in the text. It is shown how this procedure is very helpful for students learning informal logic skills, as they sometimes misidentify arguments. The paper presents the state-of-the-art on what resources are available to build a useful argument identification procedure, and includes a survey of work done on automated argument mining tools used in artificial intelligence.},
+  archiveprefix = {Social Science Research Network},
+  langid = {english},
+  keywords = {artificial intelligence,discourse analysis,finding arguments,informal logic,types of arguments},
+  file = {C:\Users\twoca\Zotero\storage\7JJG92I4\Walton - 2012 - Argument Mining by Applying Argumentation Schemes.pdf}
+}
+
+@misc{WeightsBiases2025,
+  title = {Weights \& {{Biases}}},
+  year = {2025},
+  month = mar,
+  journal = {W\&B},
+  urldate = {2025-03-19},
+  abstract = {Weights \& Biases, developer tools for machine learning},
+  howpublished = {httpss://wandb.ai/login},
+  langid = {english},
+  file = {C:\Users\twoca\Zotero\storage\H2L9RM8R\table.html}
 }
 
 @inproceedings{wuKnowCompDialAM2024Finetuning2024,
@@ -341,7 +1382,25 @@
   doi = {10.18653/v1/2024.argmining-1.10},
   urldate = {2024-10-17},
   abstract = {In this paper, we present our framework for DialAM-2024 TaskA: Identification of Propositional Relations and TaskB: Identification of Illocutionary Relations. The goal of task A is to detect argumentative relations between propositions in an argumentative dialogue. i.e., Inference, Conflict, Rephrase while task B aims to detect illocutionary relations between locutions and argumentative propositions in a dialogue. e.g., Asserting, Agreeing, Arguing, Disagreeing. Noticing the definition of the relations are strict and professional under the context of IAT framework, we meticulously curate prompts which not only incorporate formal definition of the relations, but also exhibit the subtle differences between them. The PTLMs are then fine-tuned on the human-designed prompts to enhance its discrimination capability in classifying different theoretical relations by learning from the human instruction and the ground truth samples. After extensive experiments, a fine-tuned DeBERTa-v3-base model exhibits the best performance among all PTLMs with an F1 score of 78.90\% on Task B. It is worth noticing that our framework ranks \#2 in the ILO - General official leaderboard.},
+  keywords = {Argument Mining},
   file = {C:\Users\twoca\Zotero\storage\WZX3ABDB\Wu et al. - 2024 - KnowComp at DialAM-2024 Fine-tuning Pre-trained Language Models for Dialogical Argument Mining with.pdf}
+}
+
+@misc{yeCrossModalSelfAttentionNetwork2019,
+  title = {Cross-{{Modal Self-Attention Network}} for {{Referring Image Segmentation}}},
+  author = {Ye, Linwei and Rochan, Mrigank and Liu, Zhi and Wang, Yang},
+  year = {2019},
+  month = apr,
+  number = {arXiv:1904.04745},
+  eprint = {1904.04745},
+  primaryclass = {cs},
+  publisher = {arXiv},
+  doi = {10.48550/arXiv.1904.04745},
+  urldate = {2025-02-25},
+  abstract = {We consider the problem of referring image segmentation. Given an input image and a natural language expression, the goal is to segment the object referred by the language expression in the image. Existing works in this area treat the language expression and the input image separately in their representations. They do not sufficiently capture long-range correlations between these two modalities. In this paper, we propose a cross-modal self-attention (CMSA) module that effectively captures the long-range dependencies between linguistic and visual features. Our model can adaptively focus on informative words in the referring expression and important regions in the input image. In addition, we propose a gated multi-level fusion module to selectively integrate self-attentive cross-modal features corresponding to different levels in the image. This module controls the information flow of features at different levels. We validate the proposed approach on four evaluation datasets. Our proposed approach consistently outperforms existing state-of-the-art methods.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computation and Language,Computer Science - Computer Vision and Pattern Recognition},
+  file = {C\:\\Users\\twoca\\Zotero\\storage\\AAAS2D24\\Ye et al. - 2019 - Cross-Modal Self-Attention Network for Referring Image Segmentation.pdf;C\:\\Users\\twoca\\Zotero\\storage\\FTR35EVQ\\1904.html}
 }
 
 @inproceedings{zhengKNOWCOMPPOKEMONTeam2024,
@@ -358,5 +1417,23 @@
   doi = {10.18653/v1/2024.argmining-1.11},
   urldate = {2024-10-17},
   abstract = {Dialogue Argument Mining(DialAM) is an important branch of Argument Mining(AM). DialAM-2024 is a shared task focusing on dialogue argument mining, which requires us to identify argumentative relations and illocutionary relations among proposition nodes and locution nodes. To accomplish this, we propose a two-stage pipeline, which includes the Two-Step S-Node Prediction Model in Stage 1 and the YA-Node Prediction Model in Stage 2. We also augment the training data in both stages and introduce context in the prediction of Stage 2. We successfully completed the task and achieved good results. Our team KNOWCOMP POKEMON ranked 1st in the ARI Focused score and 4th in the Global Focused score.},
+  keywords = {Argument Mining},
   file = {C:\Users\twoca\Zotero\storage\XDW4CCLN\Zheng et al. - 2024 - KNOWCOMP POKEMON Team at DialAM-2024 A Two-Stage Pipeline for Detecting Relations in Dialogue Argum.pdf}
+}
+
+@inproceedings{zongTILFAUnifiedFramework2023,
+  title = {{{TILFA}}: {{A Unified Framework}} for {{Text}}, {{Image}}, and {{Layout Fusion}} in {{Argument Mining}}},
+  shorttitle = {{{TILFA}}},
+  booktitle = {Proceedings of the 10th {{Workshop}} on {{Argument Mining}}},
+  author = {Zong, Qing and Wang, Zhaowei and Xu, Baixuan and Zheng, Tianshi and Shi, Haochen and Wang, Weiqi and Song, Yangqiu and Wong, Ginny and See, Simon},
+  editor = {Alshomary, Milad and Chen, Chung-Chi and Muresan, Smaranda and Park, Joonsuk and Romberg, Julia},
+  year = {2023},
+  month = dec,
+  pages = {139--147},
+  publisher = {Association for Computational Linguistics},
+  address = {Singapore},
+  doi = {10.18653/v1/2023.argmining-1.14},
+  urldate = {2025-02-21},
+  abstract = {A main goal of Argument Mining (AM) is to analyze an author`s stance. Unlike previous AM datasets focusing only on text, the shared task at the 10th Workshop on Argument Mining introduces a dataset including both texts and images. Importantly, these images contain both visual elements and optical characters. Our new framework, TILFA (A Unified Framework for Text, Image, and Layout Fusion in Argument Mining), is designed to handle this mixed data. It excels at not only understanding text but also detecting optical characters and recognizing layout details in images. Our model significantly outperforms existing baselines, earning our team, KnowComp, the 1st place in the leaderboard of Argumentative Stance Classification subtask in this shared task.},
+  file = {C:\Users\twoca\Zotero\storage\8HYECR76\Zong et al. - 2023 - TILFA A Unified Framework for Text, Image, and Layout Fusion in Argument Mining.pdf}
 }
