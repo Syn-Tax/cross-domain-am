@@ -1,4 +1,4 @@
-\documentclass[twocolumn,twoside]{article}
+\documentclass[twocolumn]{article}
 
 % Load basic packages
 \usepackage{balance}  % to better equalize the last page
@@ -12,6 +12,7 @@
 \usepackage{titling}	% allows you to move title up the page
 \usepackage[pdftex]{hyperref}
 \usepackage{fancyhdr}
+% \usepackage[left=2.75cm, right=2.75cm]{geometry}
 
 % \usepackage{caption}
 % \usepackage{subcaption}
@@ -189,7 +190,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={The Good, the Bad and the Noisy: Acoustic features in Cross-Domain Argument Mining},
+  pdftitle={The Good, the Bad and the Noisy: Acoustic Features in Cross-Domain Argument Mining},
   pdfauthor={Oscar Morris},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
@@ -199,7 +200,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % TITLE
-\title{The Good, the Bad and the Noisy: Acoustic features in
+\title{The Good, the Bad and the Noisy: Acoustic Features in
 Cross-Domain Argument Mining}
 \author{Oscar
 Morris\\ID: 2497790\\AC40001 Honours Project\\BSc (Hons) Computing Science\\University of Dundee\\Supervisor: Dr.~R.
@@ -226,11 +227,11 @@ features in Cross-Domain Argument Mining}}
 
 % add title
 \maketitle
+\raggedbottom
 
 
 %%%%%%%%%%%
 %%%%%%%%%%%
-
 \begin{abstract}
 Recent advances in argument relation identification have begun to look
 beyond the domain in which they were trained such that these systems can
@@ -240,7 +241,7 @@ practical application. In many domains, the data stem from a dialogue
 in the audio data have, until recently, gone unexplored. Work exploring
 the addition of acoustic data has previously been hampered by a lack of
 available corpora. In this project, the largest multimodal argument
-mining dataset currently available is presented, along with a
+relation identification dataset currently available is presented, along with a
 cross-domain dataset. These datasets are then used to evaluate nine
 different multimodal techniques in both an in-domain and a cross-domain
 environment. It was found that while the addition of acoustic features
@@ -260,7 +261,7 @@ components contained within text and discussion {[}1{]}. AM generally
 can cover many different tasks, including argumentative sequence
 detection, argument component classification and ARI in a specific
 domain. All of these tasks (often when combined) have many different
-applications such as fake news {[}2{]} and fallacy detection {[}3{]}
+applications such as fake news {[}2{]} and \mbox{fallacy detection {[}3{]}}
 with uses across many fields including political science, military and
 corporate intelligence, and education. In all of these fields, it is
 important to be able to extract arguments and their relations accurately
@@ -281,8 +282,8 @@ However, they have only had varying degrees of success in ARI with
 Mancini \emph{et al.} {[}6{]} finding the addition of acoustic features
 significantly increased performance while Mestre \emph{et al.} {[}7{]}
 find no significant difference. Recent advances in multimodal models and
-their pre-training have now allowed the effective addition of acoustic
-features {[}8, 9{]}, along with advances in other areas of natural
+their pre-training have now allowed the effective addition of \mbox{acoustic
+features {[}8, 9{]}}, along with advances in other areas of natural
 language processing, more specifically, the advent of the transformer
 {[}10{]} and the recent boom of large language models (LLMs), including
 their use in text-based argument mining {[}11{]}. Due to their size,
@@ -311,7 +312,7 @@ Although they are the largest text-audio datasets of their type which
 are currently available, when comparing to the large text only datasets
 they are still relatively small. For example, M-Arg and
 Vivesdebate-Speech contain 6,527 and 7,810 nodes with one of the largest
-debate datasets, QT30 {[}17{]} containing almost 20,000. This difference
+debate datasets, \mbox{QT30 {[}17{]}} containing almost 20,000. This difference
 in size means that there is still significant room for multimodal ARI
 datasets to grow and hints at a limitation surrounding the current
 approaches and models.
@@ -387,7 +388,7 @@ relation (also termed RA) holds between two propositions when one (the
 premise) is used to provide a reason to accept the other (the
 conclusion). This may include annotation of the kind of support
 e.g.~Modus Ponens or Argument from Expert Opinion. These subtypes of
-relation are often called \emph{argument schemes} {[}24, 25{]}.
+relation are often called \mbox{\emph{argument schemes} {[}24, 25{]}.}
 There are also several different inference structures (images from
 {[}1{]}):
 
@@ -521,7 +522,7 @@ improving the performance of language models {[}32, 33{]}. When
 the transformer was introduced these pre-training techniques were
 adapted for use in transformers creating models which are able to be
 fine-tuned with relatively minimal effort and compute to allow high
-performance on a wide variety of tasks {[}14, 34{]}. The
+performance on a wide variety of \mbox{tasks {[}14, 34{]}.} The
 pre-training approaches introduced by BERT and RoBERTa use a combination
 of masked language modelling (where the model is trained to predict the
 token hidden under a \texttt{{[}mask{]}} token) and next sentence
@@ -556,7 +557,8 @@ also possible to combine text and audio in order to gain insights from
 both modalities.
 
 Combining modalities (such as text and audio) has also proven to be a
-useful tool across several tasks, including medical imaging {[}41, 42{]} and natural language processing {[}43, 44{]}, including
+useful tool across several tasks, including medical imaging {[}41, 42{]}
+and natural language processing {[}43, 44{]}, including
 argument mining {[}6, 7{]}. Generally fusion techniques can be
 split into two categories: early and late. Early fusion techniques
 combine representations of each modality before being used as input to
@@ -570,7 +572,8 @@ information space, often using vectorisation techniques dependent on the
 modality. Late fusion techiques allow for the encodings of each modality
 to be combined in several different ways, often either simple operations
 (such as concatenation or an element-wise product) but a cross-modal
-attention module can also be used to combine the modalities {[}45, 46{]}. The fusion techniques used in this project are explained in
+attention module can also be used to combine the modalities {[}45, 46{]}.
+The fusion techniques used in this project are explained in
 detail in Section \ref{sec:models}.
 
 \subsection{Argument Mining}\label{argument-mining}
@@ -664,10 +667,8 @@ pair \((x_i, x_j)\) is related, what is the type of relation?), however
 this distinction is by no means universal among AM literature {[}16{]}.
 
 Much of the AM literature only evaluates their systems in the same
-domain (dataset) as it was trained on {[}1, 11--13{]},
-{[}47, 48{]}. Recently, however, more research has been conducted
-into how these models perform across different domains {[}15{]},
-{[}49, 50{]}, this generally involves training the model on one
+domain (dataset) as it was trained \mbox{on {[}1, 11--13, 47, 48{]}.} Recently, however, more research has been conducted
+into how these models perform across different domains {[}15, 49, 50{]}, this generally involves training the model on one
 domain and then evaluating its performance across several others. A good
 example of this is the ARIES benchmark {[}16{]}, which provides results
 for various different approaches to the ARI task across popular ARI
@@ -679,12 +680,12 @@ and cross-domain. In order to perform a cross-domain evaluation, it is
 useful to understand how the data can be constructed and what influence
 that has.
 
-Ruiz-Dolz \emph{et al.} (2025) {[}51{]} proposes techniques to answer
-the question: How do we sample unrelated arguments? If all possible
-examples of unrelated samples are used it constitutes an overwhelming
-proportion of the dataset (98-100\%) which would be detrimental to model
-performance in the real world. To achieve this, they propose the
-following methods:
+Considering the sampling of nodes, if the nodes are related it is fairly
+trivial, however, If all possible examples of unrelated samples are used
+it constitutes an overwhelming proportion of the dataset (98-100\%) which
+would be detrimental to model performance in the real world. Techniques
+to solve this problem were devised by Ruiz-Dolz \emph{et al.} {[}51{]} who
+propose the following methods:
 
 \begin{itemize}
 \tightlist
@@ -919,7 +920,7 @@ exists.
 To solve this problem, the PyTorch forced alignment API is able to take
 wildcard tokens as input, therefore, each locution can be searched for
 individually. To achieve this, the partial transcript used as input to
-the forced aligner took the following form: \texttt{*\ \{locution\}\ *}.
+the forced aligner took the following form: \mbox{\texttt{*\ \{locution\}\ *}}.
 
 Using this system allows the forced aligner to work well through
 crosstalk (since each locution's alignments are searched for
@@ -982,10 +983,10 @@ presented here (QT30-MM and Moral Maze) when compared to previous work
 in ARI and other AM subtasks. Table \ref{tbl:mm-comparison} compares the
 M-Arg {[}7{]}, VivesDebate-Speech {[}5{]}, UKDebates {[}56{]}, MM-USED
 {[}4{]} and MM-USED-fallacy {[}57{]}. As far as could be ascertained,
-QT30-MM is by far the biggest multimodal argument mining dataset created
+QT30-MM is by far the biggest multimodal ARI dataset created
 to date with 20 hours of argumentative audio and although the Moral Maze
 corpus only contains 5 hours of argumentative audio, it is the only
-cross-domain corpus.
+cross-domain corpus. It should be noted, however, that the MM-USED and MM-USED-fallacy are larger argument mining datasets but only contain annotations for ACC or fallacy detection.
 
 \begin{table}[h]
 \centering
@@ -996,8 +997,8 @@ Dataset            & Task              & Length \\ \hline
 M-Arg              & ARI               & 7              \\
 VivesDebate-Speech & ARI, ASD          & 12             \\
 UKDebates          & Claim Detection   & 2              \\
-MM-USED            & ASD, ACC          & 3.6*           \\
-MM-USED-fallacy    & Fallacy Detection & 4.2*           \\ \hline
+MM-USED            & ACC          & 43*           \\
+MM-USED-fallacy    & Fallacy Detection & 37*           \\ \hline
 QT30-MM            & ARI               & 20             \\
 Moral Maze         & ARI               & 5              \\ \hline
 \end{tabular}
@@ -1234,7 +1235,7 @@ better than other pretrained transformers on the task of ARI {[}15{]}.
 To encode the text data, the RoBERTa-base model is used, with 12 encoder
 layers, each with 12 attention heads and a hidden size of 768, resulting
 in 110M total parameters\footnote{\url{https://huggingface.co/FacebookAI/roberta-base}}.
-Wav2Vec 2.0 is also used in many audio processing tasks {[}3, 6{]}
+Wav2Vec 2.0 is also used in many audio processing \mbox{tasks {[}3, 6{]}}
 and therefore is used to encode the audio data. To ensure both models
 output the same hidden size, the wav2vec2-base model is used with 95M
 total parameters\footnote{\url{https://huggingface.co/facebook/wav2vec2-base-960h}}.
@@ -1255,12 +1256,16 @@ encoders.
 
 In most text-processing approaches the data from each sequence is
 combined at the text level using special tokens defined in the encoder's
-tokeniser {[}16, 47, 48{]}. For this project, this approach
+\mbox{tokeniser {[}16, 47, 48{]}}. For this project, this approach
 is termed early sequence fusion. To achieve this, the input sequences
 can be delimited by a separator token, and the entire sequence wrapped
 in the start of sequence (SOS) and end of sequence (EOS) tokens. An
 example using the RoBERTa tokeniser takes the following form:
-\texttt{\textless{}s\textgreater{}\ {[}sequence\ 1{]}\ \textless{}/s\textgreater{}\ {[}sequence\ 2{]}\ \textless{}/s\textgreater{}}.
+
+\begin{quote}
+\texttt{\textless{}s\textgreater{}\ {[}sequence\ 1{]}\ \textless{}/s\textgreater{}\ {[}sequence\ 2{]}\ \textless{}/s\textgreater{}}
+\end{quote}
+
 Here the \texttt{\textless{}s\textgreater{}} token corresponds to the
 SOS, and \texttt{\textless{}/s\textgreater{}} does the job of both the
 separator token and the EOS token.
@@ -1353,7 +1358,9 @@ ensure all values (across the requested dimension) lie in the range
 \([0,1]\) and sum to 1, the softmax function for a vector \(\mathbf{x}\)
 is given in Equation \ref{eq:softmax}.
 
-\begin{codelisting}
+\begin{equation} \text{Softmax}(x_i) = \frac{\exp(x_i)}{\sum_j \exp(x_j)} \label{eq:softmax}\end{equation}
+
+\begin{codelisting}[H]
 
 \caption{PyTorch forward method for a crossmodal attention mechanism.}\label{lst:crossattention}
 
@@ -1376,8 +1383,6 @@ is given in Equation \ref{eq:softmax}.
 \end{Shaded}
 
 \end{codelisting}
-
-\begin{equation} \text{Softmax}(x_i) = \frac{\exp(x_i)}{\sum_j \exp(x_j)} \label{eq:softmax}\end{equation}
 
 \section{Results}\label{results}
 
@@ -1698,32 +1703,7 @@ Majority      & .15          & .15          & .15          \\ \hline
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
-\centering
-\caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 4-class problem. The mean is taken across all Moral Maze subcorpora. \label{tbl:results-seq-4class-cd}}
-\begin{tabular}{|l|ll|}
-\hline
-Model         & Early       & Late      \\ \hline
-Text Only     & .46         & .30       \\
-Audio Only    & .37         & .28       \\
-Concatenation & .45         & .30       \\ \hline
-Random        & \multicolumn{2}{c|}{.23} \\
-Majority      & \multicolumn{2}{c|}{.15} \\ \hline
-\end{tabular}
-\end{table}
-
-\begin{table}[h]
-\centering
-\caption{Class F1 distribution for text only and CA audio SCS models on banking subcorpus.\label{tbl:class-f1-4class-banking}}
-\begin{tabular}{|l|llll|}
-\hline
-Model     & NO & RA & CA & MA              \\ \hline
-Text Only & .67         & .60         & .41         & .065 \\
-CA Audio  & .65         & .64         & .41         & .095 \\ \hline
-\end{tabular}
-\end{table}
-
-\begin{table*}[t!]
+\begin{table*}[t]
 \centering
 \caption{Cross-Domain macro-averaged F1 scores on 4-class SCS trained models. Best scores in each column are shown in bold. \label{tbl:cross-4-SCS}}
 \begin{tabular}{|l|llllllll|l|}
@@ -1740,7 +1720,33 @@ Majority      & .16          & .15          & .15          & .15          & .15 
 \end{tabular}
 \end{table*}
 
-Table \ref{tbl:results-seq-4class-cd} compares early and late sequence
+\begin{table}[h]
+\centering
+\caption{Macro-F1 scores across sequence fusion types when trained on SCS on the 4-class problem. The mean is taken across all Moral Maze subcorpora. \label{tbl:cross-4-seq}}
+\begin{tabular}{|l|ll|}
+\hline
+Model         & Early       & Late      \\ \hline
+Text Only     & .46         & .30       \\
+Audio Only    & .37         & .28       \\
+Concatenation & .45         & .30       \\ \hline
+Random        & \multicolumn{2}{c|}{.23} \\
+Majority      & \multicolumn{2}{c|}{.15} \\ \hline
+\end{tabular}
+\end{table}
+
+
+\begin{table}[h]
+\centering
+\caption{Class F1 distribution for text only and CA audio SCS models on banking subcorpus.\label{tbl:class-f1-4class-banking}}
+\begin{tabular}{|l|llll|}
+\hline
+Model     & NO & RA & CA & MA              \\ \hline
+Text Only & .67         & .60         & .41         & .065 \\
+CA Audio  & .65         & .64         & .41         & .095 \\ \hline
+\end{tabular}
+\end{table}
+
+Table \ref{tbl:cross-4-seq} compares early and late sequence
 fusion in a cross-domain setting. The results reported are the
 arithmetic mean across the Moral Maze subcorpora. Generally the increase
 is similar to that found in the in-domain evaluation with approximately
@@ -1779,12 +1785,6 @@ inference in all cases. Similarly to the in-domain results, there was no
 resampling of the training data that could be found to change the F1
 distribution across classes.
 
-\begin{figure}[H]
-\centering
-\centering
-\includegraphics[width=5cm]{text-only-conf-mat-4class-banking}
-\caption{Text only model confusion matrix on the banking subcorpus.\label{fig:res-cd-text-banking}}
-\end{figure}
 
 \begin{figure}[H]
 \centering
@@ -1792,24 +1792,14 @@ distribution across classes.
 \caption{CA Audio model confusion matrix on the banking subcorpus.\label{fig:res-cd-ca-banking}}
 \end{figure}
 
-\begin{table*}[t]
+\begin{figure}[H]
 \centering
-\caption{Cross-Domain macro-averaged F1 scores on 3-class SCS trained models. Best scores in each column are shown in bold. \label{tbl:cross-3-SCS}}
-\begin{tabular}{|l|llllllll|l|}
-\hline
-Model         & B            & E            & M            & P            & S            & G            & H            & W            & Mean  \\ \hline
-Text Only     & .54          & .47          & .50          & \textbf{.50} & .58          & .55          & .63          & .51          & \textbf{.54} \\
-Audio Only    & .21          & .20          & .22          & .21          & .20          & .21          & .22          & .21          & .21           \\ \hline
-Concatenation & .58          & \textbf{.49} & .47          & \textbf{.50} & .57          & \textbf{.57} & .59          & .49          & \textbf{.54} \\
-Product       & .51          & .45          & .44          & .47          & .53          & .54          & \textbf{.64} & .47          & .51          \\
-CA Text       & .43          & .40          & .43          & .41          & .44          & .46          & .47          & .44          & .44          \\
-CA Audio      & \textbf{.59} & .44          & \textbf{.52} & .48          & \textbf{.59} & .54          & .60          & \textbf{.52} & \textbf{.54} \\ \hline
-Random        & .27          & .32          & .30          & .27          & .30          & .29          & .29          & .33          & .30          \\
-Majority      & .21          & .21          & .22          & .21          & .20          & .21          & .22          & .20          & .21           \\ \hline
-\end{tabular}
-\end{table*}
+\includegraphics[width=5cm]{text-only-conf-mat-4class-banking}
+\caption{Text only model confusion matrix on the banking subcorpus.\label{fig:res-cd-text-banking}}
+\end{figure}
 
 \subsubsection{The 3-Class Problem}\label{sec:cd-3class}
+
 
 Next, the data from the 3-class problem is extended across different
 domains. The data can be seen in Table \ref{tbl:cross-3-SCS}. Generally
@@ -1872,6 +1862,23 @@ that this overprediction is worse than when evaluated in-domain.
 \caption{CA Audio model confusion matrix on the banking subcorpus.\label{fig:res-cd-ca-banking-3}}
 \end{figure}
 
+\begin{table*}[t]
+\centering
+\caption{Cross-Domain macro-averaged F1 scores on 3-class SCS trained models. Best scores in each column are shown in bold. \label{tbl:cross-3-SCS}}
+\begin{tabular}{|l|llllllll|l|}
+\hline
+Model         & B            & E            & M            & P            & S            & G            & H            & W            & Mean  \\ \hline
+Text Only     & .54          & .47          & .50          & \textbf{.50} & .58          & .55          & .63          & .51          & \textbf{.54} \\
+Audio Only    & .21          & .20          & .22          & .21          & .20          & .21          & .22          & .21          & .21           \\ \hline
+Concatenation & .58          & \textbf{.49} & .47          & \textbf{.50} & .57          & \textbf{.57} & .59          & .49          & \textbf{.54} \\
+Product       & .51          & .45          & .44          & .47          & .53          & .54          & \textbf{.64} & .47          & .51          \\
+CA Text       & .43          & .40          & .43          & .41          & .44          & .46          & .47          & .44          & .44          \\
+CA Audio      & \textbf{.59} & .44          & \textbf{.52} & .48          & \textbf{.59} & .54          & .60          & \textbf{.52} & \textbf{.54} \\ \hline
+Random        & .27          & .32          & .30          & .27          & .30          & .29          & .29          & .33          & .30          \\
+Majority      & .21          & .21          & .22          & .21          & .20          & .21          & .22          & .20          & .21           \\ \hline
+\end{tabular}
+\end{table*}
+
 \section{Limitations}\label{sec:limitations}
 
 \paragraph{Models}\label{models}
@@ -1910,8 +1917,7 @@ result of this project, two major argumentative corpora have been
 extended with acoustic features into multimodal datasets for use in many
 areas of argumentative research. This includes the large QT30 corpus, of
 which a multimodal subset (QT30-MM) is presented, and the much smaller,
-cross-domain Moral Maze corpus. QT30-MM is the largest dataset for any
-AM task currently available.
+cross-domain Moral Maze corpus. QT30-MM is the largest dataset for the ARI task which is currently available.
 
 Goal (ii) of this project was to use the created datasets to conduct an
 evaluation of different multimodal techniques in a cross-domain setting,
@@ -2515,6 +2521,7 @@ Materials}\label{poster-and-demonstration-materials}
 
 %%%%%%%%%%%
 %%%%%%%%%%%
+
 
 % END DOCUMENT
 \end{document}
