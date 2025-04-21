@@ -228,22 +228,22 @@ def baselines(data_files, relation_types):
         metrics_fn(preds, targets)
 
 if __name__ == "__main__":
-    N_CLASSES = 3
+    N_CLASSES = 4
     baselines(
         [
             # ("data/Question Time/test-4-SCS.json", True),
             # ("data/Question Time/test-4-LCS.json", True),
             # ("data/Question Time/test-4-US.json", True),
-            ("data/Moral Maze/Banking/complete-3-SCS.json", False),
-            ("data/Moral Maze/Empire/complete-3-SCS.json", False),
-            ("data/Moral Maze/Money/complete-3-SCS.json", False),
-            ("data/Moral Maze/Families/complete-3-SCS.json", False),
-            ("data/Moral Maze/Syria/complete-3-SCS.json", False),
-            ("data/Moral Maze/GreenBelt/complete-3-SCS.json", False),
-            ("data/Moral Maze/DDay/complete-3-SCS.json", False),
-            ("data/Moral Maze/Hypocrisy/complete-3-SCS.json", False),
-            ("data/Moral Maze/Welfare/complete-3-SCS.json", False),
+            ("data/Moral Maze/Banking/complete-4-LCS.json", False),
+            ("data/Moral Maze/Empire/complete-4-LCS.json", False),
+            ("data/Moral Maze/Money/complete-4-LCS.json", False),
+            ("data/Moral Maze/Families/complete-4-LCS.json", False),
+            ("data/Moral Maze/Syria/complete-4-LCS.json", False),
+            ("data/Moral Maze/GreenBelt/complete-4-LCS.json", False),
+            ("data/Moral Maze/DDay/complete-4-LCS.json", False),
+            ("data/Moral Maze/Hypocrisy/complete-4-LCS.json", False),
+            ("data/Moral Maze/Welfare/complete-4-LCS.json", False),
         ],
-        # {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
-        {"None": 0, "Support": 1, "Attack": 2}
+        {"NO": 0, "RA": 1, "CA": 2, "MA": 3}
+        # {"None": 0, "Support": 1, "Attack": 2}
     )

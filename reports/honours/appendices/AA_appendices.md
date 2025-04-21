@@ -1,5 +1,5 @@
 ---
-bibliography: [../../Cross-Domain AM.bib]
+bibliography: [../Cross-Domain AM.bib]
 ---
 
 \appendix
