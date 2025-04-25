@@ -1,1 +1,1057 @@
-[{"node_1": {"id": 112337, "locution": "Esther : And that is not something that is foreign to British history", "proposition": "that is not something that is foreign to British history", "relations": [], "audio": null, "audio_score": 0.9466994439180081, "episode": null}, "node_2": {"id": 112891, "locution": "AM : that plays against Matthew's point", "proposition": "that plays against Matthew's point", "relations": [], "audio": null, "audio_score": 0.6082459573724097, "episode": null}, "labels": 0}, {"node_1": {"id": 25501, "locution": "Esther :  Actually it was an unjust war that was being levelled against the Africans", "proposition": "it was an unjust war that was being levelled against the Africans", "relations": [{"type": "RA", "to_node_id": 25496}], "audio": null, "audio_score": 0.8952366472258291, "episode": null}, "node_2": {"id": 29929, "locution": "MP : That's a caricature", "proposition": "That's a caricature", "relations": [{"type": "RA", "to_node_id": 112809}], "audio": null, "audio_score": 0.29766489994815654, "episode": null}, "labels": 0}, {"node_1": {"id": 112256, "locution": "Esther : That's not what I stated", "proposition": "That's not what Esther stated", "relations": [{"type": "RA", "to_node_id": 112252}], "audio": null, "audio_score": 0.8380387609913236, "episode": null}, "node_2": {"id": 29967, "locution": "NF : it is great today", "proposition": "it is great today", "relations": [], "audio": null, "audio_score": 0.7614964045351371, "episode": null}, "labels": 0}, {"node_1": {"id": 112636, "locution": "MP : It's not racism?", "proposition": "It's racism", "relations": [{"type": "CA", "to_node_id": 28760}], "audio": null, "audio_score": 0.5405252469437463, "episode": null}, "node_2": {"id": 28772, "locution": "JA : Because you can be convicted of being racially offensive without being a racist", "proposition": "you can be convicted of being racially offensive without being a racist", "relations": [{"type": "CA", "to_node_id": 112636}, {"type": "RA", "to_node_id": 28778}, {"type": "RA", "to_node_id": 28781}], "audio": null, "audio_score": 0.5953971669137452, "episode": null}, "labels": 2}, {"node_1": {"id": 28772, "locution": "JA : Because you can be convicted of being racially offensive without being a racist", "proposition": "you can be convicted of being racially offensive without being a racist", "relations": [{"type": "CA", "to_node_id": 112636}, {"type": "RA", "to_node_id": 28778}, {"type": "RA", "to_node_id": 28781}], "audio": null, "audio_score": 0.5953971669137452, "episode": null}, "node_2": {"id": 28778, "locution": "JA : Margaret Thatcher's daughter made some inappropriate comments", "proposition": "Margaret Thatcher's daughter made some inappropriate comments", "relations": [], "audio": null, "audio_score": 0.6352803459075014, "episode": null}, "labels": 1}, {"node_1": {"id": 28760, "locution": "JA : but it's not racism", "proposition": "it's not racism", "relations": [{"type": "RA", "to_node_id": 112630}, {"type": "CA", "to_node_id": 112630}], "audio": null, "audio_score": 0.5478518307209015, "episode": null}, "node_2": {"id": 112636, "locution": "MP : It's not racism?", "proposition": "It's racism", "relations": [{"type": "CA", "to_node_id": 28760}], "audio": null, "audio_score": 0.5405252469437463, "episode": null}, "labels": 2}, {"node_1": {"id": 38755, "locution": "Anne  : so would you be also happy for them to face trial for atrocities committed against white settlers and British service personnel at the time?", "proposition": "Esther would not be also happy for them to face trial for atrocities committed against white settlers and British service personnel at the time", "relations": [], "audio": null, "audio_score": 0.6711738643796831, "episode": null}, "node_2": {"id": 112684, "locution": "AM : How could it possibly follow from this very deleterious account of colonialism that you have just given?", "proposition": "it could not possibly follow from this very deleterious account of colonialism that JA has just given", "relations": [{"type": "CA", "to_node_id": 112682}], "audio": null, "audio_score": 0.8767665030638373, "episode": null}, "labels": 0}, {"node_1": {"id": 25506, "locution": "Esther : They were dispossessed of their land, which began formally, in terms of the carving up of Africa", "proposition": "They were dispossessed of their land, which began formally, in terms of the carving up of Africa", "relations": [{"type": "RA", "to_node_id": 25496}], "audio": null, "audio_score": 0.8948388098506257, "episode": null}, "node_2": {"id": 26160, "locution": "MT : in almost any jurisdiction in the world it would be seen as a crime", "proposition": "in almost any jurisdiction in the world it would be seen as a crime", "relations": [{"type": "RA", "to_node_id": 26159}], "audio": null, "audio_score": 0.9541297938142504, "episode": null}, "labels": 0}, {"node_1": {"id": 28852, "locution": "JA : The trains ran on crime", "proposition": "The trains ran on crime", "relations": [{"type": "RA", "to_node_id": 28853}], "audio": null, "audio_score": 0.8381439677382981, "episode": null}, "node_2": {"id": 28853, "locution": "JA : the Jewish community was shipped to Auschwitz", "proposition": "the Jewish community was shipped to Auschwitz", "relations": [], "audio": null, "audio_score": 0.6983593000984956, "episode": null}, "labels": 1}, {"node_1": {"id": 26094, "locution": "Esther : It's a specific case", "proposition": "It's a specific case", "relations": [{"type": "RA", "to_node_id": 26093}], "audio": null, "audio_score": 0.8840938022654478, "episode": null}, "node_2": {"id": 112773, "locution": "MB : How much sympathy generally around the table was there for Lee Jasper's view that some form of Mdeba moment, as he put it, reconciliation or acknowledgment of the sins of the past is something that we desperately require to bring about an inclusive multi-racial community?", "proposition": "there was xxx much sympathy generally around the table for Lee Jasper's view that some form of Mdeba moment, as he put it, reconciliation or acknowledgment of the sins of the past is something that we desperately require to bring about an inclusive multi-racial community", "relations": [], "audio": null, "audio_score": 0.6877994229023655, "episode": null}, "labels": 0}, {"node_1": {"id": 112684, "locution": "AM : How could it possibly follow from this very deleterious account of colonialism that you have just given?", "proposition": "it could not possibly follow from this very deleterious account of colonialism that JA has just given", "relations": [{"type": "CA", "to_node_id": 112682}], "audio": null, "audio_score": 0.8767665030638373, "episode": null}, "node_2": {"id": 112682, "locution": "JA : I want a moment that would produce more inclusivity", "proposition": "JA wants a moment that would produce more inclusivity", "relations": [], "audio": null, "audio_score": 0.8929642715708016, "episode": null}, "labels": 2}, {"node_1": {"id": 28903, "locution": "AM : One just seems to take you into a way of feeling worse about everything", "proposition": "One just seems to take you into a way of feeling worse about everything", "relations": [{"type": "RA", "to_node_id": 112684}, {"type": "RA", "to_node_id": 112685}], "audio": null, "audio_score": 0.8103157722546409, "episode": null}, "node_2": {"id": 112685, "locution": "AM : How is that going to make young black Britons feel better?", "proposition": "that is not going to make young black Britons feel better", "relations": [], "audio": null, "audio_score": 0.5190629350088004, "episode": null}, "labels": 1}, {"node_1": {"id": 28941, "locution": "JA : Acknowledgment, in a Christian sense", "proposition": "Acknowledgment, in a Christian sense", "relations": [{"type": "MA", "to_node_id": 112713}], "audio": null, "audio_score": 0.5915786825459112, "episode": null}, "node_2": {"id": 28942, "locution": "AM : Hang on, Enoch Powell acknowledged the maltreatment of the Mau Mau in a stirring speech", "proposition": "Enoch Powell acknowledged the maltreatment of the Mau Mau in a stirring speech", "relations": [{"type": "CA", "to_node_id": 28941}], "audio": null, "audio_score": 0.5684231930141765, "episode": null}, "labels": 2}, {"node_1": {"id": 28853, "locution": "JA : the Jewish community was shipped to Auschwitz", "proposition": "the Jewish community was shipped to Auschwitz", "relations": [], "audio": null, "audio_score": 0.6983593000984956, "episode": null}, "node_2": {"id": 28854, "locution": "AM :  Do you make that parallel?", "proposition": "JA makes that parallel", "relations": [{"type": "MA", "to_node_id": 28853}], "audio": null, "audio_score": 0.48687334715024283, "episode": null}, "labels": 3}, {"node_1": {"id": 38749, "locution": "Anne  : We also know that there were atrocities on both sides, including in this big group of people that you've just referred to", "proposition": "there were atrocities on both sides, including in this big group of people that Esther has just referred to", "relations": [], "audio": null, "audio_score": 0.9322584570944309, "episode": null}, "node_2": {"id": 28760, "locution": "JA : but it's not racism", "proposition": "it's not racism", "relations": [{"type": "RA", "to_node_id": 112630}, {"type": "CA", "to_node_id": 112630}], "audio": null, "audio_score": 0.5478518307209015, "episode": null}, "labels": 0}, {"node_1": {"id": 112713, "locution": "AM : What can we do to make you happy?", "proposition": "we can do xxx to make JA happy", "relations": [], "audio": null, "audio_score": 0.42469900678433653, "episode": null}, "node_2": {"id": 28941, "locution": "JA : Acknowledgment, in a Christian sense", "proposition": "Acknowledgment, in a Christian sense", "relations": [{"type": "MA", "to_node_id": 112713}], "audio": null, "audio_score": 0.5915786825459112, "episode": null}, "labels": 3}, {"node_1": {"id": 112315, "locution": "Esther : so yes", "proposition": "there were insurgents as Melanie would call them", "relations": [], "audio": null, "audio_score": 0.7378671680177961, "episode": null}, "node_2": {"id": 112717, "locution": "AM : In a sentence, do you think this particular court case might provide this Mdeba moment", "proposition": "In a sentence, JA thinks / does not think this particular court case might provide this Mdeba moment", "relations": [], "audio": null, "audio_score": 0.8042348921936873, "episode": null}, "labels": 0}, {"node_1": {"id": 112275, "locution": "Melanie : It's only for you colonialism that is on trial here, not the behaviour of the insurgents at the time", "proposition": "It's only for Esther colonialism that is on trial here, not the behaviour of the insurgents at the time", "relations": [{"type": "RA", "to_node_id": 112245}], "audio": null, "audio_score": 0.7003390323596073, "episode": null}, "node_2": {"id": 29809, "locution": "MT : That's what drove it", "proposition": "That's what drove it", "relations": [{"type": "CA", "to_node_id": 112891}], "audio": null, "audio_score": 0.49669691000599414, "episode": null}, "labels": 0}, {"node_1": {"id": 28854, "locution": "AM :  Do you make that parallel?", "proposition": "JA makes that parallel", "relations": [{"type": "MA", "to_node_id": 28853}], "audio": null, "audio_score": 0.48687334715024283, "episode": null}, "node_2": {"id": 28862, "locution": "JA : overall, if you ask people who have been subject to colonialism, it is an experience that leaves them financially much poorer, psychologically degraded in terms of their humanity", "proposition": "overall, if you ask people who have been subject to colonialism, it is an experience that leaves them financially much poorer, psychologically degraded in terms of their humanity", "relations": [{"type": "RA", "to_node_id": 28854}], "audio": null, "audio_score": 0.7418225034450491, "episode": null}, "labels": 1}, {"node_1": {"id": 112685, "locution": "AM : How is that going to make young black Britons feel better?", "proposition": "that is not going to make young black Britons feel better", "relations": [], "audio": null, "audio_score": 0.5190629350088004, "episode": null}, "node_2": {"id": 28905, "locution": "JA : We are here on Mandela's birthday and his leadership in relation to South Africa was one in which he sought to explore these issues, reconcile them, bring them to account, to apologise, to effect reparation where necessary, to acknowledge the crime", "proposition": "We are here on Mandela's birthday and his leadership in relation to South Africa was one in which he sought to explore these issues, reconcile them, bring them to account, to apologise, to effect reparation where necessary, to acknowledge the crime", "relations": [{"type": "CA", "to_node_id": 112685}, {"type": "RA", "to_node_id": 112686}], "audio": null, "audio_score": 0.7878586819541513, "episode": null}, "labels": 2}, {"node_1": {"id": 26064, "locution": "Melanie : one could equally say the context for the atrocities having been carried out by agents of the British Government at the time, the context was the atrocities being carried out against them by the Mau Mau", "proposition": "the context for the atrocities having been carried out by agents of the British Government at the time, the context was the atrocities being carried out against them by the Mau Mau", "relations": [{"type": "CA", "to_node_id": 26061}, {"type": "RA", "to_node_id": 112245}], "audio": null, "audio_score": 0.822860579567662, "episode": null}, "node_2": {"id": 112751, "locution": "JA : Thousands were made landless, homeless and reduced to absolute poverty", "proposition": "Thousands were made landless, homeless and reduced to absolute poverty", "relations": [{"type": "RA", "to_node_id": 112715}, {"type": "RA", "to_node_id": 28946}], "audio": null, "audio_score": 0.9270470847766246, "episode": null}, "labels": 0}, {"node_1": {"id": 112714, "locution": "AM : that probably isn't enough for you", "proposition": "that probably isn't enough for JA", "relations": [], "audio": null, "audio_score": 0.3049474955846866, "episode": null}, "node_2": {"id": 112715, "locution": "JA : I think they are due reparation", "proposition": "they are due reparation", "relations": [{"type": "RA", "to_node_id": 112714}], "audio": null, "audio_score": 0.5480663447773882, "episode": null}, "labels": 1}, {"node_1": {"id": 28772, "locution": "JA : Because you can be convicted of being racially offensive without being a racist", "proposition": "you can be convicted of being racially offensive without being a racist", "relations": [{"type": "CA", "to_node_id": 112636}, {"type": "RA", "to_node_id": 28778}, {"type": "RA", "to_node_id": 28781}], "audio": null, "audio_score": 0.5953971669137452, "episode": null}, "node_2": {"id": 28781, "locution": "JA : I have heard lots of judgments of people being found guilty of uttering racially offensive remarks without themselves being what I would call a card carrying racist", "proposition": "JA has heard lots of judgments of people being found guilty of uttering racially offensive remarks without themselves being what JA would call a card carrying racist", "relations": [], "audio": null, "audio_score": 0.7847363889847266, "episode": null}, "labels": 1}, {"node_1": {"id": 28746, "locution": "JA : people who are powerless cannot be prejudiced", "proposition": "people who are powerless cannot be prejudiced", "relations": [], "audio": null, "audio_score": 0.41418115862804217, "episode": null}, "node_2": {"id": 112630, "locution": "MP : So when black people say, for example, Jews control the banks, that's not prejudice?", "proposition": "when black people say, for example, Jews control the banks, that's prejudice", "relations": [{"type": "CA", "to_node_id": 28746}], "audio": null, "audio_score": 0.7229054564171854, "episode": null}, "labels": 2}, {"node_1": {"id": 112342, "locution": "MB : What do you think is going on here?", "proposition": "What is going on here is xxx", "relations": [], "audio": null, "audio_score": 0.6589504896566786, "episode": null}, "node_2": {"id": 113244, "locution": "A revisionist :  actually the Empire wasn't so bad", "proposition": "the Empire wasn't so bad", "relations": [], "audio": null, "audio_score": 0.85087501257658, "episode": null}, "labels": 0}, {"node_1": {"id": 112289, "locution": "Esther : but I was also giving wider views around the importance of this case", "proposition": "Esther was also giving wider views around the importance of this case", "relations": [], "audio": null, "audio_score": 0.9717138913171045, "episode": null}, "node_2": {"id": 28946, "locution": "JA : acknowledgment and reparation for that is the minimum moral requisite position that is required from the United Kingdom", "proposition": "acknowledgment and reparation for that is the minimum moral requisite position that is required from the United Kingdom", "relations": [{"type": "RA", "to_node_id": 112716}], "audio": null, "audio_score": 0.8099178072208395, "episode": null}, "labels": 0}, {"node_1": {"id": 28905, "locution": "JA : We are here on Mandela's birthday and his leadership in relation to South Africa was one in which he sought to explore these issues, reconcile them, bring them to account, to apologise, to effect reparation where necessary, to acknowledge the crime", "proposition": "We are here on Mandela's birthday and his leadership in relation to South Africa was one in which he sought to explore these issues, reconcile them, bring them to account, to apologise, to effect reparation where necessary, to acknowledge the crime", "relations": [{"type": "CA", "to_node_id": 112685}, {"type": "RA", "to_node_id": 112686}], "audio": null, "audio_score": 0.7878586819541513, "episode": null}, "node_2": {"id": 112686, "locution": "JA :  You see, the legacy of colonialism for white people is white privilege in the modern day setting.", "proposition": "the legacy of colonialism for white people is white privilege in the modern day setting.", "relations": [], "audio": null, "audio_score": 0.8251319955344554, "episode": null}, "labels": 1}, {"node_1": {"id": 112715, "locution": "JA : I think they are due reparation", "proposition": "they are due reparation", "relations": [{"type": "RA", "to_node_id": 112714}], "audio": null, "audio_score": 0.5480663447773882, "episode": null}, "node_2": {"id": 112751, "locution": "JA : Thousands were made landless, homeless and reduced to absolute poverty", "proposition": "Thousands were made landless, homeless and reduced to absolute poverty", "relations": [{"type": "RA", "to_node_id": 112715}, {"type": "RA", "to_node_id": 28946}], "audio": null, "audio_score": 0.9270470847766246, "episode": null}, "labels": 1}, {"node_1": {"id": 25496, "locution": "Esther : This was a war of liberation", "proposition": "This was a war of liberation", "relations": [{"type": "RA", "to_node_id": 38758}], "audio": null, "audio_score": 0.8020049118995667, "episode": null}, "node_2": {"id": 38223, "locution": "Anne  : This took place in the colonial era", "proposition": "This took place in the colonial era", "relations": [{"type": "RA", "to_node_id": 38749}], "audio": null, "audio_score": 0.6605682346008478, "episode": null}, "labels": 0}, {"node_1": {"id": 112630, "locution": "MP : So when black people say, for example, Jews control the banks, that's not prejudice?", "proposition": "when black people say, for example, Jews control the banks, that's prejudice", "relations": [{"type": "CA", "to_node_id": 28746}], "audio": null, "audio_score": 0.7229054564171854, "episode": null}, "node_2": {"id": 28760, "locution": "JA : but it's not racism", "proposition": "it's not racism", "relations": [{"type": "RA", "to_node_id": 112630}, {"type": "CA", "to_node_id": 112630}], "audio": null, "audio_score": 0.5478518307209015, "episode": null}, "labels": 1}, {"node_1": {"id": 112684, "locution": "AM : How could it possibly follow from this very deleterious account of colonialism that you have just given?", "proposition": "it could not possibly follow from this very deleterious account of colonialism that JA has just given", "relations": [{"type": "CA", "to_node_id": 112682}], "audio": null, "audio_score": 0.8767665030638373, "episode": null}, "node_2": {"id": 28903, "locution": "AM : One just seems to take you into a way of feeling worse about everything", "proposition": "One just seems to take you into a way of feeling worse about everything", "relations": [{"type": "RA", "to_node_id": 112684}, {"type": "RA", "to_node_id": 112685}], "audio": null, "audio_score": 0.8103157722546409, "episode": null}, "labels": 1}, {"node_1": {"id": 112252, "locution": "Esther :  that's not correct", "proposition": "that's not correct", "relations": [{"type": "CA", "to_node_id": 112275}], "audio": null, "audio_score": 0.9368801712989807, "episode": null}, "node_2": {"id": 29953, "locution": "MT : Maybe there should be a window of apology and getting back to common sense.", "proposition": "there should be a window of apology and getting back to common sense.", "relations": [], "audio": null, "audio_score": 0.417050414242401, "episode": null}, "labels": 0}, {"node_1": {"id": 28854, "locution": "AM :  Do you make that parallel?", "proposition": "JA makes that parallel", "relations": [{"type": "MA", "to_node_id": 28853}], "audio": null, "audio_score": 0.48687334715024283, "episode": null}, "node_2": {"id": 28861, "locution": "JA : in order to finance the trade and the extraction of resource in African countries, infrastructure was built and there was a degree of benevolence", "proposition": "in order to finance the trade and the extraction of resource in African countries, infrastructure was built and there was a degree of benevolence", "relations": [{"type": "RA", "to_node_id": 28854}], "audio": null, "audio_score": 0.8237979623330075, "episode": null}, "labels": 1}, {"node_1": {"id": 112630, "locution": "MP : So when black people say, for example, Jews control the banks, that's not prejudice?", "proposition": "when black people say, for example, Jews control the banks, that's prejudice", "relations": [{"type": "CA", "to_node_id": 28746}], "audio": null, "audio_score": 0.7229054564171854, "episode": null}, "node_2": {"id": 28757, "locution": "JA : That's racially offensive", "proposition": "That's racially offensive", "relations": [{"type": "CA", "to_node_id": 112630}], "audio": null, "audio_score": 0.5523509547735254, "episode": null}, "labels": 2}, {"node_1": {"id": 38749, "locution": "Anne  : We also know that there were atrocities on both sides, including in this big group of people that you've just referred to", "proposition": "there were atrocities on both sides, including in this big group of people that Esther has just referred to", "relations": [], "audio": null, "audio_score": 0.9322584570944309, "episode": null}, "node_2": {"id": 28941, "locution": "JA : Acknowledgment, in a Christian sense", "proposition": "Acknowledgment, in a Christian sense", "relations": [{"type": "MA", "to_node_id": 112713}], "audio": null, "audio_score": 0.5915786825459112, "episode": null}, "labels": 0}, {"node_1": {"id": 112686, "locution": "JA :  You see, the legacy of colonialism for white people is white privilege in the modern day setting.", "proposition": "the legacy of colonialism for white people is white privilege in the modern day setting.", "relations": [], "audio": null, "audio_score": 0.8251319955344554, "episode": null}, "node_2": {"id": 28907, "locution": "JA : The legacy of colonialism for black people is, you know, poverty", "proposition": "The legacy of colonialism for black people is, you know, poverty", "relations": [{"type": "RA", "to_node_id": 112686}], "audio": null, "audio_score": 0.7958994957131196, "episode": null}, "labels": 1}]
+[
+    {
+        "node_1": {
+            "id": 112337,
+            "locution": "Esther : And that is not something that is foreign to British history",
+            "proposition": "that is not something that is foreign to British history",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.9466994439180081,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112891,
+            "locution": "AM : that plays against Matthew's point",
+            "proposition": "that plays against Matthew's point",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.6082459573724097,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 25501,
+            "locution": "Esther :  Actually it was an unjust war that was being levelled against the Africans",
+            "proposition": "it was an unjust war that was being levelled against the Africans",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 25496
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8952366472258291,
+            "episode": null
+        },
+        "node_2": {
+            "id": 29929,
+            "locution": "MP : That's a caricature",
+            "proposition": "That's a caricature",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112809
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.29766489994815654,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 112256,
+            "locution": "Esther : That's not what I stated",
+            "proposition": "That's not what Esther stated",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112252
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8380387609913236,
+            "episode": null
+        },
+        "node_2": {
+            "id": 29967,
+            "locution": "NF : it is great today",
+            "proposition": "it is great today",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.7614964045351371,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 112636,
+            "locution": "MP : It's not racism?",
+            "proposition": "It's racism",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 28760
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5405252469437463,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28772,
+            "locution": "JA : Because you can be convicted of being racially offensive without being a racist",
+            "proposition": "you can be convicted of being racially offensive without being a racist",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112636
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 28778
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 28781
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5953971669137452,
+            "episode": null
+        },
+        "labels": 2
+    },
+    {
+        "node_1": {
+            "id": 28772,
+            "locution": "JA : Because you can be convicted of being racially offensive without being a racist",
+            "proposition": "you can be convicted of being racially offensive without being a racist",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112636
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 28778
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 28781
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5953971669137452,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28778,
+            "locution": "JA : Margaret Thatcher's daughter made some inappropriate comments",
+            "proposition": "Margaret Thatcher's daughter made some inappropriate comments",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.6352803459075014,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 28760,
+            "locution": "JA : but it's not racism",
+            "proposition": "it's not racism",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112630
+                },
+                {
+                    "type": "CA",
+                    "to_node_id": 112630
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5478518307209015,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112636,
+            "locution": "MP : It's not racism?",
+            "proposition": "It's racism",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 28760
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5405252469437463,
+            "episode": null
+        },
+        "labels": 2
+    },
+    {
+        "node_1": {
+            "id": 38755,
+            "locution": "Anne  : so would you be also happy for them to face trial for atrocities committed against white settlers and British service personnel at the time?",
+            "proposition": "Esther would not be also happy for them to face trial for atrocities committed against white settlers and British service personnel at the time",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.6711738643796831,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112684,
+            "locution": "AM : How could it possibly follow from this very deleterious account of colonialism that you have just given?",
+            "proposition": "it could not possibly follow from this very deleterious account of colonialism that JA has just given",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112682
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8767665030638373,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 25506,
+            "locution": "Esther : They were dispossessed of their land, which began formally, in terms of the carving up of Africa",
+            "proposition": "They were dispossessed of their land, which began formally, in terms of the carving up of Africa",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 25496
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8948388098506257,
+            "episode": null
+        },
+        "node_2": {
+            "id": 26160,
+            "locution": "MT : in almost any jurisdiction in the world it would be seen as a crime",
+            "proposition": "in almost any jurisdiction in the world it would be seen as a crime",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 26159
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.9541297938142504,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 28852,
+            "locution": "JA : The trains ran on crime",
+            "proposition": "The trains ran on crime",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 28853
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8381439677382981,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28853,
+            "locution": "JA : the Jewish community was shipped to Auschwitz",
+            "proposition": "the Jewish community was shipped to Auschwitz",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.6983593000984956,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 26094,
+            "locution": "Esther : It's a specific case",
+            "proposition": "It's a specific case",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 26093
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8840938022654478,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112773,
+            "locution": "MB : How much sympathy generally around the table was there for Lee Jasper's view that some form of Mdeba moment, as he put it, reconciliation or acknowledgment of the sins of the past is something that we desperately require to bring about an inclusive multi-racial community?",
+            "proposition": "there was xxx much sympathy generally around the table for Lee Jasper's view that some form of Mdeba moment, as he put it, reconciliation or acknowledgment of the sins of the past is something that we desperately require to bring about an inclusive multi-racial community",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.6877994229023655,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 112684,
+            "locution": "AM : How could it possibly follow from this very deleterious account of colonialism that you have just given?",
+            "proposition": "it could not possibly follow from this very deleterious account of colonialism that JA has just given",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112682
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8767665030638373,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112682,
+            "locution": "JA : I want a moment that would produce more inclusivity",
+            "proposition": "JA wants a moment that would produce more inclusivity",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.8929642715708016,
+            "episode": null
+        },
+        "labels": 2
+    },
+    {
+        "node_1": {
+            "id": 28903,
+            "locution": "AM : One just seems to take you into a way of feeling worse about everything",
+            "proposition": "One just seems to take you into a way of feeling worse about everything",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112684
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 112685
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8103157722546409,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112685,
+            "locution": "AM : How is that going to make young black Britons feel better?",
+            "proposition": "that is not going to make young black Britons feel better",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.5190629350088004,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 28941,
+            "locution": "JA : Acknowledgment, in a Christian sense",
+            "proposition": "Acknowledgment, in a Christian sense",
+            "relations": [
+                {
+                    "type": "MA",
+                    "to_node_id": 112713
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5915786825459112,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28942,
+            "locution": "AM : Hang on, Enoch Powell acknowledged the maltreatment of the Mau Mau in a stirring speech",
+            "proposition": "Enoch Powell acknowledged the maltreatment of the Mau Mau in a stirring speech",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 28941
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5684231930141765,
+            "episode": null
+        },
+        "labels": 2
+    },
+    {
+        "node_1": {
+            "id": 28853,
+            "locution": "JA : the Jewish community was shipped to Auschwitz",
+            "proposition": "the Jewish community was shipped to Auschwitz",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.6983593000984956,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28854,
+            "locution": "AM :  Do you make that parallel?",
+            "proposition": "JA makes that parallel",
+            "relations": [
+                {
+                    "type": "MA",
+                    "to_node_id": 28853
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.48687334715024283,
+            "episode": null
+        },
+        "labels": 3
+    },
+    {
+        "node_1": {
+            "id": 38749,
+            "locution": "Anne  : We also know that there were atrocities on both sides, including in this big group of people that you've just referred to",
+            "proposition": "there were atrocities on both sides, including in this big group of people that Esther has just referred to",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.9322584570944309,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28760,
+            "locution": "JA : but it's not racism",
+            "proposition": "it's not racism",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112630
+                },
+                {
+                    "type": "CA",
+                    "to_node_id": 112630
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5478518307209015,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 112713,
+            "locution": "AM : What can we do to make you happy?",
+            "proposition": "we can do xxx to make JA happy",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.42469900678433653,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28941,
+            "locution": "JA : Acknowledgment, in a Christian sense",
+            "proposition": "Acknowledgment, in a Christian sense",
+            "relations": [
+                {
+                    "type": "MA",
+                    "to_node_id": 112713
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5915786825459112,
+            "episode": null
+        },
+        "labels": 3
+    },
+    {
+        "node_1": {
+            "id": 112315,
+            "locution": "Esther : so yes",
+            "proposition": "there were insurgents as Melanie would call them",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.7378671680177961,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112717,
+            "locution": "AM : In a sentence, do you think this particular court case might provide this Mdeba moment",
+            "proposition": "In a sentence, JA thinks / does not think this particular court case might provide this Mdeba moment",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.8042348921936873,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 112275,
+            "locution": "Melanie : It's only for you colonialism that is on trial here, not the behaviour of the insurgents at the time",
+            "proposition": "It's only for Esther colonialism that is on trial here, not the behaviour of the insurgents at the time",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112245
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.7003390323596073,
+            "episode": null
+        },
+        "node_2": {
+            "id": 29809,
+            "locution": "MT : That's what drove it",
+            "proposition": "That's what drove it",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112891
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.49669691000599414,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 28854,
+            "locution": "AM :  Do you make that parallel?",
+            "proposition": "JA makes that parallel",
+            "relations": [
+                {
+                    "type": "MA",
+                    "to_node_id": 28853
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.48687334715024283,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28862,
+            "locution": "JA : overall, if you ask people who have been subject to colonialism, it is an experience that leaves them financially much poorer, psychologically degraded in terms of their humanity",
+            "proposition": "overall, if you ask people who have been subject to colonialism, it is an experience that leaves them financially much poorer, psychologically degraded in terms of their humanity",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 28854
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.7418225034450491,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 112685,
+            "locution": "AM : How is that going to make young black Britons feel better?",
+            "proposition": "that is not going to make young black Britons feel better",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.5190629350088004,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28905,
+            "locution": "JA : We are here on Mandela's birthday and his leadership in relation to South Africa was one in which he sought to explore these issues, reconcile them, bring them to account, to apologise, to effect reparation where necessary, to acknowledge the crime",
+            "proposition": "We are here on Mandela's birthday and his leadership in relation to South Africa was one in which he sought to explore these issues, reconcile them, bring them to account, to apologise, to effect reparation where necessary, to acknowledge the crime",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112685
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 112686
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.7878586819541513,
+            "episode": null
+        },
+        "labels": 2
+    },
+    {
+        "node_1": {
+            "id": 26064,
+            "locution": "Melanie : one could equally say the context for the atrocities having been carried out by agents of the British Government at the time, the context was the atrocities being carried out against them by the Mau Mau",
+            "proposition": "the context for the atrocities having been carried out by agents of the British Government at the time, the context was the atrocities being carried out against them by the Mau Mau",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 26061
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 112245
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.822860579567662,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112751,
+            "locution": "JA : Thousands were made landless, homeless and reduced to absolute poverty",
+            "proposition": "Thousands were made landless, homeless and reduced to absolute poverty",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112715
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 28946
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.9270470847766246,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 112714,
+            "locution": "AM : that probably isn't enough for you",
+            "proposition": "that probably isn't enough for JA",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.3049474955846866,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112715,
+            "locution": "JA : I think they are due reparation",
+            "proposition": "they are due reparation",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112714
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5480663447773882,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 28772,
+            "locution": "JA : Because you can be convicted of being racially offensive without being a racist",
+            "proposition": "you can be convicted of being racially offensive without being a racist",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112636
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 28778
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 28781
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5953971669137452,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28781,
+            "locution": "JA : I have heard lots of judgments of people being found guilty of uttering racially offensive remarks without themselves being what I would call a card carrying racist",
+            "proposition": "JA has heard lots of judgments of people being found guilty of uttering racially offensive remarks without themselves being what JA would call a card carrying racist",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.7847363889847266,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 28746,
+            "locution": "JA : people who are powerless cannot be prejudiced",
+            "proposition": "people who are powerless cannot be prejudiced",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.41418115862804217,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112630,
+            "locution": "MP : So when black people say, for example, Jews control the banks, that's not prejudice?",
+            "proposition": "when black people say, for example, Jews control the banks, that's prejudice",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 28746
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.7229054564171854,
+            "episode": null
+        },
+        "labels": 2
+    },
+    {
+        "node_1": {
+            "id": 112342,
+            "locution": "MB : What do you think is going on here?",
+            "proposition": "What is going on here is xxx",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.6589504896566786,
+            "episode": null
+        },
+        "node_2": {
+            "id": 113244,
+            "locution": "A revisionist :  actually the Empire wasn't so bad",
+            "proposition": "the Empire wasn't so bad",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.85087501257658,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 112289,
+            "locution": "Esther : but I was also giving wider views around the importance of this case",
+            "proposition": "Esther was also giving wider views around the importance of this case",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.9717138913171045,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28946,
+            "locution": "JA : acknowledgment and reparation for that is the minimum moral requisite position that is required from the United Kingdom",
+            "proposition": "acknowledgment and reparation for that is the minimum moral requisite position that is required from the United Kingdom",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112716
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8099178072208395,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 28905,
+            "locution": "JA : We are here on Mandela's birthday and his leadership in relation to South Africa was one in which he sought to explore these issues, reconcile them, bring them to account, to apologise, to effect reparation where necessary, to acknowledge the crime",
+            "proposition": "We are here on Mandela's birthday and his leadership in relation to South Africa was one in which he sought to explore these issues, reconcile them, bring them to account, to apologise, to effect reparation where necessary, to acknowledge the crime",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112685
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 112686
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.7878586819541513,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112686,
+            "locution": "JA :  You see, the legacy of colonialism for white people is white privilege in the modern day setting.",
+            "proposition": "the legacy of colonialism for white people is white privilege in the modern day setting.",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.8251319955344554,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 112715,
+            "locution": "JA : I think they are due reparation",
+            "proposition": "they are due reparation",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112714
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5480663447773882,
+            "episode": null
+        },
+        "node_2": {
+            "id": 112751,
+            "locution": "JA : Thousands were made landless, homeless and reduced to absolute poverty",
+            "proposition": "Thousands were made landless, homeless and reduced to absolute poverty",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112715
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 28946
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.9270470847766246,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 25496,
+            "locution": "Esther : This was a war of liberation",
+            "proposition": "This was a war of liberation",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 38758
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8020049118995667,
+            "episode": null
+        },
+        "node_2": {
+            "id": 38223,
+            "locution": "Anne  : This took place in the colonial era",
+            "proposition": "This took place in the colonial era",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 38749
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.6605682346008478,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 112630,
+            "locution": "MP : So when black people say, for example, Jews control the banks, that's not prejudice?",
+            "proposition": "when black people say, for example, Jews control the banks, that's prejudice",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 28746
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.7229054564171854,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28760,
+            "locution": "JA : but it's not racism",
+            "proposition": "it's not racism",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112630
+                },
+                {
+                    "type": "CA",
+                    "to_node_id": 112630
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5478518307209015,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 112684,
+            "locution": "AM : How could it possibly follow from this very deleterious account of colonialism that you have just given?",
+            "proposition": "it could not possibly follow from this very deleterious account of colonialism that JA has just given",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112682
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8767665030638373,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28903,
+            "locution": "AM : One just seems to take you into a way of feeling worse about everything",
+            "proposition": "One just seems to take you into a way of feeling worse about everything",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112684
+                },
+                {
+                    "type": "RA",
+                    "to_node_id": 112685
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8103157722546409,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 112252,
+            "locution": "Esther :  that's not correct",
+            "proposition": "that's not correct",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112275
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.9368801712989807,
+            "episode": null
+        },
+        "node_2": {
+            "id": 29953,
+            "locution": "MT : Maybe there should be a window of apology and getting back to common sense.",
+            "proposition": "there should be a window of apology and getting back to common sense.",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.417050414242401,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 28854,
+            "locution": "AM :  Do you make that parallel?",
+            "proposition": "JA makes that parallel",
+            "relations": [
+                {
+                    "type": "MA",
+                    "to_node_id": 28853
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.48687334715024283,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28861,
+            "locution": "JA : in order to finance the trade and the extraction of resource in African countries, infrastructure was built and there was a degree of benevolence",
+            "proposition": "in order to finance the trade and the extraction of resource in African countries, infrastructure was built and there was a degree of benevolence",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 28854
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.8237979623330075,
+            "episode": null
+        },
+        "labels": 1
+    },
+    {
+        "node_1": {
+            "id": 112630,
+            "locution": "MP : So when black people say, for example, Jews control the banks, that's not prejudice?",
+            "proposition": "when black people say, for example, Jews control the banks, that's prejudice",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 28746
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.7229054564171854,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28757,
+            "locution": "JA : That's racially offensive",
+            "proposition": "That's racially offensive",
+            "relations": [
+                {
+                    "type": "CA",
+                    "to_node_id": 112630
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5523509547735254,
+            "episode": null
+        },
+        "labels": 2
+    },
+    {
+        "node_1": {
+            "id": 38749,
+            "locution": "Anne  : We also know that there were atrocities on both sides, including in this big group of people that you've just referred to",
+            "proposition": "there were atrocities on both sides, including in this big group of people that Esther has just referred to",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.9322584570944309,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28941,
+            "locution": "JA : Acknowledgment, in a Christian sense",
+            "proposition": "Acknowledgment, in a Christian sense",
+            "relations": [
+                {
+                    "type": "MA",
+                    "to_node_id": 112713
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.5915786825459112,
+            "episode": null
+        },
+        "labels": 0
+    },
+    {
+        "node_1": {
+            "id": 112686,
+            "locution": "JA :  You see, the legacy of colonialism for white people is white privilege in the modern day setting.",
+            "proposition": "the legacy of colonialism for white people is white privilege in the modern day setting.",
+            "relations": [],
+            "audio": null,
+            "audio_score": 0.8251319955344554,
+            "episode": null
+        },
+        "node_2": {
+            "id": 28907,
+            "locution": "JA : The legacy of colonialism for black people is, you know, poverty",
+            "proposition": "The legacy of colonialism for black people is, you know, poverty",
+            "relations": [
+                {
+                    "type": "RA",
+                    "to_node_id": 112686
+                }
+            ],
+            "audio": null,
+            "audio_score": 0.7958994957131196,
+            "episode": null
+        },
+        "labels": 1
+    }
+]

@@ -220,7 +220,7 @@ class MultimodalEarlyLateModel(nn.Module):
         if mm_fusion_method == "concat":
             self.hidden_size = self.text_hidden_size + self.audio_hidden_size
         else:
-            if not "ca" in mm_fusion_method:
+            if "ca" not in mm_fusion_method:
                 assert self.text_hidden_size == self.audio_hidden_size
             self.hidden_size = self.text_hidden_size
 
