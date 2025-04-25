@@ -166,3 +166,4 @@ raw_data/
 wandb/
 saves/
 models/checkpoint-*
+demo_model.pt
