@@ -19,7 +19,7 @@ accuracy = evaluate.load("accuracy")
 precision = evaluate.load("precision")
 recall = evaluate.load("recall")
 
-N_CLASSES = 4
+N_CLASSES = 3
 
 
 def metrics_fn(predictions, targets=None, step="eval"):
@@ -80,16 +80,16 @@ def metrics_fn(predictions, targets=None, step="eval"):
     elif N_CLASSES == 4:
         class_names = ["NO", "RA", "CA", "MA"]
 
-    cm = skm.confusion_matrix(targets, preds)
-    df = pd.DataFrame(
-        cm / np.sum(cm, axis=1)[:, None],
-        index=[i for i in class_names],
-        columns=[i for i in class_names],
-    )
-    plt.figure(figsize=(12, 7))
-    sn.heatmap(df, annot=True)
-    plt.xlabel("Predicted Label")
-    plt.ylabel("True Label")
+    # cm = skm.confusion_matrix(targets, preds)
+    # df = pd.DataFrame(
+    #     cm / np.sum(cm, axis=1)[:, None],
+    #     index=[i for i in class_names],
+    #     columns=[i for i in class_names],
+    # )
+    # plt.figure(figsize=(12, 7))
+    # sn.heatmap(df, annot=True)
+    # plt.xlabel("Predicted Label")
+    # plt.ylabel("True Label")
 
     # add metric scores to dictionary
     res = {
@@ -107,13 +107,13 @@ def metrics_fn(predictions, targets=None, step="eval"):
     print(res)
 
     # log metrics to wandb
-    if "--log" in sys.argv:
-        try:
-            wandb.log({"conf_mat": wandb.Image(plt)})
-        except:
-            pass
+    # if "--log" in sys.argv:
+    #     try:
+    #         wandb.log({"conf_mat": wandb.Image(plt)})
+    #     except:
+    #         pass
 
-    plt.close()
+    # plt.close()
 
     return res
 

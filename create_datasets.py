@@ -7,12 +7,14 @@ from tqdm import tqdm
 import random
 import math
 import sys
+import numpy as np
 
 from datastructs import Node, Sample
 
 SPLITS = [0.7, 0.1, 0.2]
 AUDIO_EOS_LEN = 5
 audio_cat = torch.tensor([0 for _ in range(int(16_000 * AUDIO_EOS_LEN))])
+audio_cat_np = np.zeros(16_000 * AUDIO_EOS_LEN)
 
 seed = 0
 random.seed(seed)
@@ -735,6 +737,111 @@ class MultimodalDatasetNoConcat(torch.utils.data.Dataset):
 
         with open(path, "r") as f:
             s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
+
+        s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
+
+        return s
+
+
+class LLMDataset(torch.utils.data.Dataset):
+    """Dataset containing multimodal sequence pairs processed using librosa for LLM"""
+
+    def __init__(
+        self,
+        data_dir,
+        train_test_split=[1, 0, 0],
+        split=0,
+        qt_complete=False,
+        process=True,
+    ):
+        """Class constructor
+
+        Args:
+            data_dir (str): path to data directory
+            tokenizer (str): text model checkpoint
+            feature_extractor (str): audio model checkpoint
+            max_tokens (int): maximum length to which to pad/truncate text sequences
+            max_samples (int): maximum length to pad/truncate audio sequences
+            train_test_split (list[float], optional): proportion of data to be put into each split. Defaults to entirely training split.
+            split (int, optional): the requested split. Defaults to 0.
+            qt_complete (bool, optional): whether the dataset is the complete QT30 set. Defaults to False.
+        """
+
+        self.data_dir = data_dir
+
+        self.qt_complete = qt_complete
+
+        if process:
+            self.sequence_pairs = process(data_dir, train_test_split)[split]
+
+    def __len__(self):
+        """Method to get the length of the dataset"""
+        return len(self.sequence_pairs)
+
+    def __getitem__(self, idx):
+        """Method to get the item at a specific index
+
+        Args:
+            idx (int): index
+
+        Returns:
+            dict: sample
+        """
+        sample = self.sequence_pairs[idx]
+
+        # load the audio data
+        if self.qt_complete:
+            n1_audio_path = str(
+                Path(self.data_dir)
+                / sample.node_1.episode
+                / "audio"
+                / (str(sample.node_1.id) + ".wav")
+            )
+            n2_audio_path = str(
+                Path(self.data_dir)
+                / sample.node_2.episode
+                / "audio"
+                / (str(sample.node_2.id) + ".wav")
+            )
+        else:
+            n1_audio_path = str(
+                Path(self.data_dir) / "audio" / (str(sample.node_1.id) + ".wav")
+            )
+            n2_audio_path = str(
+                Path(self.data_dir) / "audio" / (str(sample.node_2.id) + ".wav")
+            )
+
+        # return the sample
+        return {
+            "text1": sample.node_1.proposition,
+            "text2": sample.node_2.proposition,
+            "audio1": n1_audio_path,
+            "audio2": n2_audio_path,
+            "labels": sample.labels,
+        }
+
+    def save(self, path):
+        with open(path, "w") as f:
+            out = Sample.schema().dumps(self.sequence_pairs, many=True)
+            f.write(out)
+
+    def load(
+        path,
+        data_dir,
+        relation_types,
+        qt_complete=False,
+        max_items=-1
+    ):
+        s = LLMDataset(
+            data_dir,
+            qt_complete=qt_complete,
+            process=False,
+        )
+
+        with open(path, "r") as f:
+            s.sequence_pairs = Sample.schema().loads(f.read(), many=True)
+            if max_items > 0:
+                s.sequence_pairs = s.sequence_pairs[:max_items]
 
         s.weights, s.counts = get_metrics(s.sequence_pairs, relation_types)
 

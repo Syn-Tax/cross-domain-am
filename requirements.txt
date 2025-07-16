@@ -7,3 +7,4 @@ evaluate
 scikit-learn
 ffmpeg-python
 wandb
+google-genai
